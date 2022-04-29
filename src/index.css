@@ -16,11 +16,11 @@ code {
   opacity: 0.25;
 }
 
-.leg--placeholder:hover .road {
+.leg--interactive.leg--placeholder:hover .road {
   opacity: 0.9;
 }
 
-.leg:hover {
+.leg--interactive:hover {
   opacity: 0.9;
 }
 

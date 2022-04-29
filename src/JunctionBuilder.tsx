@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useState } from 'react'
+import React, { MouseEventHandler, useEffect, useState } from 'react'
 
 const legWidth = 30
 const legLength = 30
@@ -6,16 +6,18 @@ const crosswalkLength = 20
 const crosswalkSegmentsInEachDirection = 3
 const islandWidthInSegments = 2
 
-type Leg = { crosswalk: boolean; island: boolean } | null
+export type Leg = { crosswalk: boolean; island: boolean } | null
+export type Legs = [Leg, Leg, Leg, Leg]
 
-export default function JunctionBuilder() {
+export default function JunctionBuilder({
+  legs,
+  setLegs,
+}: {
+  legs: Legs
+  setLegs: (legs: Legs) => void
+}) {
   const [junctionTitle, setJunctionTitle] = useState('')
-  const [legs, setLegs] = useState<[Leg, Leg, Leg, Leg]>([
-    null,
-    null,
-    null,
-    null,
-  ])
+
   const setLeg = (index: number, leg: Leg) =>
     setLegs(setArrayItem(legs, index, leg) as [Leg, Leg, Leg, Leg])
 
@@ -23,6 +25,10 @@ export default function JunctionBuilder() {
   const [selectedLegIndex, setSelectedLegIndex] = useState<number | null>(null)
 
   const viewBoxOffset = legWidth / 2 + legLength
+
+  useEffect(() => {
+    setSelectedLegIndex(null)
+  }, [inEditMode])
 
   return (
     <div>
@@ -72,7 +78,9 @@ export default function JunctionBuilder() {
             {(inEditMode || legs[legIndex]) && (
               <JunctionLegGroup
                 status={legs[legIndex]}
-                onClick={() => setSelectedLegIndex(legIndex)}
+                onClick={
+                  inEditMode ? () => setSelectedLegIndex(legIndex) : undefined
+                }
                 ariaLabel={legs[legIndex] ? 'עריכת כביש' : 'הוספת כביש'}
               />
             )}
@@ -158,7 +166,9 @@ function JunctionLegGroup({
 
   return (
     <g
-      className={status ? 'leg' : 'leg leg--placeholder'}
+      className={`leg ${status === null ? 'leg--placeholder' : ''} ${
+        onClick ? 'leg--interactive' : ''
+      }`}
       onClick={onClick}
       tabIndex={onClick ? 0 : undefined}
       role={onClick && 'button'}

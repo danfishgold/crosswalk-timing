@@ -1,21 +1,23 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import JunctionBuilder from './JunctionBuilder'
+import JunctionBuilder, { Legs } from './JunctionBuilder'
 
 function App() {
   const [durationInputValue, setDurationInputValue, duration] =
     useDurationInput()
+  const [legs, setLegs] = useState<Legs>([null, null, null, null])
+
   return (
     <div>
-      <DurationInput
-        value={durationInputValue}
-        setValue={setDurationInputValue}
-      />
-      <JunctionBuilder />
+      <JunctionBuilder legs={legs} setLegs={setLegs} />
       {duration ? (
         <TimelineEditor duration={duration} />
       ) : (
         <BlankTimelineEditor />
       )}
+      <DurationInput
+        value={durationInputValue}
+        setValue={setDurationInputValue}
+      />
     </div>
   )
 }
