@@ -21,7 +21,7 @@ export default function JunctionBuilder({
   const setLeg = (index: number, leg: Leg) =>
     setLegs(setArrayItem(legs, index, leg) as [Leg, Leg, Leg, Leg])
 
-  const [inEditMode, setInEditMode] = useState(true)
+  const [inEditMode, setInEditMode] = useState(false)
   const [selectedLegIndex, setSelectedLegIndex] = useState<number | null>(null)
 
   const viewBoxOffset = legWidth / 2 + legLength
@@ -228,10 +228,10 @@ function legClassNames(leg: Leg): string {
   ].join(' ')
 }
 
-function range(n: number): number[] {
+export function range(n: number): number[] {
   return new Array(n).fill(0).map((_, index) => index)
 }
 
-function setArrayItem<T>(array: T[], index: number, value: T): T[] {
+export function setArrayItem<T>(array: T[], index: number, value: T): T[] {
   return [...array.slice(0, index), value, ...array.slice(index + 1)]
 }
