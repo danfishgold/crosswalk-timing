@@ -1,0 +1,54 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.leg--placeholder .road {
+  opacity: 0.25;
+}
+
+.leg--placeholder:hover .road {
+  opacity: 0.9;
+}
+
+.leg:hover {
+  opacity: 0.9;
+}
+
+.leg__focus-ring {
+  opacity: 0;
+  fill: none;
+  stroke: rgb(72, 0, 255);
+  stroke-width: 1;
+  transform: translateZ(1px);
+}
+
+.leg:focus .leg__focus-ring,
+.leg-placeholder:focus .leg__focus-ring {
+  opacity: 1;
+}
+
+.road {
+  fill: #373842;
+  stroke: #373842;
+  stroke-width: 0.1;
+}
+
+.crosswalk-stripe {
+  fill: #eeeeee;
+}
+
+.island rect {
+  fill: #a5a5a5;
+  stroke: #a5a5a5;
+  stroke-width: 0.1;
+}
