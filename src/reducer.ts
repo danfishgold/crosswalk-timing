@@ -39,6 +39,14 @@ export type TransitionSuggestion = {
   y: number
 }
 
+export function crosswalkIdString(crosswalkId: CrosswalkId): string {
+  if (crosswalkId.part) {
+    return `${crosswalkId.legId}-${crosswalkId.part}`
+  } else {
+    return crosswalkId.legId
+  }
+}
+
 const initialState: State = {
   junction: {
     n: { crosswalk: false, island: true },
@@ -148,7 +156,8 @@ export const selectTrackTransitions = createSelector(
 export const selectCrosswalkIds = createSelector(
   (state: State) => state.junction,
   (junction): CrosswalkId[] =>
-    Object.entries(junction).flatMap(([legId, leg]) => {
+    legIds.flatMap((legId) => {
+      const leg = junction[legId]
       if (!leg || !leg.crosswalk) {
         return []
       }

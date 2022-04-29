@@ -1,11 +1,20 @@
-import React, { MouseEventHandler, useEffect, useState } from 'react'
-import { Leg, LegId, legIds, setJunctionTitle, setLeg } from './reducer'
+import React, { MouseEventHandler, useEffect, useMemo, useState } from 'react'
+import {
+  CrosswalkId,
+  crosswalkIdString,
+  Leg,
+  LegId,
+  legIds,
+  selectCrosswalkIds,
+  setJunctionTitle,
+  setLeg,
+} from './reducer'
 import { useDispatch, useSelector } from './store'
 import { range } from './utils'
 
 const legWidth = 30
 const legLength = 30
-const crosswalkLength = 20
+const crosswalkLength = 15
 const crosswalkSegmentsInEachDirection = 3
 const islandWidthInSegments = 2
 
@@ -19,12 +28,9 @@ const legRotation: Record<LegId, number> = {
 export default function JunctionBuilder() {
   const dispatch = useDispatch()
   const junctionTitle = useSelector((state) => state.junctionTitle)
-  const junction = useSelector((state) => state.junction)
 
   const [inEditMode, setInEditMode] = useState(false)
   const [selectedLegId, setSelectedLegId] = useState<LegId | null>(null)
-
-  const viewBoxOffset = legWidth / 2 + legLength
 
   useEffect(() => {
     setSelectedLegId(null)
@@ -48,118 +54,234 @@ export default function JunctionBuilder() {
           />
         </div>
       ) : (
-        junctionTitle && <h1>{junctionTitle}</h1>
+        junctionTitle && (
+          <h1 style={{ textAlign: 'center' }}>{junctionTitle}</h1>
+        )
       )}
-      <svg
-        width='300px'
-        height='300px'
-        viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${viewBoxOffset * 2} ${
-          viewBoxOffset * 2
-        }`}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          maxWidth: '700px',
+          margin: '0 auto',
+        }}
       >
-        <rect
-          className='road'
-          x={-legWidth / 2}
-          y={-legWidth / 2}
-          width={legWidth}
-          height={legWidth}
+        <Svg
+          inEditMode={inEditMode}
+          onLegClick={(legId) => setSelectedLegId(legId)}
         />
-        {legIds.map((legId) => (
-          <g
-            key={legId}
-            transform={`rotate(${legRotation[legId]}) translate(${
-              legWidth / 2
-            },${-legWidth / 2})`}
+        {inEditMode && (
+          <div
+            style={{
+              maxWidth: '280px',
+              border: '1px solid black',
+              padding: '20px',
+            }}
           >
-            {(inEditMode || junction[legId]) && (
-              <JunctionLegGroup
-                leg={junction[legId]}
-                onClick={inEditMode ? () => setSelectedLegId(legId) : undefined}
-                ariaLabel={junction[legId] ? 'עריכת כביש' : 'הוספת כביש'}
-              />
+            <h2>עריכת צומת</h2>
+            {selectedLegId === null ? (
+              <p>לחצו על אחת הזרועות של הצומת כדי לערוך אותה</p>
+            ) : (
+              <div>
+                <button
+                  onClick={() =>
+                    dispatch(setLeg({ legId: selectedLegId, leg: null }))
+                  }
+                >
+                  שום כלום
+                </button>
+                <button
+                  onClick={() =>
+                    dispatch(
+                      setLeg({
+                        legId: selectedLegId,
+                        leg: {
+                          crosswalk: false,
+                          island: false,
+                        },
+                      }),
+                    )
+                  }
+                >
+                  כביש בלי מעבר חציה
+                </button>
+                <button
+                  onClick={() =>
+                    dispatch(
+                      setLeg({
+                        legId: selectedLegId,
+                        leg: {
+                          crosswalk: true,
+                          island: false,
+                        },
+                      }),
+                    )
+                  }
+                >
+                  מעבר חציה
+                </button>
+                <button
+                  onClick={() =>
+                    dispatch(
+                      setLeg({
+                        legId: selectedLegId,
+                        leg: {
+                          crosswalk: true,
+                          island: true,
+                        },
+                      }),
+                    )
+                  }
+                >
+                  מעבר חציה + מפרדה
+                </button>
+                <button
+                  onClick={() =>
+                    dispatch(
+                      setLeg({
+                        legId: selectedLegId,
+                        leg: {
+                          crosswalk: false,
+                          island: true,
+                        },
+                      }),
+                    )
+                  }
+                >
+                  בלי מעבר חציה אבל עם מפרדה
+                </button>
+              </div>
             )}
-          </g>
-        ))}
-      </svg>
-      {inEditMode && (
-        <div>
-          <h2>עריכת צומת</h2>
-          {selectedLegId === null ? (
-            <p>לחצו על אחת הזרועות של הצומת כדי לערוך אותה</p>
-          ) : (
-            <div>
-              <button
-                onClick={() =>
-                  dispatch(setLeg({ legId: selectedLegId, leg: null }))
-                }
-              >
-                שום כלום
-              </button>
-              <button
-                onClick={() =>
-                  dispatch(
-                    setLeg({
-                      legId: selectedLegId,
-                      leg: {
-                        crosswalk: false,
-                        island: false,
-                      },
-                    }),
-                  )
-                }
-              >
-                כביש בלי מעבר חציה
-              </button>
-              <button
-                onClick={() =>
-                  dispatch(
-                    setLeg({
-                      legId: selectedLegId,
-                      leg: {
-                        crosswalk: true,
-                        island: false,
-                      },
-                    }),
-                  )
-                }
-              >
-                מעבר חציה
-              </button>
-              <button
-                onClick={() =>
-                  dispatch(
-                    setLeg({
-                      legId: selectedLegId,
-                      leg: {
-                        crosswalk: true,
-                        island: true,
-                      },
-                    }),
-                  )
-                }
-              >
-                מעבר חציה + מפרדה
-              </button>
-              <button
-                onClick={() =>
-                  dispatch(
-                    setLeg({
-                      legId: selectedLegId,
-                      leg: {
-                        crosswalk: false,
-                        island: true,
-                      },
-                    }),
-                  )
-                }
-              >
-                בלי מעבר חציה אבל עם מפרדה
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
+  )
+}
+
+function Svg({
+  inEditMode,
+  onLegClick,
+}: {
+  inEditMode: boolean
+  onLegClick: (legId: LegId) => void
+}) {
+  const junction = useSelector((state) => state.junction)
+  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const viewBoxOffset = legWidth / 2 + legLength
+
+  return (
+    <svg
+      width='300px'
+      height='300px'
+      viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${viewBoxOffset * 2} ${
+        viewBoxOffset * 2
+      }`}
+    >
+      <rect
+        className='road'
+        x={-legWidth / 2}
+        y={-legWidth / 2}
+        width={legWidth}
+        height={legWidth}
+      />
+      {legIds.map((legId) => (
+        <g
+          key={legId}
+          transform={`rotate(${legRotation[legId]}) translate(${legWidth / 2},${
+            -legWidth / 2
+          })`}
+        >
+          {(inEditMode || junction[legId]) && (
+            <JunctionLegGroup
+              leg={junction[legId]}
+              onClick={inEditMode ? () => onLegClick(legId) : undefined}
+              ariaLabel={junction[legId] ? 'עריכת כביש' : 'הוספת כביש'}
+            />
+          )}
+        </g>
+      ))}
+      <g>
+        {crosswalkIds.map((crosswalkId, index) => (
+          <CrosswalkIndicatorGroup
+            key={crosswalkIdString(crosswalkId)}
+            crosswalkId={crosswalkId}
+            index={index}
+          />
+        ))}
+      </g>
+    </svg>
+  )
+}
+
+function CrosswalkIndicatorGroup({
+  crosswalkId,
+  index,
+}: {
+  crosswalkId: CrosswalkId
+  index: number
+}) {
+  const crosswalkSegmentCount =
+    crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
+  const crosswalkSegmentLength = legWidth / (crosswalkSegmentCount * 2 + 1)
+
+  const islandHeight = crosswalkSegmentLength * (islandWidthInSegments * 2 - 1)
+
+  const crosswalkOffset = islandHeight
+
+  const [x, y1, y2] = useMemo(() => {
+    if (!crosswalkId.part) {
+      const x = legWidth / 2 + crosswalkOffset + crosswalkLength + 5
+      const y1 = -legWidth / 2 + crosswalkSegmentLength
+      const y2 = legWidth / 2 - crosswalkSegmentLength
+      return [x, y1, y2]
+    } else if (crosswalkId.part === 'first') {
+      const x = legWidth / 2 + crosswalkOffset + crosswalkLength + 5
+      const y1 = -legWidth / 2 + crosswalkSegmentLength
+      const y2 =
+        -legWidth / 2 +
+        crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2)
+      return [x, y1, y2]
+    } else {
+      const x = legWidth / 2 + crosswalkOffset + crosswalkLength + 5
+      const y1 =
+        legWidth / 2 -
+        crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2)
+      const y2 = legWidth / 2 - crosswalkSegmentLength
+      return [x, y1, y2]
+    }
+  }, [crosswalkId.part])
+  return (
+    <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
+      <line
+        x1={x}
+        x2={x}
+        y1={y1}
+        y2={y2}
+        stroke='white'
+        strokeWidth={crosswalkSegmentLength}
+      />
+      <circle
+        cx={x}
+        cy={(y1 + y2) / 2}
+        r={crosswalkSegmentLength * 1.5}
+        fill='white'
+      />
+      <text
+        x={0}
+        y={0}
+        fontSize={crosswalkSegmentLength * 2.5}
+        fill='black'
+        textAnchor='middle'
+        alignmentBaseline='middle'
+        transform={`translate(${x}, ${(y1 + y2) / 2}) rotate(${-legRotation[
+          crosswalkId.legId
+        ]})`}
+      >
+        {index + 1}
+      </text>
+    </g>
   )
 }
 
@@ -192,13 +314,6 @@ function JunctionLegGroup({
       role={onClick && 'button'}
       aria-label={ariaLabel}
     >
-      <rect
-        className='leg__focus-ring'
-        x={-1}
-        y={-1}
-        width={legLength + 2}
-        height={legWidth + 2}
-      />
       <rect className='road' x={0} y={0} width={legLength} height={legWidth} />
       {leg?.crosswalk && (
         <g className='crosswalk'>
@@ -233,6 +348,13 @@ function JunctionLegGroup({
           />
         </g>
       )}
+      <rect
+        className='leg__focus-ring'
+        x={0}
+        y={0}
+        width={legLength}
+        height={legWidth}
+      />
     </g>
   )
 }

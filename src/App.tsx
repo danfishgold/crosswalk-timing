@@ -5,6 +5,7 @@ import {
   clickTimelineTrack,
   confirmTransitionSuggestion,
   CrosswalkId,
+  crosswalkIdString,
   dismissTransitionSuggestion,
   hoverOverTimeline,
   moveOutsideTimeline,
@@ -23,7 +24,10 @@ function App() {
   return (
     <div>
       <JunctionBuilder />
-      <hr />
+      <br />
+      <br />
+      <br />
+      <br />
       <DurationInput />
       <TimelineEditor />
     </div>
@@ -74,7 +78,7 @@ function TimelineEditor() {
     >
       {crosswalkIds.map((crosswalkId) => (
         <CrosswalkTrack
-          key={`${crosswalkId.legId}${crosswalkId.part ?? ''}`}
+          key={crosswalkIdString(crosswalkId)}
           crosswalkId={crosswalkId}
         />
       ))}
@@ -147,7 +151,7 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
       onMouseMove={(event) =>
         dispatch(hoverOverTimeline(timestampFromEvent(event, duration)))
       }
-      key={`${crosswalkId.legId}${crosswalkId.part ?? ''}`}
+      key={crosswalkIdString(crosswalkId)}
       style={{
         width: '100%',
         height: '30px',
