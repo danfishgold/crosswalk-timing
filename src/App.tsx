@@ -3,7 +3,6 @@ import JunctionBuilder from './JunctionBuilder'
 import Popover from './Popover'
 import {
   clickTimelineTrack,
-  Color,
   confirmTransitionSuggestion,
   CrosswalkId,
   dismissTransitionSuggestion,
@@ -61,27 +60,16 @@ function DurationInput() {
 function TimelineEditor() {
   const dispatch = useDispatch()
   const duration = useSelector((state) => state.recordingDuration)
-  const transitions = useSelector((state) => state.transitions)
   const suggestion = useSelector((state) => state.transitionSuggestion)
   const cursor = useSelector((state) => state.cursor)
-
-  const onMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    const boundingRect = event.currentTarget.getBoundingClientRect()
-    const x = event.clientX - boundingRect.x
-    const timestamp = Math.round((x / boundingRect.width) * duration)
-    dispatch(hoverOverTimeline(timestamp))
-  }
-
-  const onConfirmTransition = (color: Color) => {
-    dispatch(confirmTransitionSuggestion(color))
-  }
-
   const crosswalkIds = useSelector(selectCrosswalkIds)
 
   return (
     <div
       style={{ position: 'relative' }}
-      onMouseMove={onMouseMove}
+      onMouseMove={(event) =>
+        dispatch(hoverOverTimeline(timestampFromEvent(event, duration)))
+      }
       onMouseLeave={() => dispatch(moveOutsideTimeline())}
     >
       {crosswalkIds.map((crosswalkId) => (
@@ -137,14 +125,17 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
   const transitions = useSelector((state) =>
     selectTrackTransitions(state, crosswalkId),
   )
+  const duration = useSelector((state) => state.recordingDuration)
 
   const onTrackClick = (
     crosswalkId: CrosswalkId,
     event: MouseEvent<HTMLDivElement>,
   ) => {
+    const timestamp = timestampFromEvent(event, duration)
     dispatch(
       clickTimelineTrack({
         crosswalkId,
+        timestamp,
         x: event.clientX,
         y: event.clientY,
       }),
@@ -153,6 +144,9 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
   return (
     <div
       onClick={(event) => onTrackClick(crosswalkId, event)}
+      onMouseMove={(event) =>
+        dispatch(hoverOverTimeline(timestampFromEvent(event, duration)))
+      }
       key={`${crosswalkId.legId}${crosswalkId.part ?? ''}`}
       style={{
         width: '100%',
@@ -187,6 +181,16 @@ function TrackTransition({ transition }: { transition: Transition }) {
       }}
     ></div>
   )
+}
+
+function timestampFromEvent(
+  event: MouseEvent<HTMLDivElement>,
+  duration: number,
+): number {
+  const boundingRect = event.currentTarget.getBoundingClientRect()
+  const x = event.clientX - boundingRect.x
+  const timestamp = Math.round((x / boundingRect.width) * duration)
+  return timestamp
 }
 
 export default App

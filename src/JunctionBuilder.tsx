@@ -236,12 +236,3 @@ function JunctionLegGroup({
     </g>
   )
 }
-
-function legClassNames(leg: Leg): string {
-  return [
-    'leg',
-    leg ? 'leg--visible' : '',
-    leg?.crosswalk ? 'leg--with-crosswalk' : '',
-    leg?.island ? 'leg--with-island' : '',
-  ].join(' ')
-}

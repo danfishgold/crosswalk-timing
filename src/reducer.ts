@@ -80,16 +80,22 @@ const { reducer, actions } = createSlice({
     },
     clickTimelineTrack(
       state,
-      action: PayloadAction<{ crosswalkId: CrosswalkId; x: number; y: number }>,
+      action: PayloadAction<{
+        crosswalkId: CrosswalkId
+        timestamp: number
+        x: number
+        y: number
+      }>,
     ) {
-      if (!state.cursor) {
-        return
-      }
       state.transitionSuggestion = {
         crosswalkId: action.payload.crosswalkId,
-        timestamp: state.cursor.timestamp,
+        timestamp: action.payload.timestamp,
         x: action.payload.x,
         y: action.payload.y,
+      }
+      state.cursor = {
+        crosswalkId: action.payload.crosswalkId,
+        timestamp: action.payload.timestamp,
       }
     },
     confirmTransitionSuggestion(state, action: PayloadAction<Color>) {
