@@ -1,72 +1,51 @@
-import React, {
-  Dispatch,
-  MouseEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from 'react'
-import JunctionBuilder, { Legs, range, setArrayItem } from './JunctionBuilder'
+import React, { MouseEvent, useEffect, useState } from 'react'
+import JunctionBuilder from './JunctionBuilder'
 import Popover from './Popover'
+import {
+  clickTimelineTrack,
+  Color,
+  confirmTransitionSuggestion,
+  CrosswalkId,
+  dismissTransitionSuggestion,
+  hoverOverTimeline,
+  moveOutsideTimeline,
+  selectCrosswalkIds,
+  selectTrackTransitions,
+  setRecordingDuration,
+  Transition,
+} from './reducer'
+import { useDispatch, useSelector } from './store'
+import { formatTimestamp } from './utils'
+
+const green = '#28e23f'
+const red = '#e91c32'
 
 function App() {
-  const [durationInputValue, setDurationInputValue, duration] =
-    useDurationInput()
-  const [legs, setLegs] = useState<Legs>([
-    { crosswalk: false, island: true },
-    null,
-    { crosswalk: true, island: true },
-    { crosswalk: true, island: false },
-  ])
-  const [tracks, setTracks] = useState<Track[]>(
-    range(trackCount(legs)).map(() => ({
-      transitions: [],
-    })),
-  )
-
-  useEffect(() => {
-    setTracks(
-      range(trackCount(legs)).map(() => ({
-        transitions: [],
-      })),
-    )
-  }, [legs])
-
-  const addTransition = (transition: Transition, trackIndex: number) => {
-    const newTrack = {
-      ...tracks[trackIndex],
-      transitions: [...tracks[trackIndex].transitions, transition],
-    }
-    setTracks(setArrayItem(tracks, trackIndex, newTrack))
-  }
-
   return (
     <div>
-      <JunctionBuilder legs={legs} setLegs={setLegs} />
+      <JunctionBuilder />
       <hr />
-      <DurationInput
-        value={durationInputValue}
-        setValue={setDurationInputValue}
-      />
-      {duration ? (
-        <TimelineEditor
-          duration={duration}
-          tracks={tracks}
-          addTransition={addTransition}
-        />
-      ) : (
-        <BlankTimelineEditor tracks={tracks} />
-      )}
+      <DurationInput />
+      <TimelineEditor />
     </div>
   )
 }
 
-function DurationInput({
-  value,
-  setValue,
-}: {
-  value: string
-  setValue: Dispatch<SetStateAction<string>>
-}) {
+function DurationInput() {
+  const dispatch = useDispatch()
+  const duration = useSelector((state) => state.recordingDuration)
+  const [value, setValue] = useState(formatTimestamp(duration))
+
+  useEffect(() => {
+    const match = value.match(/^(\d+):(\d\d)$/)
+    const newDuration = match
+      ? parseInt(match[1]) * 60 + parseInt(match[2])
+      : null
+    if (newDuration) {
+      dispatch(setRecordingDuration(newDuration))
+    }
+  }, [value])
+
   return (
     <div>
       <label htmlFor='duration-input'>משך ההקלטה:</label>
@@ -79,111 +58,44 @@ function DurationInput({
   )
 }
 
-type Transition = { to: Color; timestamp: number }
-
-type Color = 'red' | 'green'
-
-type Track = {
-  transitions: Transition[]
-}
-
-function TimelineEditor({
-  duration,
-  tracks,
-  addTransition,
-}: {
-  duration: number
-  tracks: Track[]
-  addTransition: (transition: Transition, trackIndex: number) => void
-}) {
-  const [selectedTimestamp, setSelectedTimestamp] = useState<number | null>(
-    null,
-  )
-  const [transitionCandidate, setTransitionCandidate] = useState<{
-    trackIndex: number
-    timestamp: number
-    x: number
-    y: number
-  } | null>(null)
+function TimelineEditor() {
+  const dispatch = useDispatch()
+  const duration = useSelector((state) => state.recordingDuration)
+  const transitions = useSelector((state) => state.transitions)
+  const suggestion = useSelector((state) => state.transitionSuggestion)
+  const cursor = useSelector((state) => state.cursor)
 
   const onMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    if (transitionCandidate) {
-      return
-    }
     const boundingRect = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - boundingRect.x
     const timestamp = Math.round((x / boundingRect.width) * duration)
-    setSelectedTimestamp(timestamp)
-  }
-
-  const onMouseLeave = () => {
-    if (transitionCandidate) {
-      return
-    }
-    setSelectedTimestamp(null)
-  }
-
-  const onTrackClick = (
-    trackIndex: number,
-    event: MouseEvent<HTMLDivElement>,
-  ) => {
-    if (!selectedTimestamp) {
-      return
-    }
-    setTransitionCandidate({
-      trackIndex,
-      timestamp: selectedTimestamp,
-      x: event.clientX,
-      y: event.clientY,
-    })
+    dispatch(hoverOverTimeline(timestamp))
   }
 
   const onConfirmTransition = (color: Color) => {
-    if (!transitionCandidate) {
-      return
-    }
-    const transition: Transition = {
-      timestamp: transitionCandidate.timestamp,
-      to: color,
-    }
-    addTransition(transition, transitionCandidate.trackIndex)
-    setTransitionCandidate(null)
-    setSelectedTimestamp(null)
+    dispatch(confirmTransitionSuggestion(color))
   }
+
+  const crosswalkIds = useSelector(selectCrosswalkIds)
 
   return (
     <div
       style={{ position: 'relative' }}
       onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
+      onMouseLeave={() => dispatch(moveOutsideTimeline())}
     >
-      {tracks.map((track, index) => (
-        <div
-          onClick={(event) => onTrackClick(index, event)}
-          key={index}
-          style={{
-            width: '100%',
-            height: '30px',
-            margin: '5px 0',
-            border: '1px solid black',
-            position: 'relative',
-          }}
-        >
-          {track.transitions.map((transition, index) => (
-            <TrackTransition
-              key={index}
-              transition={transition}
-              duration={duration}
-            />
-          ))}
-        </div>
+      {crosswalkIds.map((crosswalkId) => (
+        <CrosswalkTrack
+          key={`${crosswalkId.legId}${crosswalkId.part ?? ''}`}
+          crosswalkId={crosswalkId}
+        />
       ))}
-      {selectedTimestamp && (
+      {cursor && (
         <div
           style={{
             position: 'absolute',
             top: 0,
-            left: `${(selectedTimestamp / duration) * 100}%`,
+            left: `${(cursor.timestamp / duration) * 100}%`,
             height: '100%',
             width: '1px',
             background: 'black',
@@ -191,121 +103,90 @@ function TimelineEditor({
           }}
         ></div>
       )}
-      {selectedTimestamp && (
+      {cursor && (
         <div
           style={{
-            marginLeft: `${(selectedTimestamp / duration) * 100}%`,
+            marginLeft: `${(cursor.timestamp / duration) * 100}%`,
             background: 'white',
           }}
         >
-          {formatTimestamp(selectedTimestamp)}
+          {formatTimestamp(cursor.timestamp)}
         </div>
       )}
-      {transitionCandidate && (
-        <Popover x={transitionCandidate.x} y={transitionCandidate.y}>
-          <button onClick={() => onConfirmTransition('green')}>
+      {suggestion && (
+        <Popover x={suggestion.x} y={suggestion.y}>
+          <button
+            onClick={() => dispatch(confirmTransitionSuggestion('green'))}
+          >
             נהיה ירוק
           </button>
-          <button onClick={() => onConfirmTransition('red')}>נהיה אדום</button>
-          <button onClick={() => setTransitionCandidate(null)}>חזל״ש</button>
+          <button onClick={() => dispatch(confirmTransitionSuggestion('red'))}>
+            נהיה אדום
+          </button>
+          <button onClick={() => dispatch(dismissTransitionSuggestion())}>
+            חזל״ש
+          </button>
         </Popover>
       )}
     </div>
   )
 }
 
-function TrackTransition({
-  transition,
-  duration,
-}: {
-  transition: Transition
-  duration: number
-}) {
+function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
+  const dispatch = useDispatch()
+  const transitions = useSelector((state) =>
+    selectTrackTransitions(state, crosswalkId),
+  )
+
+  const onTrackClick = (
+    crosswalkId: CrosswalkId,
+    event: MouseEvent<HTMLDivElement>,
+  ) => {
+    dispatch(
+      clickTimelineTrack({
+        crosswalkId,
+        x: event.clientX,
+        y: event.clientY,
+      }),
+    )
+  }
+  return (
+    <div
+      onClick={(event) => onTrackClick(crosswalkId, event)}
+      key={`${crosswalkId.legId}${crosswalkId.part ?? ''}`}
+      style={{
+        width: '100%',
+        height: '30px',
+        margin: '5px 0',
+        border: '1px solid black',
+        position: 'relative',
+      }}
+    >
+      {transitions.map((transition) => (
+        <TrackTransition key={transition.id} transition={transition} />
+      ))}
+    </div>
+  )
+}
+
+function TrackTransition({ transition }: { transition: Transition }) {
+  const duration = useSelector((state) => state.recordingDuration)
   return (
     <div
       style={{
         position: 'absolute',
         top: 0,
         left: `${(transition.timestamp / duration) * 100}%`,
-        width: '10px',
+        width: '20px',
         height: '100%',
+        transform: 'translateX(-10px)',
         background:
-          transition.to === 'green'
-            ? 'linear-gradient(to right, rgba(255, 0,0 ,0) 0% , rgba(255,0,0, 1) 50%, rgba(0, 255, 0, 1) 50%,  rgba(0,255,0,0) 100%'
-            : 'linear-gradient(to right, rgba(0, 255,0 ,0) 0% , rgba(0,255,0, 1) 50%, rgba(255,0,0, 1) 50%,  rgba(255,0,0,0) 100%',
+          transition.toColor === 'green'
+            ? `linear-gradient(to right, ${red}00 0% , ${red} 50%, ${green} 50%,  ${green}00 100%`
+            : `linear-gradient(to right, ${green}00 0% , ${green} 50%, ${red} 50%,  ${red}00 100%`,
       }}
     ></div>
   )
 }
 
-function TrackSegment({
-  color,
-  duration,
-  totalDuration,
-}: {
-  color: 'green' | 'red' | 'unknown'
-  duration: number
-  totalDuration: number
-}) {
-  return (
-    <div
-      style={{
-        width: `${(duration / totalDuration) * 100}%`,
-        height: '100%',
-        background: color === 'unknown' ? 'gray' : color,
-      }}
-    ></div>
-  )
-}
-
-function BlankTimelineEditor({ tracks }: { tracks: Track[] }) {
-  return (
-    <div>
-      {range(tracks.length).map((index) => (
-        <div
-          key={index}
-          style={{ width: '100%', height: '30px', margin: '5px' }}
-        >
-          <TrackSegment color='unknown' duration={1} totalDuration={1} />
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function useDurationInput(): [
-  string,
-  Dispatch<SetStateAction<string>>,
-  number | null,
-] {
-  const [value, setValue] = useState('6:30')
-
-  const match = value.match(/^(\d+):(\d\d)$/)
-  const duration = match ? parseInt(match[1]) * 60 + parseInt(match[2]) : null
-
-  return [value, setValue, duration]
-}
 export default App
-
-function trackCount(legs: Legs): number {
-  let count = 0
-  for (const leg of legs) {
-    if (leg?.crosswalk) {
-      count += leg.island ? 2 : 1
-    }
-  }
-  return count
-}
-
-type Segment = {
-  start: number
-  duration: number
-  color: 'green' | 'red' | 'unknown'
-}
-
-function formatTimestamp(timestamp: number): string {
-  const minutes = Math.floor(timestamp / 60)
-  const seconds = Math.round(timestamp % 60)
-  const paddedSeconds = seconds.toString().length < 2 ? '0' + seconds : seconds
-  return `${minutes}:${paddedSeconds}`
-}
