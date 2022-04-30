@@ -13,11 +13,22 @@ import {
 import { useDispatch, useSelector } from './store'
 import { range } from './utils'
 
+// Sizes
 const legWidth = 30
 const legLength = 30
 const crosswalkLength = 15
 const crosswalkSegmentsInEachDirection = 3
 const islandWidthInSegments = 2
+
+// Derived sizes
+const crosswalkSegmentCount =
+  crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
+const crosswalkSegmentLength = legWidth / (crosswalkSegmentCount * 2 + 1)
+const islandY =
+  crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2 + 1)
+const islandHeight = crosswalkSegmentLength * (islandWidthInSegments * 2 - 1)
+const circleRadius = crosswalkSegmentLength * 1.5
+const crosswalkOffset = islandHeight
 
 const legRotation: Record<LegId, number> = {
   n: -90,
@@ -226,13 +237,6 @@ function CrosswalkIndicatorGroup({
   const isSelected = useSelector((state) =>
     selectIsCrosswalkSelected(state, crosswalkId),
   )
-  const crosswalkSegmentCount =
-    crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
-  const crosswalkSegmentLength = legWidth / (crosswalkSegmentCount * 2 + 1)
-
-  const islandHeight = crosswalkSegmentLength * (islandWidthInSegments * 2 - 1)
-
-  const crosswalkOffset = islandHeight
 
   const x = legWidth / 2 + crosswalkOffset
   const [y1, y2] = useMemo(() => {
@@ -254,18 +258,10 @@ function CrosswalkIndicatorGroup({
       return [y1, y2]
     }
   }, [crosswalkId.part])
-  const circleRadius = crosswalkSegmentLength * 1.5
 
   const color = isSelected ? 'lightsalmon' : 'white'
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
-      <rect
-        className='road'
-        x={x - circleRadius - 0.5}
-        y={y1}
-        width={circleRadius * 2 + 0.5 * 2}
-        height={y2 - y1}
-      />
       <line
         x1={x}
         x2={x}
@@ -301,16 +297,6 @@ function JunctionLegGroup({
   onClick?: MouseEventHandler<SVGElement>
   ariaLabel?: string
 }) {
-  const crosswalkSegmentCount =
-    crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
-  const crosswalkSegmentLength = legWidth / (crosswalkSegmentCount * 2 + 1)
-
-  const islandY =
-    crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2 + 1)
-  const islandHeight = crosswalkSegmentLength * (islandWidthInSegments * 2 - 1)
-
-  const crosswalkOffset = islandHeight
-
   return (
     <g
       className={`leg ${leg === null ? 'leg--placeholder' : ''} ${
@@ -328,7 +314,7 @@ function JunctionLegGroup({
             <rect
               className='crosswalk-stripe'
               key={segmentIndex}
-              x={crosswalkOffset}
+              x={crosswalkOffset + circleRadius * 2}
               y={crosswalkSegmentLength * (segmentIndex * 2 + 1)}
               width={crosswalkLength}
               height={crosswalkSegmentLength}
@@ -342,7 +328,7 @@ function JunctionLegGroup({
             className='island--inset'
             x={0}
             y={islandY}
-            width={2 * crosswalkOffset}
+            width={legLength}
             height={islandHeight}
             rx={islandHeight / 2}
           />
