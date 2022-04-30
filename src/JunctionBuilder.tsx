@@ -6,6 +6,7 @@ import {
   LegId,
   legIds,
   selectCrosswalkIds,
+  selectIsCrosswalkSelected,
   setJunctionTitle,
   setLeg,
 } from './reducer'
@@ -222,6 +223,9 @@ function CrosswalkIndicatorGroup({
   crosswalkId: CrosswalkId
   index: number
 }) {
+  const isSelected = useSelector((state) =>
+    selectIsCrosswalkSelected(state, crosswalkId),
+  )
   const crosswalkSegmentCount =
     crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
   const crosswalkSegmentLength = legWidth / (crosswalkSegmentCount * 2 + 1)
@@ -251,6 +255,8 @@ function CrosswalkIndicatorGroup({
     }
   }, [crosswalkId.part])
   const circleRadius = crosswalkSegmentLength * 1.5
+
+  const color = isSelected ? 'lightsalmon' : 'white'
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
       <rect
@@ -265,10 +271,10 @@ function CrosswalkIndicatorGroup({
         x2={x}
         y1={y1}
         y2={y2}
-        stroke='white'
+        stroke={color}
         strokeWidth={crosswalkSegmentLength}
       />
-      <circle cx={x} cy={(y1 + y2) / 2} r={circleRadius} fill='white' />
+      <circle cx={x} cy={(y1 + y2) / 2} r={circleRadius} fill={color} />
       <text
         x={0}
         y={0}

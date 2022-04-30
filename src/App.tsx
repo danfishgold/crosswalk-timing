@@ -10,6 +10,7 @@ import {
   hoverOverTimeline,
   moveOutsideTimeline,
   selectCrosswalkIds,
+  selectIsCrosswalkSelected,
   selectTrackTransitions,
   setRecordingDuration,
   Transition,
@@ -72,7 +73,9 @@ function TimelineEditor() {
     <div
       style={{ position: 'relative' }}
       onMouseMove={(event) =>
-        dispatch(hoverOverTimeline(timestampFromEvent(event, duration)))
+        dispatch(
+          hoverOverTimeline({ timestamp: timestampFromEvent(event, duration) }),
+        )
       }
       onMouseLeave={() => dispatch(moveOutsideTimeline())}
     >
@@ -130,16 +133,15 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
     selectTrackTransitions(state, crosswalkId),
   )
   const duration = useSelector((state) => state.recordingDuration)
+  const isSelected = useSelector((state) =>
+    selectIsCrosswalkSelected(state, crosswalkId),
+  )
 
-  const onTrackClick = (
-    crosswalkId: CrosswalkId,
-    event: MouseEvent<HTMLDivElement>,
-  ) => {
-    const timestamp = timestampFromEvent(event, duration)
+  const onClick = (event: MouseEvent<HTMLDivElement>) => {
     dispatch(
       clickTimelineTrack({
         crosswalkId,
-        timestamp,
+        timestamp: timestampFromEvent(event, duration),
         x: event.clientX,
         y: event.clientY,
       }),
@@ -147,16 +149,23 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
   }
   return (
     <div
-      onClick={(event) => onTrackClick(crosswalkId, event)}
-      onMouseMove={(event) =>
-        dispatch(hoverOverTimeline(timestampFromEvent(event, duration)))
-      }
+      onClick={onClick}
+      onMouseMove={(event) => {
+        event.stopPropagation()
+        dispatch(
+          hoverOverTimeline({
+            timestamp: timestampFromEvent(event, duration),
+            crosswalkId,
+          }),
+        )
+      }}
       key={crosswalkIdString(crosswalkId)}
       style={{
         width: '100%',
         height: '30px',
         margin: '5px 0',
         border: '1px solid black',
+        background: isSelected ? 'lightsalmon' : 'white',
         position: 'relative',
       }}
     >
@@ -177,11 +186,10 @@ function TrackTransition({ transition }: { transition: Transition }) {
         left: `${(transition.timestamp / duration) * 100}%`,
         width: '20px',
         height: '100%',
-        transform: 'translateX(-10px)',
         background:
           transition.toColor === 'green'
-            ? `linear-gradient(to right, ${red}00 0% , ${red} 50%, ${green} 50%,  ${green}00 100%`
-            : `linear-gradient(to right, ${green}00 0% , ${green} 50%, ${red} 50%,  ${red}00 100%`,
+            ? `linear-gradient(to right, ${green},  ${green}00`
+            : `linear-gradient(to right, ${red},  ${red}00`,
       }}
     ></div>
   )

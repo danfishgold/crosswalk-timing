@@ -74,11 +74,17 @@ const { reducer, actions } = createSlice({
     setRecordingDuration(state, action: PayloadAction<number>) {
       state.recordingDuration = action.payload
     },
-    hoverOverTimeline(state, action: PayloadAction<number>) {
+    hoverOverTimeline(
+      state,
+      action: PayloadAction<{ timestamp: number; crosswalkId?: CrosswalkId }>,
+    ) {
       if (state.transitionSuggestion) {
         return
       }
-      state.cursor = { timestamp: action.payload, crosswalkId: null }
+      state.cursor = {
+        timestamp: action.payload.timestamp,
+        crosswalkId: action.payload.crosswalkId ?? null,
+      }
     },
     moveOutsideTimeline(state) {
       if (state.transitionSuggestion) {
@@ -169,4 +175,11 @@ export const selectCrosswalkIds = createSelector(
       }
       return [{ legId: legId as LegId }]
     }),
+)
+
+export const selectIsCrosswalkSelected = createSelector(
+  (state: State) => state.cursor?.crosswalkId,
+  (state: State, crosswalkId: CrosswalkId) => crosswalkId,
+  (selected, current) =>
+    selected && crosswalkIdString(selected) === crosswalkIdString(current),
 )
