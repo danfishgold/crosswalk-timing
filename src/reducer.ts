@@ -1,4 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { groupBy } from './utils'
 
 export type State = {
   junction: Junction
@@ -7,6 +8,8 @@ export type State = {
   transitions: Transition[]
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
+  cycleDuration: number | null
+  timings: { crosswalkId: CrosswalkId; color: Color; timestamp: number }[]
 }
 
 export const legIds = ['n', 'e', 's', 'w'] as const
@@ -54,11 +57,74 @@ const initialState: State = {
     s: { crosswalk: true, island: true },
     w: { crosswalk: true, island: false },
   },
-  junctionTitle: '',
-  recordingDuration: 60,
-  transitions: [],
+  junctionTitle: 'ארלוזורוב/הנרייטה סולד',
+  recordingDuration: 180,
+  transitions: [
+    {
+      id: '0.12398773012577846',
+      crosswalkId: { legId: 's', part: 'first' },
+      timestamp: 61,
+      toColor: 'red',
+    },
+    {
+      id: '0.06205668256992425',
+      crosswalkId: { legId: 's', part: 'first' },
+      timestamp: 139,
+      toColor: 'green',
+    },
+    {
+      id: '0.6137002118351933',
+      crosswalkId: { legId: 's', part: 'first' },
+      timestamp: 149,
+      toColor: 'red',
+    },
+    {
+      id: '0.9071513331960934',
+      crosswalkId: { legId: 's', part: 'second' },
+      timestamp: 71,
+      toColor: 'green',
+    },
+    {
+      id: '0.793728302050524',
+      crosswalkId: { legId: 's', part: 'second' },
+      timestamp: 84,
+      toColor: 'red',
+    },
+    {
+      id: '0.5516136306987944',
+      crosswalkId: { legId: 's', part: 'second' },
+      timestamp: 161,
+      toColor: 'green',
+    },
+    {
+      id: '0.8799757999376338',
+      crosswalkId: { legId: 's', part: 'second' },
+      timestamp: 174,
+      toColor: 'red',
+    },
+    {
+      id: '0.8095581678087502',
+      crosswalkId: { legId: 'w' },
+      timestamp: 38,
+      toColor: 'red',
+    },
+    {
+      id: '0.8425316385763103',
+      crosswalkId: { legId: 'w' },
+      timestamp: 94,
+      toColor: 'green',
+    },
+    {
+      id: '0.7279889478335789',
+      crosswalkId: { legId: 'w' },
+      timestamp: 128,
+      toColor: 'red',
+    },
+  ],
   cursor: null,
   transitionSuggestion: null,
+  cycleDuration: null,
+  timings: [],
 }
 
 const { reducer, actions } = createSlice({
@@ -125,10 +191,14 @@ const { reducer, actions } = createSlice({
       })
       state.transitionSuggestion = null
       state.cursor = null
+      console.log(JSON.stringify(state.transitions))
     },
     dismissTransitionSuggestion(state) {
       state.transitionSuggestion = null
       state.cursor = null
+    },
+    setCycleDuraration(state, action: PayloadAction<number>) {
+      state.cycleDuration = action.payload
     },
   },
 })
@@ -144,6 +214,7 @@ export const {
   clickTimelineTrack,
   confirmTransitionSuggestion,
   dismissTransitionSuggestion,
+  setCycleDuraration,
 } = actions
 
 export const selectTrackTransitions = createSelector(
@@ -183,3 +254,29 @@ export const selectIsCrosswalkSelected = createSelector(
   (selected, current) =>
     selected && crosswalkIdString(selected) === crosswalkIdString(current),
 )
+
+export const selectPossibleCycleDurations = createSelector(
+  (state: State) => state.transitions,
+  (transitions) => possibleCycleDurations(transitions),
+)
+
+function possibleCycleDurations(transitions: Transition[]): number[] {
+  const transitionGroupings = groupBy(
+    transitions,
+    (transition) =>
+      crosswalkIdString(transition.crosswalkId) + transition.toColor,
+  )
+  const allPossibleCycleDurations = Array.from(
+    transitionGroupings.values(),
+  ).flatMap(timestampDiffs)
+
+  return allPossibleCycleDurations
+}
+
+function timestampDiffs(transitions: Transition[]): number[] {
+  const timestamps = transitions.map((transition) => transition.timestamp)
+  timestamps.sort((a, b) => a - b)
+  return timestamps
+    .slice(0, -1)
+    .map((timestamp, index) => timestamps[index + 1] - timestamp)
+}
