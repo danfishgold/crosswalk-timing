@@ -230,30 +230,36 @@ function CrosswalkIndicatorGroup({
 
   const crosswalkOffset = islandHeight
 
-  const [x, y1, y2] = useMemo(() => {
+  const x = legWidth / 2 + crosswalkOffset
+  const [y1, y2] = useMemo(() => {
     if (!crosswalkId.part) {
-      const x = legWidth / 2 + crosswalkOffset + crosswalkLength + 5
       const y1 = -legWidth / 2 + crosswalkSegmentLength
       const y2 = legWidth / 2 - crosswalkSegmentLength
-      return [x, y1, y2]
+      return [y1, y2]
     } else if (crosswalkId.part === 'first') {
-      const x = legWidth / 2 + crosswalkOffset + crosswalkLength + 5
       const y1 = -legWidth / 2 + crosswalkSegmentLength
       const y2 =
         -legWidth / 2 +
         crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2)
-      return [x, y1, y2]
+      return [y1, y2]
     } else {
-      const x = legWidth / 2 + crosswalkOffset + crosswalkLength + 5
       const y1 =
         legWidth / 2 -
         crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2)
       const y2 = legWidth / 2 - crosswalkSegmentLength
-      return [x, y1, y2]
+      return [y1, y2]
     }
   }, [crosswalkId.part])
+  const circleRadius = crosswalkSegmentLength * 1.5
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
+      <rect
+        className='road'
+        x={x - circleRadius - 0.5}
+        y={y1}
+        width={circleRadius * 2 + 0.5 * 2}
+        height={y2 - y1}
+      />
       <line
         x1={x}
         x2={x}
@@ -262,12 +268,7 @@ function CrosswalkIndicatorGroup({
         stroke='white'
         strokeWidth={crosswalkSegmentLength}
       />
-      <circle
-        cx={x}
-        cy={(y1 + y2) / 2}
-        r={crosswalkSegmentLength * 1.5}
-        fill='white'
-      />
+      <circle cx={x} cy={(y1 + y2) / 2} r={circleRadius} fill='white' />
       <text
         x={0}
         y={0}
