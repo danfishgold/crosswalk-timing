@@ -2,22 +2,25 @@ import React, { MouseEvent } from 'react'
 import Popover from './Popover'
 import {
   clickTimelineTrack,
+  Color,
   confirmTransitionSuggestion,
   CrosswalkId,
-  crosswalkIdString,
+  crosswalkKey,
   dismissTransitionSuggestion,
   hoverOverTimeline,
   moveOutsideTimeline,
   selectCrosswalkIds,
+  selectCrosswalkTransitions,
   selectIsCrosswalkSelected,
-  selectTrackTransitions,
   Transition,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
 import { formatTimestamp } from './utils'
 
-const green = '#28e23f'
-const red = '#e91c32'
+export const colorColors: Record<Color, string> = {
+  green: '#28e23f',
+  red: '#e91c32',
+}
 
 export default function TimelineEditor() {
   const dispatch = useDispatch()
@@ -38,7 +41,7 @@ export default function TimelineEditor() {
     >
       {crosswalkIds.map((crosswalkId) => (
         <CrosswalkTrack
-          key={crosswalkIdString(crosswalkId)}
+          key={crosswalkKey(crosswalkId)}
           crosswalkId={crosswalkId}
         />
       ))}
@@ -87,7 +90,7 @@ export default function TimelineEditor() {
 function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
   const dispatch = useDispatch()
   const transitions = useSelector((state) =>
-    selectTrackTransitions(state, crosswalkId),
+    selectCrosswalkTransitions(state, crosswalkId),
   )
   const duration = useSelector((state) => state.recordingDuration)
   const isSelected = useSelector((state) =>
@@ -116,7 +119,7 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
           }),
         )
       }}
-      key={crosswalkIdString(crosswalkId)}
+      key={crosswalkKey(crosswalkId)}
       style={{
         width: '100%',
         height: '30px',
@@ -143,10 +146,9 @@ function TrackTransition({ transition }: { transition: Transition }) {
         left: `${(transition.timestamp / duration) * 100}%`,
         width: '20px',
         height: '100%',
-        background:
-          transition.toColor === 'green'
-            ? `linear-gradient(to right, ${green},  ${green}00`
-            : `linear-gradient(to right, ${red},  ${red}00`,
+        background: `linear-gradient(to right, ${
+          colorColors[transition.toColor]
+        },  ${colorColors[transition.toColor]}00`,
       }}
     ></div>
   )

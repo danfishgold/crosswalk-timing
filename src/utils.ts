@@ -13,7 +13,10 @@ export function setArrayItem<T>(array: T[], index: number, value: T): T[] {
   return [...array.slice(0, index), value, ...array.slice(index + 1)]
 }
 
-export function groupBy<T, K>(items: T[], key: (item: T) => K): Map<K, T[]> {
+export function groupBy<T, K extends string | number>(
+  items: T[],
+  key: (item: T) => K,
+): Map<K, T[]> {
   const groups = new Map<K, T[]>()
   for (const item of items) {
     const k = key(item)
@@ -28,4 +31,13 @@ export function groupBy<T, K>(items: T[], key: (item: T) => K): Map<K, T[]> {
 export function sortBy<T>(items: T[], key: (item: T) => number): T[] {
   const copy = [...items].sort((a, b) => key(a) - key(b))
   return copy
+}
+
+export function mod(n: number, m: number): number {
+  const naiveMod = n % m
+  if (naiveMod < 0) {
+    return naiveMod + m
+  } else {
+    return naiveMod
+  }
 }

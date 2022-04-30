@@ -1,7 +1,7 @@
 import React, { MouseEventHandler, useEffect, useMemo, useState } from 'react'
 import {
   CrosswalkId,
-  crosswalkIdString,
+  crosswalkKey,
   Leg,
   LegId,
   legIds,
@@ -217,7 +217,7 @@ function Svg({
       <g>
         {crosswalkIds.map((crosswalkId, index) => (
           <CrosswalkIndicatorGroup
-            key={crosswalkIdString(crosswalkId)}
+            key={crosswalkKey(crosswalkId)}
             crosswalkId={crosswalkId}
             index={index}
           />

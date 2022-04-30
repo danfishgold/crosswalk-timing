@@ -1,4 +1,9 @@
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import {
+  createSelector,
+  createSlice,
+  PayloadAction,
+  Selector,
+} from '@reduxjs/toolkit'
 import { groupBy } from './utils'
 
 export type State = {
@@ -8,8 +13,8 @@ export type State = {
   transitions: Transition[]
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
-  cycleDuration: number | null
-  timings: { crosswalkId: CrosswalkId; color: Color; timestamp: number }[]
+  cycle: Cycle | null
+  timings: { crosswalkId: CrosswalkId; color: Color; offset: number }[]
 }
 
 export const legIds = ['n', 'e', 's', 'w'] as const
@@ -42,12 +47,23 @@ export type TransitionSuggestion = {
   y: number
 }
 
-export function crosswalkIdString(crosswalkId: CrosswalkId): string {
+export type Cycle = { duration: number; recordingOffset: number }
+
+export type CrosswalkKey = LegId | `${LegId}-${'first' | 'second'}`
+export function crosswalkKey(crosswalkId: CrosswalkId): CrosswalkKey {
   if (crosswalkId.part) {
     return `${crosswalkId.legId}-${crosswalkId.part}`
   } else {
     return crosswalkId.legId
   }
+}
+
+export type TransitionKey = `${CrosswalkKey}-${Color}`
+export function transitionKey(
+  crosswalkId: CrosswalkId,
+  color: Color,
+): TransitionKey {
+  return `${crosswalkKey(crosswalkId)}-${color}`
 }
 
 const initialState: State = {
@@ -123,7 +139,7 @@ const initialState: State = {
   ],
   cursor: null,
   transitionSuggestion: null,
-  cycleDuration: null,
+  cycle: null,
   timings: [],
 }
 
@@ -198,7 +214,16 @@ const { reducer, actions } = createSlice({
       state.cursor = null
     },
     setCycleDuraration(state, action: PayloadAction<number>) {
-      state.cycleDuration = action.payload
+      state.cycle = {
+        duration: action.payload,
+        recordingOffset: state.cycle?.recordingOffset ?? 0,
+      }
+    },
+    setCycleOffset(state, action: PayloadAction<number>) {
+      if (!state.cycle) {
+        return
+      }
+      state.cycle.recordingOffset = action.payload
     },
   },
 })
@@ -215,11 +240,15 @@ export const {
   confirmTransitionSuggestion,
   dismissTransitionSuggestion,
   setCycleDuraration,
+  setCycleOffset,
 } = actions
 
-export const selectTrackTransitions = createSelector(
-  (state: State) => state.transitions,
-  (state: State, crosswalkId: CrosswalkId) => crosswalkId,
+export const selectCrosswalkTransitions = createSelector<
+  [Selector<State, Transition[]>, Selector<State, CrosswalkId, [CrosswalkId]>],
+  Transition[]
+>(
+  (state) => state.transitions,
+  (_, crosswalkId) => crosswalkId,
   (transitions, crosswalkId) =>
     transitions
       .filter(
@@ -252,7 +281,7 @@ export const selectIsCrosswalkSelected = createSelector(
   (state: State) => state.cursor?.crosswalkId,
   (state: State, crosswalkId: CrosswalkId) => crosswalkId,
   (selected, current) =>
-    selected && crosswalkIdString(selected) === crosswalkIdString(current),
+    selected && crosswalkKey(selected) === crosswalkKey(current),
 )
 
 export const selectPossibleCycleDurations = createSelector(
@@ -263,8 +292,7 @@ export const selectPossibleCycleDurations = createSelector(
 function possibleCycleDurations(transitions: Transition[]): number[] {
   const transitionGroupings = groupBy(
     transitions,
-    (transition) =>
-      crosswalkIdString(transition.crosswalkId) + transition.toColor,
+    (transition) => crosswalkKey(transition.crosswalkId) + transition.toColor,
   )
   const allPossibleCycleDurations = Array.from(
     transitionGroupings.values(),
