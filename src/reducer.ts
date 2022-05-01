@@ -66,7 +66,23 @@ export function transitionKey(
   return `${crosswalkKey(crosswalkId)}-${color}`
 }
 
-const initialState: State = {
+const emptyState: State = {
+  junction: {
+    n: null,
+    e: null,
+    s: null,
+    w: null,
+  },
+  junctionTitle: '',
+  recordingDuration: 180,
+  transitions: [],
+  cursor: null,
+  transitionSuggestion: null,
+  cycle: null,
+  timings: [],
+}
+
+const szoldState: State = {
   junction: {
     n: { crosswalk: false, island: true },
     e: null,
@@ -139,13 +155,13 @@ const initialState: State = {
   ],
   cursor: null,
   transitionSuggestion: null,
-  cycle: null,
+  cycle: { duration: 90, recordingOffset: 44 },
   timings: [],
 }
 
 const { reducer, actions } = createSlice({
   name: 'reducer',
-  initialState,
+  initialState: szoldState,
   reducers: {
     setJunctionTitle(state, action: PayloadAction<string>) {
       state.junctionTitle = action.payload
