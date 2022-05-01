@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import CycleDiagram from './CycleDiagram'
 import JunctionBuilder from './JunctionBuilder'
 import {
@@ -8,6 +8,7 @@ import {
 } from './reducer'
 import { useDispatch, useSelector } from './store'
 import TimelineEditor from './TimelineEditor'
+import TimestampInput from './TimestampInput'
 import { formatTimestamp } from './utils'
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
       <br />
       <br />
       <h2>הקלטה</h2>
-      <DurationInput />
+      <RecordingDurationEditor />
       <TimelineEditor />
       <CycleDurationSelector />
       <CycleDiagram />
@@ -27,28 +28,17 @@ function App() {
   )
 }
 
-function DurationInput() {
+function RecordingDurationEditor() {
   const dispatch = useDispatch()
   const duration = useSelector((state) => state.recordingDuration)
-  const [value, setValue] = useState(formatTimestamp(duration))
-
-  useEffect(() => {
-    const match = value.match(/^(\d+):(\d\d)$/)
-    const newDuration = match
-      ? parseInt(match[1]) * 60 + parseInt(match[2])
-      : null
-    if (newDuration) {
-      dispatch(setRecordingDuration(newDuration))
-    }
-  }, [value])
 
   return (
     <div>
       <label htmlFor='duration-input'>משך ההקלטה:</label>
-      <input
+      <TimestampInput
+        timestamp={duration}
+        setTimestamp={(value) => dispatch(setRecordingDuration(value))}
         id='duration-input'
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
       />
     </div>
   )
