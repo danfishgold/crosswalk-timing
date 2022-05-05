@@ -223,11 +223,21 @@ const { reducer, actions } = createSlice({
       })
       state.transitionSuggestion = null
       state.cursor = null
-      console.log(JSON.stringify(state.transitions))
     },
     dismissTransitionSuggestion(state) {
       state.transitionSuggestion = null
       state.cursor = null
+    },
+    addTransitionThroughForm(
+      state,
+      action: PayloadAction<
+        Pick<Transition, 'crosswalkId' | 'timestamp' | 'toColor'>
+      >,
+    ) {
+      state.transitions.push({
+        ...action.payload,
+        id: Math.random().toString(),
+      })
     },
     setCycleDuraration(state, action: PayloadAction<number>) {
       state.cycle = {
@@ -255,6 +265,7 @@ export const {
   clickTimelineTrack,
   confirmTransitionSuggestion,
   dismissTransitionSuggestion,
+  addTransitionThroughForm,
   setCycleDuraration,
   setCycleOffset,
 } = actions

@@ -1,6 +1,7 @@
-import React, { MouseEvent } from 'react'
+import React, { MouseEvent, useState } from 'react'
 import Popover from './Popover'
 import {
+  addTransitionThroughForm,
   clickTimelineTrack,
   Color,
   confirmTransitionSuggestion,
@@ -15,6 +16,7 @@ import {
   Transition,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
+import TimestampInput from './TimestampInput'
 import { formatTimestamp } from './utils'
 
 export const colorColors: Record<Color, string> = {
@@ -30,60 +32,121 @@ export default function TimelineEditor() {
   const crosswalkIds = useSelector(selectCrosswalkIds)
 
   return (
-    <div
-      style={{ position: 'relative' }}
-      onMouseMove={(event) =>
-        dispatch(
-          hoverOverTimeline({ timestamp: timestampFromEvent(event, duration) }),
-        )
-      }
-      onMouseLeave={() => dispatch(moveOutsideTimeline())}
-    >
-      {crosswalkIds.map((crosswalkId) => (
-        <CrosswalkTrack
-          key={crosswalkKey(crosswalkId)}
-          crosswalkId={crosswalkId}
-        />
-      ))}
-      {cursor && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: `${(cursor.timestamp / duration) * 100}%`,
-            height: '100%',
-            width: '1px',
-            background: 'black',
-            pointerEvents: 'none',
-          }}
-        ></div>
-      )}
-      {cursor && (
-        <div
-          style={{
-            marginLeft: `${(cursor.timestamp / duration) * 100}%`,
-            background: 'white',
-          }}
-        >
-          {formatTimestamp(cursor.timestamp)}
-        </div>
-      )}
-      {suggestion && (
-        <Popover x={suggestion.x} y={suggestion.y}>
-          <button
-            onClick={() => dispatch(confirmTransitionSuggestion('green'))}
+    <div>
+      {' '}
+      <div
+        style={{ position: 'relative' }}
+        onMouseMove={(event) =>
+          dispatch(
+            hoverOverTimeline({
+              timestamp: timestampFromEvent(event, duration),
+            }),
+          )
+        }
+        onMouseLeave={() => dispatch(moveOutsideTimeline())}
+      >
+        {crosswalkIds.map((crosswalkId) => (
+          <CrosswalkTrack
+            key={crosswalkKey(crosswalkId)}
+            crosswalkId={crosswalkId}
+          />
+        ))}
+        {cursor && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: `${(cursor.timestamp / duration) * 100}%`,
+              height: '100%',
+              width: '1px',
+              background: 'black',
+              pointerEvents: 'none',
+            }}
+          ></div>
+        )}
+        {cursor && (
+          <div
+            style={{
+              marginLeft: `${(cursor.timestamp / duration) * 100}%`,
+              background: 'white',
+            }}
           >
-            נהיה ירוק
-          </button>
-          <button onClick={() => dispatch(confirmTransitionSuggestion('red'))}>
-            נהיה אדום
-          </button>
-          <button onClick={() => dispatch(dismissTransitionSuggestion())}>
-            חזל״ש
-          </button>
-        </Popover>
-      )}
+            {formatTimestamp(cursor.timestamp)}
+          </div>
+        )}
+        {suggestion && (
+          <Popover x={suggestion.x} y={suggestion.y}>
+            <button
+              onClick={() => dispatch(confirmTransitionSuggestion('green'))}
+            >
+              נהיה ירוק
+            </button>
+            <button
+              onClick={() => dispatch(confirmTransitionSuggestion('red'))}
+            >
+              נהיה אדום
+            </button>
+            <button onClick={() => dispatch(dismissTransitionSuggestion())}>
+              חזל״ש
+            </button>
+          </Popover>
+        )}
+      </div>
+      <div>
+        <TransitionForm />
+      </div>
     </div>
+  )
+}
+
+function TransitionForm() {
+  const dispatch = useDispatch()
+  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const [timestamp, setTimestamp] = useState(0)
+  const [trackIndex, setTrackIndex] = useState(0)
+  const [color, setColor] = useState<Color>('green')
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault()
+        dispatch(
+          addTransitionThroughForm({
+            timestamp,
+            crosswalkId: crosswalkIds[trackIndex],
+            toColor: color,
+          }),
+        )
+      }}
+    >
+      <TimestampInput timestamp={timestamp} setTimestamp={setTimestamp} />
+      <input
+        type='number'
+        min={1}
+        max={crosswalkIds.length}
+        value={trackIndex + 1}
+        onChange={(event) => setTrackIndex(event.target.valueAsNumber - 1)}
+      />
+      <input
+        type='radio'
+        name='new-transition-color'
+        id='new-transition-color--red'
+        value='red'
+        checked={color === 'red'}
+        onChange={(event) => setColor(event.target.value as Color)}
+      />
+      <label htmlFor='new-transition-color--red'>אדום</label>
+      <input
+        type='radio'
+        name='new-transition-color'
+        id='new-transition-color--green'
+        value='green'
+        checked={color === 'green'}
+        onChange={(event) => setColor(event.target.value as Color)}
+      />
+      <label htmlFor='new-transition-color--green'>ירוק</label>
+      <button type='submit'>הוספה</button>
+    </form>
   )
 }
 
