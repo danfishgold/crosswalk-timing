@@ -4,6 +4,7 @@ import {
   PayloadAction,
   Selector,
 } from '@reduxjs/toolkit'
+import { WritableDraft } from 'immer/dist/internal'
 import { groupBy } from './utils'
 
 export type State = {
@@ -206,12 +207,17 @@ const { reducer, actions } = createSlice({
         return
       }
 
-      const id = state.transitionSuggestion.id ?? Math.random().toString()
-      state.transitions[id] = {
+      const transition = {
         crosswalkId: state.transitionSuggestion.crosswalkId,
         timestamp: state.transitionSuggestion.timestamp,
         toColor: action.payload,
       }
+
+      upsertTransition(
+        state.transitions,
+        transition,
+        state.transitionSuggestion.id,
+      )
       state.transitionSuggestion = null
       state.cursor = null
     },
@@ -239,8 +245,7 @@ const { reducer, actions } = createSlice({
       }
     },
     addTransitionThroughForm(state, action: PayloadAction<Transition>) {
-      const id = Math.random().toString()
-      state.transitions[id] = action.payload
+      upsertTransition(state.transitions, action.payload)
     },
     setCycleDuraration(state, action: PayloadAction<number>) {
       state.cycle = {
@@ -256,6 +261,24 @@ const { reducer, actions } = createSlice({
     },
   },
 })
+
+function upsertTransition(
+  transitions: WritableDraft<Record<string, Transition>>,
+  transition: Transition,
+  existingId?: string,
+): string {
+  const existingTransitionId =
+    existingId ??
+    Object.keys(transitions).find(
+      (id) =>
+        crosswalkKey(transitions[id].crosswalkId) ===
+          crosswalkKey(transition.crosswalkId) &&
+        transitions[id].timestamp === transition.timestamp,
+    )
+  const id = existingTransitionId ?? Math.random().toString()
+  transitions[id] = transition
+  return id
+}
 
 export default reducer
 
