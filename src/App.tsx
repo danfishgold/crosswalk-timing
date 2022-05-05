@@ -1,14 +1,9 @@
 import React from 'react'
 import CycleDiagram from './CycleDiagram'
 import JunctionBuilder from './JunctionBuilder'
-import {
-  selectPossibleCycleDurations,
-  setCycleDuraration,
-  setRecordingDuration,
-} from './reducer'
+import RecordingSection from './Recording/RecordingSection'
+import { selectPossibleCycleDurations, setCycleDuraration } from './reducer'
 import { useDispatch, useSelector } from './store'
-import TimelineEditor from './TimelineEditor'
-import TimestampInput from './TimestampInput'
 import { formatTimestamp } from './utils'
 
 function App() {
@@ -23,27 +18,10 @@ function App() {
       <br />
       <br />
       <br />
-      <h2>הקלטה</h2>
-      <RecordingDurationEditor />
-      <TimelineEditor />
+
+      <RecordingSection />
       <CycleDurationSelector />
       <CycleDiagram />
-    </div>
-  )
-}
-
-function RecordingDurationEditor() {
-  const dispatch = useDispatch()
-  const duration = useSelector((state) => state.recordingDuration)
-
-  return (
-    <div>
-      <label htmlFor='duration-input'>משך ההקלטה:</label>
-      <TimestampInput
-        timestamp={duration}
-        setTimestamp={(value) => dispatch(setRecordingDuration(value))}
-        id='duration-input'
-      />
     </div>
   )
 }

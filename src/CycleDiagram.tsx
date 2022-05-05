@@ -9,8 +9,7 @@ import {
   Transition,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
-import { colorColors } from './TimelineEditor'
-import { groupBy, mod } from './utils'
+import { colorColors, groupBy, mod } from './utils'
 
 export default function CycleDiagram() {
   const cycle = useSelector((state) => state.cycle)

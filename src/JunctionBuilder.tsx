@@ -12,8 +12,7 @@ import {
   setLeg,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
-import { highlightColors } from './TimelineEditor'
-import { range } from './utils'
+import { highlightColors, range } from './utils'
 
 // Sizes
 const legWidth = 30
