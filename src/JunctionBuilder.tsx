@@ -12,7 +12,7 @@ import {
   setLeg,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
-import { colorColors } from './TimelineEditor'
+import { highlightColors } from './TimelineEditor'
 import { range } from './utils'
 
 // Sizes
@@ -289,11 +289,6 @@ function CrosswalkIndicatorGroup({
       </text>
     </g>
   )
-}
-
-const highlightColors: Record<Highlight, string> = {
-  highlight: 'lightsalmon',
-  ...colorColors,
 }
 
 function JunctionLegGroup({

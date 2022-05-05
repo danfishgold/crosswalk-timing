@@ -247,6 +247,19 @@ const { reducer, actions } = createSlice({
     addTransitionThroughForm(state, action: PayloadAction<Transition>) {
       upsertTransition(state.transitions, action.payload)
     },
+    updateTransitionInList(
+      state,
+      action: PayloadAction<{ id: string; transition: Transition }>,
+    ) {
+      upsertTransition(
+        state.transitions,
+        action.payload.transition,
+        action.payload.id,
+      )
+    },
+    deleteTransitionFromList(state, action: PayloadAction<string>) {
+      delete state.transitions[action.payload]
+    },
     setCycleDuraration(state, action: PayloadAction<number>) {
       state.cycle = {
         duration: action.payload,
@@ -293,6 +306,8 @@ export const {
   cancelTransitionSuggestion,
   clickOnExistingTransition,
   addTransitionThroughForm,
+  updateTransitionInList,
+  deleteTransitionFromList,
   setCycleDuraration,
   setCycleOffset,
 } = actions
