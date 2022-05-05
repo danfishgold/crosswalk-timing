@@ -8,11 +8,12 @@ import {
   CrosswalkId,
   crosswalkKey,
   dismissTransitionSuggestion,
+  Highlight,
   hoverOverTimeline,
   moveOutsideTimeline,
+  selectCrosswalkHighlightColors,
   selectCrosswalkIds,
   selectCrosswalkTransitionsAndIds,
-  selectIsCrosswalkSelected,
   Transition,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
@@ -30,10 +31,10 @@ export default function TimelineEditor() {
   const suggestion = useSelector((state) => state.transitionSuggestion)
   const cursor = useSelector((state) => state.cursor)
   const crosswalkIds = useSelector(selectCrosswalkIds)
+  const highlights = useSelector(selectCrosswalkHighlightColors)
 
   return (
     <div>
-      {' '}
       <div
         style={{ position: 'relative' }}
         onMouseMove={(event) =>
@@ -49,6 +50,7 @@ export default function TimelineEditor() {
           <CrosswalkTrack
             key={crosswalkKey(crosswalkId)}
             crosswalkId={crosswalkId}
+            highlight={highlights[crosswalkKey(crosswalkId)]}
           />
         ))}
         {cursor && (
@@ -92,9 +94,8 @@ export default function TimelineEditor() {
           </Popover>
         )}
       </div>
-      <div>
-        <TransitionForm />
-      </div>
+      <TransitionForm />
+      <TransitionList />
     </div>
   )
 }
@@ -150,17 +151,23 @@ function TransitionForm() {
   )
 }
 
-function TransitionList() {}
+function TransitionList() {
+  return <div></div>
+}
 
-function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
+function CrosswalkTrack({
+  crosswalkId,
+  highlight,
+}: {
+  crosswalkId: CrosswalkId
+  highlight: Highlight | null
+}) {
   const dispatch = useDispatch()
   const transitionsAndIds = useSelector((state) =>
     selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )
   const duration = useSelector((state) => state.recordingDuration)
-  const isSelected = useSelector((state) =>
-    selectIsCrosswalkSelected(state, crosswalkId),
-  )
+  const isSelected = highlight === 'highlight'
 
   const onClick = (event: MouseEvent<HTMLDivElement>) => {
     dispatch(

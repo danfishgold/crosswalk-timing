@@ -2,15 +2,17 @@ import React, { MouseEventHandler, useEffect, useMemo, useState } from 'react'
 import {
   CrosswalkId,
   crosswalkKey,
+  Highlight,
   Leg,
   LegId,
   legIds,
+  selectCrosswalkHighlightColors,
   selectCrosswalkIds,
-  selectIsCrosswalkSelected,
   setJunctionTitle,
   setLeg,
 } from './reducer'
 import { useDispatch, useSelector } from './store'
+import { colorColors } from './TimelineEditor'
 import { range } from './utils'
 
 // Sizes
@@ -181,6 +183,8 @@ function Svg({
 }) {
   const junction = useSelector((state) => state.junction)
   const crosswalkIds = useSelector(selectCrosswalkIds)
+  const highlights = useSelector(selectCrosswalkHighlightColors)
+
   const viewBoxOffset = legWidth / 2 + legLength
 
   return (
@@ -219,6 +223,7 @@ function Svg({
           <CrosswalkIndicatorGroup
             key={crosswalkKey(crosswalkId)}
             crosswalkId={crosswalkId}
+            highlight={highlights[crosswalkKey(crosswalkId)]}
             index={index}
           />
         ))}
@@ -229,15 +234,13 @@ function Svg({
 
 function CrosswalkIndicatorGroup({
   crosswalkId,
+  highlight,
   index,
 }: {
   crosswalkId: CrosswalkId
+  highlight: Highlight | null
   index: number
 }) {
-  const isSelected = useSelector((state) =>
-    selectIsCrosswalkSelected(state, crosswalkId),
-  )
-
   const x = legWidth / 2 + crosswalkOffset
   const [y1, y2] = useMemo(() => {
     if (!crosswalkId.part) {
@@ -259,7 +262,7 @@ function CrosswalkIndicatorGroup({
     }
   }, [crosswalkId.part])
 
-  const color = isSelected ? 'lightsalmon' : 'white'
+  const color = highlight ? highlightColors[highlight] : 'white'
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
       <line
@@ -286,6 +289,11 @@ function CrosswalkIndicatorGroup({
       </text>
     </g>
   )
+}
+
+const highlightColors: Record<Highlight, string> = {
+  highlight: 'lightsalmon',
+  ...colorColors,
 }
 
 function JunctionLegGroup({

@@ -33,6 +33,7 @@ export type Transition = {
 }
 
 export type Color = 'red' | 'green'
+export type Highlight = Color | 'highlight'
 
 export type Cursor = {
   timestamp: number
@@ -289,13 +290,6 @@ export const selectCrosswalkIds = createSelector(
     }),
 )
 
-export const selectIsCrosswalkSelected = createSelector(
-  (state: State) => state.cursor?.crosswalkId,
-  (state: State, crosswalkId: CrosswalkId) => crosswalkId,
-  (selected, current) =>
-    selected && crosswalkKey(selected) === crosswalkKey(current),
-)
-
 export const selectPossibleCycleDurations = createSelector(
   (state: State) => state.transitions,
   (transitions) => possibleCycleDurations(transitions),
@@ -321,4 +315,24 @@ function timestampDiffs(transitions: Transition[]): number[] {
   return timestamps
     .slice(0, -1)
     .map((timestamp, index) => timestamps[index + 1] - timestamp)
+}
+
+export const selectCrosswalkHighlightColors = createSelector<
+  [Selector<State, CrosswalkId[]>, Selector<State, Cursor | null>],
+  Record<CrosswalkKey, Highlight | null>
+>(selectCrosswalkIds, (state) => state.cursor, crosswalkHighlightColors)
+
+function crosswalkHighlightColors(
+  crosswalkIds: CrosswalkId[],
+  cursor: Cursor | null,
+): Record<CrosswalkKey, Highlight | null> {
+  const entries = crosswalkIds.map((id) => {
+    const key = crosswalkKey(id)
+    if (cursor?.crosswalkId && crosswalkKey(cursor.crosswalkId) === key) {
+      return [key, 'highlight']
+    } else {
+      return [key, null]
+    }
+  })
+  return Object.fromEntries(entries)
 }
