@@ -94,6 +94,11 @@ function TransitionRow({ id }: { id: string }) {
   const dispatch = useDispatch()
   const transition = useSelector((state) => state.transitions[id])
 
+  const onDeleteClick = () => {
+    if (window.confirm('בטוח למחוק?')) {
+      dispatch(deleteTransitionFromList(id))
+    }
+  }
   return (
     <div>
       <TransitionFormElements
@@ -106,9 +111,7 @@ function TransitionRow({ id }: { id: string }) {
         formIdPrefix={id}
         isTrackIndexFieldHidden={true}
       />
-      <button onClick={() => dispatch(deleteTransitionFromList(id))}>
-        מחיקה
-      </button>
+      <button onClick={onDeleteClick}>מחיקה</button>
     </div>
   )
 }
