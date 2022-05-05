@@ -5,52 +5,24 @@ import {
   Cycle,
   selectCrosswalkIds,
   selectCrosswalkTransitionsAndIds as selectCrosswalkTransitionsAndIds,
-  setCycleOffset,
   Transition,
-} from './reducer'
-import { useDispatch, useSelector } from './store'
-import { colorColors, groupBy, mod } from './utils'
+} from '../reducer'
+import { useSelector } from '../store'
+import { colorColors, groupBy, mod } from '../utils'
 
-export default function CycleDiagram() {
-  const cycle = useSelector((state) => state.cycle)
+export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  if (!cycle) {
-    return null
-  }
-  return (
-    <div>
-      <h2>מחזור</h2>
-      <CycleOffsetInput cycle={cycle} />
-      <div>
-        {crosswalkIds.map((crosswalkId, index) => (
-          <DiagramTrack
-            key={crosswalkKey(crosswalkId)}
-            crosswalkId={crosswalkId}
-            crosswalkIndex={index}
-            cycle={cycle}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function CycleOffsetInput({ cycle }: { cycle: Cycle }) {
-  const dispatch = useDispatch()
 
   return (
     <div>
-      <label htmlFor='cycle-offset-input'>
-        אני לא זוכר איך אומרים אופסט בעברית:
-      </label>
-      <input
-        id='cycle-offset-input'
-        type='number'
-        value={cycle.recordingOffset}
-        onChange={(event) =>
-          dispatch(setCycleOffset(event.target.valueAsNumber))
-        }
-      />
+      {crosswalkIds.map((crosswalkId, index) => (
+        <DiagramTrack
+          key={crosswalkKey(crosswalkId)}
+          crosswalkId={crosswalkId}
+          crosswalkIndex={index}
+          cycle={cycle}
+        />
+      ))}
     </div>
   )
 }

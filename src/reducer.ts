@@ -16,6 +16,7 @@ export type State = {
   transitionSuggestion: TransitionSuggestion | null
   cycle: Cycle | null
   timings: { crosswalkId: CrosswalkId; color: Color; offset: number }[]
+  inEditMode: boolean
 }
 
 export const legIds = ['n', 'e', 's', 'w'] as const
@@ -82,6 +83,7 @@ const emptyState: State = {
   transitionSuggestion: null,
   cycle: null,
   timings: [],
+  inEditMode: true,
 }
 
 const szoldState: State = {
@@ -149,6 +151,7 @@ const szoldState: State = {
   transitionSuggestion: null,
   cycle: { duration: 90, recordingOffset: 44 },
   timings: [],
+  inEditMode: true,
 }
 
 const { reducer, actions } = createSlice({
@@ -272,6 +275,9 @@ const { reducer, actions } = createSlice({
       }
       state.cycle.recordingOffset = action.payload
     },
+    toggleEditMode(state) {
+      state.inEditMode = !state.inEditMode
+    },
   },
 })
 
@@ -310,6 +316,7 @@ export const {
   deleteTransitionFromList,
   setCycleDuraration,
   setCycleOffset,
+  toggleEditMode,
 } = actions
 
 export const selectCrosswalkTransitionsAndIds = createSelector<

@@ -1,10 +1,9 @@
 import React from 'react'
-import CycleDiagram from './CycleDiagram'
-import JunctionBuilder from './JunctionBuilder'
+import CycleSection from './Cycle/CycleSection'
+import JunctionSection from './Junction/JunctionSection'
 import RecordingSection from './Recording/RecordingSection'
-import { selectPossibleCycleDurations, setCycleDuraration } from './reducer'
+import { toggleEditMode } from './reducer'
 import { useDispatch, useSelector } from './store'
-import { formatTimestamp } from './utils'
 
 function App() {
   return (
@@ -13,43 +12,22 @@ function App() {
         <strong>נוהל בטא</strong>: אם תנסו לשבור זה ישבר. אם תנסו להשתמש בזה
         בטלפון זה כנראה גם ישבר
       </p>
-      <JunctionBuilder />
-      <br />
-      <br />
-      <br />
-      <br />
-
+      <EditModeToggle />
+      <JunctionSection />
       <RecordingSection />
-      <CycleDurationSelector />
-      <CycleDiagram />
+      <CycleSection />
     </div>
   )
 }
 
-function CycleDurationSelector() {
+function EditModeToggle() {
   const dispatch = useDispatch()
-  const possibleDurations = useSelector(selectPossibleCycleDurations)
-  if (possibleDurations.length === 0) {
-    return (
-      <div>
-        <p>
-          סמנו זמני אירועי רמזורים בחלק למעלה כדי לקבל הצעות לחישוב זמן המחזור
-          של הצומת
-        </p>
-      </div>
-    )
-  }
+  const inEditMode = useSelector((state) => state.inEditMode)
   return (
     <div>
-      <span>זמני מחזור אפשריים:</span>
-      {possibleDurations.map((duration, index) => (
-        <button
-          key={index}
-          onClick={() => dispatch(setCycleDuraration(duration))}
-        >
-          {formatTimestamp(duration)}
-        </button>
-      ))}
+      <button onClick={() => dispatch(toggleEditMode())}>
+        {inEditMode ? 'שמירה' : 'עריכה'}
+      </button>
     </div>
   )
 }
