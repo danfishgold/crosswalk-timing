@@ -14,6 +14,10 @@ import { formatTimestamp } from './utils'
 function App() {
   return (
     <div>
+      <p>
+        <strong>נוהל בטא</strong>: אם תנסו לשבור זה ישבר. אם תנסו להשתמש בזה
+        בטלפון זה כנראה גם ישבר
+      </p>
       <JunctionBuilder />
       <br />
       <br />
