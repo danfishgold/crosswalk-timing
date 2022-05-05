@@ -4,7 +4,7 @@ import {
   crosswalkKey,
   Cycle,
   selectCrosswalkIds,
-  selectCrosswalkTransitions,
+  selectCrosswalkTransitionsAndIds as selectCrosswalkTransitionsAndIds,
   setCycleOffset,
   Transition,
 } from './reducer'
@@ -65,9 +65,10 @@ function DiagramTrack({
   crosswalkIndex: number
   cycle: Cycle
 }) {
-  const transitions = useSelector((state) =>
-    selectCrosswalkTransitions(state, crosswalkId),
+  const transitionsAndIds = useSelector((state) =>
+    selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )
+  const transitions = transitionsAndIds.map(([, transition]) => transition)
   const trackTimings = timings(transitions, cycle)
   if (!trackTimings) {
     return <div>no data</div>

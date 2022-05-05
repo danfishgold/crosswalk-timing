@@ -10,7 +10,7 @@ export type State = {
   junction: Junction
   junctionTitle: string
   recordingDuration: number
-  transitions: Transition[]
+  transitions: Record<string, Transition>
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
   cycle: Cycle | null
@@ -27,7 +27,6 @@ export type Leg = { crosswalk: boolean; island: boolean }
 export type CrosswalkId = { legId: LegId; part?: 'first' | 'second' }
 
 export type Transition = {
-  id: string
   crosswalkId: CrosswalkId
   toColor: Color
   timestamp: number
@@ -75,7 +74,7 @@ const emptyState: State = {
   },
   junctionTitle: '',
   recordingDuration: 180,
-  transitions: [],
+  transitions: {},
   cursor: null,
   transitionSuggestion: null,
   cycle: null,
@@ -91,68 +90,58 @@ const szoldState: State = {
   },
   junctionTitle: 'ארלוזורוב/הנרייטה סולד',
   recordingDuration: 180,
-  transitions: [
-    {
-      id: '0.12398773012577846',
+  transitions: {
+    '0.12398773012577846': {
       crosswalkId: { legId: 's', part: 'first' },
       timestamp: 61,
       toColor: 'red',
     },
-    {
-      id: '0.06205668256992425',
+    '0.06205668256992425': {
       crosswalkId: { legId: 's', part: 'first' },
       timestamp: 139,
       toColor: 'green',
     },
-    {
-      id: '0.6137002118351933',
+    '0.6137002118351933': {
       crosswalkId: { legId: 's', part: 'first' },
       timestamp: 149,
       toColor: 'red',
     },
-    {
-      id: '0.9071513331960934',
+    '0.9071513331960934': {
       crosswalkId: { legId: 's', part: 'second' },
       timestamp: 71,
       toColor: 'green',
     },
-    {
-      id: '0.793728302050524',
+    '0.793728302050524': {
       crosswalkId: { legId: 's', part: 'second' },
       timestamp: 84,
       toColor: 'red',
     },
-    {
-      id: '0.5516136306987944',
+    '0.5516136306987944': {
       crosswalkId: { legId: 's', part: 'second' },
       timestamp: 161,
       toColor: 'green',
     },
-    {
-      id: '0.8799757999376338',
+    '0.8799757999376338': {
       crosswalkId: { legId: 's', part: 'second' },
       timestamp: 174,
       toColor: 'red',
     },
-    {
-      id: '0.8095581678087502',
+    '0.8095581678087502': {
       crosswalkId: { legId: 'w' },
       timestamp: 38,
       toColor: 'red',
     },
-    {
-      id: '0.8425316385763103',
+    '0.8425316385763103': {
       crosswalkId: { legId: 'w' },
       timestamp: 94,
       toColor: 'green',
     },
-    {
-      id: '0.7279889478335789',
+    '0.7279889478335789': {
       crosswalkId: { legId: 'w' },
       timestamp: 128,
       toColor: 'red',
     },
-  ],
+  },
   cursor: null,
   transitionSuggestion: null,
   cycle: { duration: 90, recordingOffset: 44 },
@@ -215,12 +204,12 @@ const { reducer, actions } = createSlice({
         return
       }
 
-      state.transitions.push({
-        id: Math.random().toString(),
+      const id = Math.random().toString()
+      state.transitions[id] = {
         crosswalkId: state.transitionSuggestion.crosswalkId,
         timestamp: state.transitionSuggestion.timestamp,
         toColor: action.payload,
-      })
+      }
       state.transitionSuggestion = null
       state.cursor = null
     },
@@ -228,16 +217,9 @@ const { reducer, actions } = createSlice({
       state.transitionSuggestion = null
       state.cursor = null
     },
-    addTransitionThroughForm(
-      state,
-      action: PayloadAction<
-        Pick<Transition, 'crosswalkId' | 'timestamp' | 'toColor'>
-      >,
-    ) {
-      state.transitions.push({
-        ...action.payload,
-        id: Math.random().toString(),
-      })
+    addTransitionThroughForm(state, action: PayloadAction<Transition>) {
+      const id = Math.random().toString()
+      state.transitions[id] = action.payload
     },
     setCycleDuraration(state, action: PayloadAction<number>) {
       state.cycle = {
@@ -270,20 +252,23 @@ export const {
   setCycleOffset,
 } = actions
 
-export const selectCrosswalkTransitions = createSelector<
-  [Selector<State, Transition[]>, Selector<State, CrosswalkId, [CrosswalkId]>],
-  Transition[]
+export const selectCrosswalkTransitionsAndIds = createSelector<
+  [
+    Selector<State, Record<string, Transition>>,
+    Selector<State, CrosswalkId, [CrosswalkId]>,
+  ],
+  [string, Transition][]
 >(
   (state) => state.transitions,
   (_, crosswalkId) => crosswalkId,
   (transitions, crosswalkId) =>
-    transitions
+    Object.entries(transitions)
       .filter(
-        (transition) =>
+        ([transitionId, transition]) =>
           transition.crosswalkId.legId === crosswalkId.legId &&
           transition.crosswalkId.part === crosswalkId.part,
       )
-      .sort((a, b) => a.timestamp - b.timestamp),
+      .sort(([, a], [, b]) => a.timestamp - b.timestamp),
 )
 
 export const selectCrosswalkIds = createSelector(
@@ -316,10 +301,12 @@ export const selectPossibleCycleDurations = createSelector(
   (transitions) => possibleCycleDurations(transitions),
 )
 
-function possibleCycleDurations(transitions: Transition[]): number[] {
+function possibleCycleDurations(
+  transitions: Record<string, Transition>,
+): number[] {
   const transitionGroupings = groupBy(
-    transitions,
-    (transition) => crosswalkKey(transition.crosswalkId) + transition.toColor,
+    Object.values(transitions),
+    (transition) => transitionKey(transition.crosswalkId, transition.toColor),
   )
   const allPossibleCycleDurations = Array.from(
     transitionGroupings.values(),

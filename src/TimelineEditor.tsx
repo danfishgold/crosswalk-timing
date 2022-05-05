@@ -11,7 +11,7 @@ import {
   hoverOverTimeline,
   moveOutsideTimeline,
   selectCrosswalkIds,
-  selectCrosswalkTransitions,
+  selectCrosswalkTransitionsAndIds,
   selectIsCrosswalkSelected,
   Transition,
 } from './reducer'
@@ -150,10 +150,12 @@ function TransitionForm() {
   )
 }
 
+function TransitionList() {}
+
 function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
   const dispatch = useDispatch()
-  const transitions = useSelector((state) =>
-    selectCrosswalkTransitions(state, crosswalkId),
+  const transitionsAndIds = useSelector((state) =>
+    selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )
   const duration = useSelector((state) => state.recordingDuration)
   const isSelected = useSelector((state) =>
@@ -192,8 +194,8 @@ function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
         position: 'relative',
       }}
     >
-      {transitions.map((transition) => (
-        <TrackTransition key={transition.id} transition={transition} />
+      {transitionsAndIds.map(([id, transition]) => (
+        <TrackTransition key={id} transition={transition} />
       ))}
     </div>
   )
