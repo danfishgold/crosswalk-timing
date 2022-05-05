@@ -41,6 +41,7 @@ export type Cursor = {
 }
 
 export type TransitionSuggestion = {
+  id?: string
   timestamp: number
   crosswalkId: CrosswalkId
   x: number
@@ -205,7 +206,7 @@ const { reducer, actions } = createSlice({
         return
       }
 
-      const id = Math.random().toString()
+      const id = state.transitionSuggestion.id ?? Math.random().toString()
       state.transitions[id] = {
         crosswalkId: state.transitionSuggestion.crosswalkId,
         timestamp: state.transitionSuggestion.timestamp,
@@ -214,9 +215,28 @@ const { reducer, actions } = createSlice({
       state.transitionSuggestion = null
       state.cursor = null
     },
-    dismissTransitionSuggestion(state) {
+    cancelTransitionSuggestion(state) {
+      if (state.transitionSuggestion?.id) {
+        delete state.transitions[state.transitionSuggestion.id]
+      }
       state.transitionSuggestion = null
       state.cursor = null
+    },
+    clickOnExistingTransition(
+      state,
+      action: PayloadAction<{ id: string; x: number; y: number }>,
+    ) {
+      const transition = state.transitions[action.payload.id]
+      if (!transition) {
+        return
+      }
+      state.transitionSuggestion = {
+        id: action.payload.id,
+        timestamp: transition.timestamp,
+        crosswalkId: transition.crosswalkId,
+        x: action.payload.x,
+        y: action.payload.y,
+      }
     },
     addTransitionThroughForm(state, action: PayloadAction<Transition>) {
       const id = Math.random().toString()
@@ -247,7 +267,8 @@ export const {
   moveOutsideTimeline,
   clickTimelineTrack,
   confirmTransitionSuggestion,
-  dismissTransitionSuggestion,
+  cancelTransitionSuggestion,
+  clickOnExistingTransition,
   addTransitionThroughForm,
   setCycleDuraration,
   setCycleOffset,

@@ -2,12 +2,13 @@ import React, { MouseEvent, useState } from 'react'
 import Popover from './Popover'
 import {
   addTransitionThroughForm,
+  cancelTransitionSuggestion,
+  clickOnExistingTransition,
   clickTimelineTrack,
   Color,
   confirmTransitionSuggestion,
   CrosswalkId,
   crosswalkKey,
-  dismissTransitionSuggestion,
   Highlight,
   hoverOverTimeline,
   moveOutsideTimeline,
@@ -88,8 +89,8 @@ export default function TimelineEditor() {
             >
               נהיה אדום
             </button>
-            <button onClick={() => dispatch(dismissTransitionSuggestion())}>
-              חזל״ש
+            <button onClick={() => dispatch(cancelTransitionSuggestion())}>
+              ביטול
             </button>
           </Popover>
         )}
@@ -179,6 +180,7 @@ function CrosswalkTrack({
       }),
     )
   }
+
   return (
     <div
       onClick={onClick}
@@ -202,16 +204,30 @@ function CrosswalkTrack({
       }}
     >
       {transitionsAndIds.map(([id, transition]) => (
-        <TrackTransition key={id} transition={transition} />
+        <TrackTransition key={id} transition={transition} id={id} />
       ))}
     </div>
   )
 }
 
-function TrackTransition({ transition }: { transition: Transition }) {
+function TrackTransition({
+  transition,
+  id,
+}: {
+  transition: Transition
+  id: string
+}) {
+  const dispatch = useDispatch()
+  const onClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation()
+    dispatch(
+      clickOnExistingTransition({ id, x: event.clientX, y: event.clientY }),
+    )
+  }
   const duration = useSelector((state) => state.recordingDuration)
   return (
     <div
+      onClick={onClick}
       style={{
         position: 'absolute',
         top: 0,
