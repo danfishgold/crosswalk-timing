@@ -6,7 +6,9 @@ import {
   Cycle,
   Transition,
 } from '../reducer'
-import { groupBy, mod, sortBy, sumBy, uniques } from '../utils'
+import { compact, groupBy, mod, pairs, sortBy, sumBy, uniques } from '../utils'
+
+// Key function
 
 export type TimedEventKey = `${CrosswalkKey}-${Color}`
 export function timedEventKey(
@@ -15,6 +17,8 @@ export function timedEventKey(
 ): TimedEventKey {
   return `${crosswalkKey(crosswalkId)}-${color}`
 }
+
+// Event timestamp suggestions
 
 export function timingSuggestions(
   transitions: Record<string, Transition>,
@@ -33,6 +37,8 @@ export function timingSuggestions(
     ])
   return Object.fromEntries(timingEntries) as Record<TimedEventKey, number[]>
 }
+
+// Cycle duration suggestions
 
 export function cycleDurationSuggestions(
   transitions: Record<string, Transition>,
@@ -77,4 +83,57 @@ function timestampDiffs(transitions: Transition[]): number[] {
   return timestamps
     .slice(0, -1)
     .map((timestamp, index) => timestamps[index + 1] - timestamp)
+}
+
+// Cycle segments
+
+export type Segment = { color: Color; offset: number; duration: number }
+
+export function calculateTrackSegments(
+  reds: number[],
+  greens: number[],
+  cycle: Cycle,
+): Segment[] | null {
+  const sortedEvents: { timestamp: number; color: Color }[] = sortBy(
+    [
+      ...reds.map((timestamp) => ({ timestamp, color: 'red' as const })),
+      ...greens.map((timestamp) => ({ timestamp, color: 'green' as const })),
+    ].map((event) => ({
+      ...event,
+      timestamp: mod(event.timestamp - cycle.offset, cycle.duration),
+    })),
+    (event) => event.timestamp,
+  )
+  const eventCount = sortedEvents.length
+  if (eventCount < 2) {
+    return null
+  }
+
+  const eventsWithExplicitBorderEvents = compact([
+    sortedEvents[0].timestamp === 0
+      ? null
+      : { timestamp: 0, color: sortedEvents[1].color },
+    ...sortedEvents,
+    sortedEvents[eventCount - 1].timestamp === cycle.duration
+      ? null
+      : {
+          timestamp: cycle.duration,
+          color: sortedEvents[eventCount - 2].color,
+        },
+  ])
+
+  const eventPairs = pairs(eventsWithExplicitBorderEvents)
+
+  if (
+    eventPairs.length === 0 ||
+    eventPairs.some(([event1, event2]) => event1.color === event2.color)
+  ) {
+    return null
+  }
+
+  return eventPairs.map(([event1, event2]) => ({
+    color: event1.color,
+    offset: event1.timestamp,
+    duration: event2.timestamp - event1.timestamp,
+  }))
 }
