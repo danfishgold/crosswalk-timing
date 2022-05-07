@@ -44,7 +44,7 @@ function DiagramTrack({
     useSelector(
       (state) => state.eventTimestamps[timedEventKey(crosswalkId, 'green')],
     ) ?? []
-  const trackSegments = calculateTrackSegments(reds, greens, cycle.duration)
+  const trackSegments = calculateTrackSegments(reds, greens, cycle)
   if (!trackSegments) {
     return <div>no data</div>
   }
@@ -75,14 +75,17 @@ type Segment = { color: Color; offset: number; duration: number }
 function calculateTrackSegments(
   reds: number[],
   greens: number[],
-  cycleDuration: number,
+  cycle: Cycle,
 ): Segment[] | null {
   const sortedEvents: { timestamp: number; color: Color }[] = sortBy(
     [
       ...reds.map((timestamp) => ({ timestamp, color: 'red' as const })),
       ...greens.map((timestamp) => ({ timestamp, color: 'green' as const })),
-    ],
-    (event) => mod(event.timestamp, cycleDuration),
+    ].map((event) => ({
+      ...event,
+      timestamp: mod(event.timestamp - cycle.offset, cycle.duration),
+    })),
+    (event) => event.timestamp,
   )
   const eventCount = sortedEvents.length
   if (eventCount < 2) {
@@ -94,9 +97,12 @@ function calculateTrackSegments(
       ? null
       : { timestamp: 0, color: sortedEvents[1].color },
     ...sortedEvents,
-    sortedEvents[eventCount - 1].timestamp === cycleDuration
+    sortedEvents[eventCount - 1].timestamp === cycle.duration
       ? null
-      : { timestamp: cycleDuration, color: sortedEvents[eventCount - 2].color },
+      : {
+          timestamp: cycle.duration,
+          color: sortedEvents[eventCount - 2].color,
+        },
   ])
 
   const eventPairs = pairs(eventsWithExplicitBorderEvents)

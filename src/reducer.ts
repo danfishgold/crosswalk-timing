@@ -50,7 +50,7 @@ export type TransitionSuggestion = {
   y: number
 }
 
-export type Cycle = { duration: number; recordingOffset: number }
+export type Cycle = { duration: number; offset: number }
 
 export type CrosswalkKey = LegId | `${LegId}-${'first' | 'second'}`
 export function crosswalkKey(crosswalkId: CrosswalkId): CrosswalkKey {
@@ -141,7 +141,7 @@ const szoldState: State = {
   },
   cursor: null,
   transitionSuggestion: null,
-  cycle: { duration: 90, recordingOffset: 44 },
+  cycle: { duration: 90, offset: 44 },
   eventTimestamps: {},
   inEditMode: true,
 }
@@ -258,14 +258,14 @@ const { reducer, actions } = createSlice({
     setCycleDuraration(state, action: PayloadAction<number>) {
       state.cycle = {
         duration: action.payload,
-        recordingOffset: state.cycle?.recordingOffset ?? 0,
+        offset: state.cycle?.offset ?? 0,
       }
     },
     setCycleOffset(state, action: PayloadAction<number>) {
       if (!state.cycle) {
         return
       }
-      state.cycle.recordingOffset = action.payload
+      state.cycle.offset = action.payload
     },
     toggleEditMode(state) {
       state.inEditMode = !state.inEditMode

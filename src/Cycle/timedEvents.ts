@@ -28,7 +28,7 @@ export function timingSuggestions(
     groupedTransitionEntries.map(([key, transitions]) => [
       key,
       transitions.map((transition) =>
-        mod(transition.timestamp - cycle.recordingOffset, cycle.duration),
+        mod(transition.timestamp, cycle.duration),
       ),
     ])
   return Object.fromEntries(timingEntries) as Record<TimedEventKey, number[]>
@@ -63,7 +63,7 @@ function conflictCount(
 ): number {
   const timings = timingSuggestions(transitions, {
     duration,
-    recordingOffset: 0,
+    offset: 0,
   })
   return sumBy(
     Object.values(timings),

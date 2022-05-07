@@ -19,8 +19,8 @@ export default function CycleSection() {
       <CycleDurationSelector />
       {cycle && (
         <>
-          <CycleOffsetInput cycle={cycle} />
           <TimedEventEditor cycle={cycle} />
+          <CycleOffsetInput cycle={cycle} />
           <CycleDiagram cycle={cycle} />
         </>
       )}
@@ -69,7 +69,7 @@ function CycleOffsetInput({ cycle }: { cycle: Cycle }) {
       <input
         id='cycle-offset-input'
         type='number'
-        value={cycle.recordingOffset}
+        value={cycle.offset}
         onChange={(event) =>
           dispatch(setCycleOffset(event.target.valueAsNumber))
         }
