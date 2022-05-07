@@ -6,7 +6,7 @@ import {
   Cycle,
   Transition,
 } from '../reducer'
-import { compact, groupBy, mod, pairs, sortBy, sumBy, uniques } from '../utils'
+import { groupBy, mod, pairs, sortBy, sumBy, uniques } from '../utils'
 
 // Key function
 
@@ -89,10 +89,10 @@ function timestampDiffs(transitions: Transition[]): number[] {
 
 export type Segment = { color: Color; offset: number; duration: number }
 
-export function calculateTrackSegments(
+export function canonicalTrackSegments(
   reds: number[],
   greens: number[],
-  cycle: Cycle,
+  cycleDuration: number,
 ): Segment[] | null {
   const sortedEvents: { timestamp: number; color: Color }[] = sortBy(
     [
@@ -100,7 +100,7 @@ export function calculateTrackSegments(
       ...greens.map((timestamp) => ({ timestamp, color: 'green' as const })),
     ].map((event) => ({
       ...event,
-      timestamp: mod(event.timestamp - cycle.offset, cycle.duration),
+      timestamp: mod(event.timestamp, cycleDuration),
     })),
     (event) => event.timestamp,
   )
@@ -109,20 +109,11 @@ export function calculateTrackSegments(
     return null
   }
 
-  const eventsWithExplicitBorderEvents = compact([
-    sortedEvents[0].timestamp === 0
-      ? null
-      : { timestamp: 0, color: sortedEvents[1].color },
-    ...sortedEvents,
-    sortedEvents[eventCount - 1].timestamp === cycle.duration
-      ? null
-      : {
-          timestamp: cycle.duration,
-          color: sortedEvents[eventCount - 2].color,
-        },
-  ])
-
-  const eventPairs = pairs(eventsWithExplicitBorderEvents)
+  const firstEventAgain = {
+    timestamp: sortedEvents[0].timestamp + cycleDuration,
+    color: sortedEvents[0].color,
+  }
+  const eventPairs = pairs([...sortedEvents, firstEventAgain])
 
   if (
     eventPairs.length === 0 ||
@@ -136,4 +127,27 @@ export function calculateTrackSegments(
     offset: event1.timestamp,
     duration: event2.timestamp - event1.timestamp,
   }))
+}
+
+export function cutSegmentsToFit(segments: Segment[], cycle: Cycle): Segment[] {
+  const moddedSegments = segments.flatMap((segment) => {
+    const startTime = mod(segment.offset - cycle.offset, cycle.duration)
+    const endTime = mod(startTime + segment.duration, cycle.duration)
+    if (endTime < startTime && endTime !== 0) {
+      return [
+        {
+          offset: startTime,
+          duration: cycle.duration - startTime,
+          color: segment.color,
+        },
+        { offset: 0, duration: endTime, color: segment.color },
+      ]
+    } else {
+      return [
+        { offset: startTime, duration: segment.duration, color: segment.color },
+      ]
+    }
+  })
+
+  return moddedSegments
 }

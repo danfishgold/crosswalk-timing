@@ -6,7 +6,7 @@ import {
 } from '@reduxjs/toolkit'
 import { WritableDraft } from 'immer/dist/internal'
 import {
-  calculateTrackSegments,
+  canonicalTrackSegments,
   cycleDurationSuggestions,
   Segment,
   timedEventKey,
@@ -386,27 +386,31 @@ function crosswalkHighlightColors(
   return Object.fromEntries(entries)
 }
 
-export const selectCycleSegments = createSelector<
+export const selectCanonicalCycleSegments = createSelector<
   [
     Selector<State, CrosswalkId[]>,
-    Selector<State, Cycle | null>,
+    Selector<State, number | undefined>,
     Selector<State, Partial<Record<TimedEventKey, number[]>>>,
   ],
   Map<CrosswalkKey, Segment[] | null>
 >(
   selectCrosswalkIds,
-  (state) => state.cycle,
+  (state) => state.cycle?.duration,
   (state) => state.eventTimestamps,
-  (crosswalkIds, cycle, eventTimestamps) => {
-    if (!cycle) {
+  (crosswalkIds, cycleDuration, eventTimestamps) => {
+    if (!cycleDuration) {
       return new Map()
     }
     const entries: [CrosswalkKey, Segment[] | null][] = crosswalkIds.map(
       (id) => {
         const reds = eventTimestamps[timedEventKey(id, 'red')] ?? []
         const greens = eventTimestamps[timedEventKey(id, 'green')] ?? []
-        const segments = calculateTrackSegments(reds, greens, cycle)
-        return [crosswalkKey(id), segments]
+        const canonicalSegments = canonicalTrackSegments(
+          reds,
+          greens,
+          cycleDuration,
+        )
+        return [crosswalkKey(id), canonicalSegments]
       },
     )
     return new Map(entries)

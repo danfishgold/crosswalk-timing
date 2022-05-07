@@ -1,16 +1,17 @@
+import { useMemo } from 'react'
 import {
   crosswalkKey,
   Cycle,
+  selectCanonicalCycleSegments,
   selectCrosswalkIds,
-  selectCycleSegments,
 } from '../reducer'
 import { useSelector } from '../store'
 import { colorColors } from '../utils'
-import { Segment } from './timedEvents'
+import { cutSegmentsToFit, Segment } from './timedEvents'
 
 export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  const segments = useSelector(selectCycleSegments)
+  const canonicalSegments = useSelector(selectCanonicalCycleSegments)
 
   return (
     <div>
@@ -19,7 +20,9 @@ export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
           key={crosswalkKey(crosswalkId)}
           crosswalkIndex={index}
           cycle={cycle}
-          segments={segments.get(crosswalkKey(crosswalkId)) ?? null}
+          canonicalSegments={
+            canonicalSegments.get(crosswalkKey(crosswalkId)) ?? null
+          }
         />
       ))}
     </div>
@@ -29,12 +32,17 @@ export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
 function DiagramTrack({
   crosswalkIndex,
   cycle,
-  segments,
+  canonicalSegments,
 }: {
   crosswalkIndex: number
   cycle: Cycle
-  segments: Segment[] | null
+  canonicalSegments: Segment[] | null
 }) {
+  const segments = useMemo(
+    () => canonicalSegments && cutSegmentsToFit(canonicalSegments, cycle),
+    [canonicalSegments, cycle],
+  )
+
   if (!segments) {
     return <div>no data</div>
   }
