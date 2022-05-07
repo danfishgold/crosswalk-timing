@@ -32,7 +32,11 @@ function RecordingDurationEditor() {
       <label htmlFor='duration-input'>משך ההקלטה:</label>
       <TimestampInput
         timestamp={duration}
-        setTimestamp={(value) => dispatch(setRecordingDuration(value))}
+        setTimestamp={(value) => {
+          if (value !== null) {
+            dispatch(setRecordingDuration(value))
+          }
+        }}
         id='duration-input'
       />
     </div>

@@ -1,13 +1,14 @@
 import React from 'react'
 import {
   Cycle,
-  selectPossibleCycleDurations,
+  selectCycleDurationSuggestions,
   setCycleDuraration,
   setCycleOffset,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import { formatTimestamp } from '../utils'
 import CycleDiagram from './CycleDiagram'
+import TimedEventEditor from './TimedEventEditor'
 
 export default function CycleSection() {
   const cycle = useSelector((state) => state.cycle)
@@ -19,6 +20,7 @@ export default function CycleSection() {
       {cycle && (
         <>
           <CycleOffsetInput cycle={cycle} />
+          <TimedEventEditor cycle={cycle} />
           <CycleDiagram cycle={cycle} />
         </>
       )}
@@ -28,8 +30,8 @@ export default function CycleSection() {
 
 function CycleDurationSelector() {
   const dispatch = useDispatch()
-  const possibleDurations = useSelector(selectPossibleCycleDurations)
-  if (possibleDurations.length === 0) {
+  const cycleDurationSuggestions = useSelector(selectCycleDurationSuggestions)
+  if (cycleDurationSuggestions.length === 0) {
     return (
       <div>
         <p>
@@ -42,12 +44,14 @@ function CycleDurationSelector() {
   return (
     <div>
       <span>זמני מחזור אפשריים:</span>
-      {possibleDurations.map((duration, index) => (
+      {cycleDurationSuggestions.map((suggestion) => (
         <button
-          key={index}
-          onClick={() => dispatch(setCycleDuraration(duration))}
+          key={suggestion.duration}
+          onClick={() => dispatch(setCycleDuraration(suggestion.duration))}
         >
-          {formatTimestamp(duration)}
+          {`${formatTimestamp(suggestion.duration)} (${
+            suggestion.conflictCount
+          } קונפליקטים)`}
         </button>
       ))}
     </div>

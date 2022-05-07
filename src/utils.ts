@@ -30,6 +30,14 @@ export function groupBy<T, K extends string | number>(
   return groups
 }
 
+export function tally<T extends string | number>(items: T[]): Map<T, number> {
+  const counts = new Map<T, number>()
+  for (const item of items) {
+    counts.set(item, (counts.get(item) ?? 0) + 1)
+  }
+  return counts
+}
+
 export function sortBy<T>(items: T[], key: (item: T) => number): T[] {
   const copy = [...items].sort((a, b) => key(a) - key(b))
   return copy
@@ -42,6 +50,28 @@ export function mod(n: number, m: number): number {
   } else {
     return naiveMod
   }
+}
+
+export function uniques<T>(array: T[]): T[] {
+  return Array.from(new Set(array))
+}
+
+export function sum(array: number[]): number {
+  return array.reduce((total, n) => total + n, 0)
+}
+
+export function sumBy<T>(array: T[], key: (item: T) => number): number {
+  return array.reduce((total, item) => total + key(item), 0)
+}
+
+export function compact<T>(array: (T | null | undefined)[]): T[] {
+  return array.filter((item) => item !== undefined && item !== null) as T[]
+}
+
+export function splice<T>(array: T[], betweenEveryTwoItems: T): T[] {
+  return array.flatMap((item, index) =>
+    index === 0 ? [item] : [betweenEveryTwoItems, item],
+  )
 }
 
 export const colorColors: Record<Color, string> = {

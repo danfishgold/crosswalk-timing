@@ -20,6 +20,11 @@ export default function TransitionFormElements({
     (id) => crosswalkKey(id) === crosswalkKey(transition.crosswalkId),
   )
 
+  const onTimestampChange = (timestamp: number | null) => {
+    if (timestamp !== null) {
+      onChange({ ...transition, timestamp })
+    }
+  }
   const onCrosswalkChange = (event: ChangeEvent<HTMLInputElement>) => {
     const index = event.target.valueAsNumber - 1
     const crosswalkId = crosswalkIds[index]
@@ -34,7 +39,7 @@ export default function TransitionFormElements({
     <>
       <TimestampInput
         timestamp={transition.timestamp}
-        setTimestamp={(timestamp) => onChange({ ...transition, timestamp })}
+        setTimestamp={onTimestampChange}
       />
       {!isTrackIndexFieldHidden && (
         <input

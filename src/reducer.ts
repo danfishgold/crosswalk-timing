@@ -5,7 +5,7 @@ import {
   Selector,
 } from '@reduxjs/toolkit'
 import { WritableDraft } from 'immer/dist/internal'
-import { groupBy } from './utils'
+import { cycleDurationSuggestions, TimedEventKey } from './Cycle/timedEvents'
 
 export type State = {
   junction: Junction
@@ -15,7 +15,7 @@ export type State = {
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
   cycle: Cycle | null
-  timings: { crosswalkId: CrosswalkId; color: Color; offset: number }[]
+  events: Partial<Record<TimedEventKey, number[]>>
   inEditMode: boolean
 }
 
@@ -61,14 +61,6 @@ export function crosswalkKey(crosswalkId: CrosswalkId): CrosswalkKey {
   }
 }
 
-export type TransitionKey = `${CrosswalkKey}-${Color}`
-export function transitionKey(
-  crosswalkId: CrosswalkId,
-  color: Color,
-): TransitionKey {
-  return `${crosswalkKey(crosswalkId)}-${color}`
-}
-
 const emptyState: State = {
   junction: {
     n: null,
@@ -82,7 +74,7 @@ const emptyState: State = {
   cursor: null,
   transitionSuggestion: null,
   cycle: null,
-  timings: [],
+  events: {},
   inEditMode: true,
 }
 
@@ -150,7 +142,7 @@ const szoldState: State = {
   cursor: null,
   transitionSuggestion: null,
   cycle: { duration: 90, recordingOffset: 44 },
-  timings: [],
+  events: {},
   inEditMode: true,
 }
 
@@ -278,6 +270,12 @@ const { reducer, actions } = createSlice({
     toggleEditMode(state) {
       state.inEditMode = !state.inEditMode
     },
+    setEventTimestamps(
+      state,
+      action: PayloadAction<{ eventKey: TimedEventKey; timestamps: number[] }>,
+    ) {
+      state.events[action.payload.eventKey] = action.payload.timestamps
+    },
   },
 })
 
@@ -317,6 +315,7 @@ export const {
   setCycleDuraration,
   setCycleOffset,
   toggleEditMode,
+  setEventTimestamps,
 } = actions
 
 export const selectCrosswalkTransitionsAndIds = createSelector<
@@ -356,32 +355,10 @@ export const selectCrosswalkIds = createSelector(
     }),
 )
 
-export const selectPossibleCycleDurations = createSelector(
+export const selectCycleDurationSuggestions = createSelector(
   (state: State) => state.transitions,
-  (transitions) => possibleCycleDurations(transitions),
+  (transitions) => cycleDurationSuggestions(transitions),
 )
-
-function possibleCycleDurations(
-  transitions: Record<string, Transition>,
-): number[] {
-  const transitionGroupings = groupBy(
-    Object.values(transitions),
-    (transition) => transitionKey(transition.crosswalkId, transition.toColor),
-  )
-  const allPossibleCycleDurations = Array.from(
-    transitionGroupings.values(),
-  ).flatMap(timestampDiffs)
-
-  return allPossibleCycleDurations
-}
-
-function timestampDiffs(transitions: Transition[]): number[] {
-  const timestamps = transitions.map((transition) => transition.timestamp)
-  timestamps.sort((a, b) => a - b)
-  return timestamps
-    .slice(0, -1)
-    .map((timestamp, index) => timestamps[index + 1] - timestamp)
-}
 
 export const selectCrosswalkHighlightColors = createSelector<
   [Selector<State, CrosswalkId[]>, Selector<State, Cursor | null>],

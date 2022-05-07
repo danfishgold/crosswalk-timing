@@ -10,7 +10,7 @@ import {
   updateTransitionInList,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import { highlightColors } from '../utils'
+import CrosswalkNumberIndicator from './../CrosswalkNumberIndicator'
 import TransitionFormElements from './TransitionFormElements'
 
 export default function TransitionList() {
@@ -44,8 +44,6 @@ function CrosswalkTransitionList({
     selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )
 
-  const color = highlight ? highlightColors[highlight] : 'black'
-
   return (
     <div
       style={{
@@ -56,29 +54,7 @@ function CrosswalkTransitionList({
         padding: '5px 5px',
       }}
     >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'auto',
-          gridTemplateRows: '1fr auto 1fr',
-          justifyItems: 'center',
-        }}
-      >
-        <div style={{ width: '5px', height: '100%', background: color }} />
-        <div
-          style={{
-            width: '20px',
-            height: '20px',
-            borderRadius: '20px',
-            background: color,
-            color: 'white',
-            textAlign: 'center',
-          }}
-        >
-          {index + 1}
-        </div>
-        <div style={{ width: '5px', height: '100%', background: color }} />
-      </div>
+      <CrosswalkNumberIndicator number={index + 1} highlight={highlight} />
       <div>
         {transitions.length > 0 ? (
           transitions.map(([id]) => <TransitionRow key={id} id={id} />)

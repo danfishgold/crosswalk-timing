@@ -6,8 +6,8 @@ export default function TimestampInput({
   setTimestamp,
   ...props
 }: {
-  timestamp: number
-  setTimestamp: (timestamp: number) => void
+  timestamp: number | null
+  setTimestamp: (timestamp: number | null) => void
 } & Exclude<
   React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -15,18 +15,26 @@ export default function TimestampInput({
   >,
   'value' | 'onChange' | 'onKeyDown'
 >) {
-  const [value, setValue] = useState(formatTimestamp(timestamp))
+  const [value, setValue] = useState(
+    timestamp !== null ? formatTimestamp(timestamp) : '',
+  )
 
   useEffect(() => {
-    const newValue = formatTimestamp(timestamp)
-    if (newValue !== value) {
-      setValue(newValue)
+    if (timestamp === null) {
+      setValue('')
+    } else {
+      const newValue = formatTimestamp(timestamp)
+      if (newValue !== value) {
+        setValue(newValue)
+      }
     }
   }, [timestamp])
 
   useEffect(() => {
     const newTimestamp = parseTimestamp(value)
-    if (newTimestamp && newTimestamp !== timestamp) {
+    if (newTimestamp === null) {
+      setTimestamp(null)
+    } else if (newTimestamp && newTimestamp !== timestamp) {
       setTimestamp(newTimestamp)
     }
   }, [value])
