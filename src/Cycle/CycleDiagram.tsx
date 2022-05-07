@@ -19,7 +19,7 @@ export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
           key={crosswalkKey(crosswalkId)}
           crosswalkIndex={index}
           cycle={cycle}
-          segments={segments[crosswalkKey(crosswalkId)] ?? null}
+          segments={segments.get(crosswalkKey(crosswalkId)) ?? null}
         />
       ))}
     </div>

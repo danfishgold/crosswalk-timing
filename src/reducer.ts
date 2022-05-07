@@ -392,21 +392,23 @@ export const selectCycleSegments = createSelector<
     Selector<State, Cycle | null>,
     Selector<State, Partial<Record<TimedEventKey, number[]>>>,
   ],
-  Partial<Record<CrosswalkKey, Segment[] | null>>
+  Map<CrosswalkKey, Segment[] | null>
 >(
   selectCrosswalkIds,
   (state) => state.cycle,
   (state) => state.eventTimestamps,
   (crosswalkIds, cycle, eventTimestamps) => {
     if (!cycle) {
-      return {}
+      return new Map()
     }
-    const entries = crosswalkIds.map((id) => {
-      const reds = eventTimestamps[timedEventKey(id, 'red')] ?? []
-      const greens = eventTimestamps[timedEventKey(id, 'green')] ?? []
-      const segments = calculateTrackSegments(reds, greens, cycle)
-      return [crosswalkKey(id), segments]
-    })
-    return Object.fromEntries(entries)
+    const entries: [CrosswalkKey, Segment[] | null][] = crosswalkIds.map(
+      (id) => {
+        const reds = eventTimestamps[timedEventKey(id, 'red')] ?? []
+        const greens = eventTimestamps[timedEventKey(id, 'green')] ?? []
+        const segments = calculateTrackSegments(reds, greens, cycle)
+        return [crosswalkKey(id), segments]
+      },
+    )
+    return new Map(entries)
   },
 )
