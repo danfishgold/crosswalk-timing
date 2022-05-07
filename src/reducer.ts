@@ -368,21 +368,24 @@ export const selectCrosswalkTransitionsAndIds = createSelector<
 
 export const selectCrosswalkIds = createSelector(
   (state: State) => state.junction,
-  (junction): CrosswalkId[] =>
-    legIds.flatMap((legId) => {
-      const leg = junction[legId]
-      if (!leg || !leg.crosswalk) {
-        return []
-      }
-      if (leg.island) {
-        return [
-          { legId: legId as LegId, part: 'first' },
-          { legId: legId as LegId, part: 'second' },
-        ]
-      }
-      return [{ legId: legId as LegId }]
-    }),
+  junctionCrosswalkIds,
 )
+
+export function junctionCrosswalkIds(junction: Junction): CrosswalkId[] {
+  return legIds.flatMap((legId) => {
+    const leg = junction[legId]
+    if (!leg || !leg.crosswalk) {
+      return []
+    }
+    if (leg.island) {
+      return [
+        { legId: legId as LegId, part: 'first' },
+        { legId: legId as LegId, part: 'second' },
+      ]
+    }
+    return [{ legId: legId as LegId }]
+  })
+}
 
 export const selectCycleDurationSuggestions = createSelector(
   (state: State) => state.transitions,
