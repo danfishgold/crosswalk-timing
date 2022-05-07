@@ -23,15 +23,18 @@ export default function SimulationGraph({
       cycle.duration,
     )
   }, [journeyCrosswalkIds, canonicalWaitTimes, cycle.duration])
-  console.log({ canonicalDurations })
   const data = useMemo(
     () =>
-      canonicalDurations.map((duration, timestamp) => ({
+      canonicalDurations?.map((duration, timestamp) => ({
         duration: duration,
         timestamp: mod(timestamp - cycle.offset, cycle.duration),
       })),
     [canonicalDurations, cycle],
   )
+
+  if (!data) {
+    return <p>יש בעיה איפשהו</p>
+  }
 
   return (
     <div style={{ width: '700px', direction: 'ltr' }}>
