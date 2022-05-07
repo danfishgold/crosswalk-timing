@@ -12,6 +12,7 @@ import {
   timedEventKey,
   TimedEventKey,
 } from './Cycle/timedEvents'
+import { canonicalWaitTimes } from './Simulation/waitTimes'
 import { compact } from './utils'
 
 export type State = {
@@ -439,5 +440,27 @@ export const selectCanonicalCycleSegments = createSelector<
       }),
     )
     return new Map(entries)
+  },
+)
+
+export const selectCanonicalWaitTimes = createSelector<
+  [
+    Selector<State, Map<CrosswalkKey, Segment[]>>,
+    Selector<State, number | undefined>,
+  ],
+  Map<CrosswalkKey, number[]>
+>(
+  selectCanonicalCycleSegments,
+  (state) => state.cycle?.duration,
+  (segments, cycleDuration) => {
+    if (!cycleDuration) {
+      return new Map()
+    }
+    return new Map(
+      Array.from(segments.entries()).map(([key, segments]) => [
+        key,
+        canonicalWaitTimes(segments, cycleDuration),
+      ]),
+    )
   },
 )
