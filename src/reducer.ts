@@ -12,6 +12,7 @@ import {
   timedEventKey,
   TimedEventKey,
 } from './Cycle/timedEvents'
+import { compact } from './utils'
 
 export type State = {
   junction: Junction
@@ -399,7 +400,7 @@ export const selectCanonicalCycleSegments = createSelector<
     Selector<State, number | undefined>,
     Selector<State, Partial<Record<TimedEventKey, number[]>>>,
   ],
-  Map<CrosswalkKey, Segment[] | null>
+  Map<CrosswalkKey, Segment[]>
 >(
   selectCrosswalkIds,
   (state) => state.cycle?.duration,
@@ -408,8 +409,8 @@ export const selectCanonicalCycleSegments = createSelector<
     if (!cycleDuration) {
       return new Map()
     }
-    const entries: [CrosswalkKey, Segment[] | null][] = crosswalkIds.map(
-      (id) => {
+    const entries: [CrosswalkKey, Segment[]][] = compact(
+      crosswalkIds.map((id) => {
         const reds = eventTimestamps[timedEventKey(id, 'red')] ?? []
         const greens = eventTimestamps[timedEventKey(id, 'green')] ?? []
         const canonicalSegments = canonicalTrackSegments(
@@ -417,8 +418,11 @@ export const selectCanonicalCycleSegments = createSelector<
           greens,
           cycleDuration,
         )
+        if (!canonicalSegments) {
+          return null
+        }
         return [crosswalkKey(id), canonicalSegments]
-      },
+      }),
     )
     return new Map(entries)
   },
