@@ -148,7 +148,14 @@ const szoldState: State = {
   cursor: null,
   transitionSuggestion: null,
   cycle: { duration: 90, offset: 44 },
-  eventTimestamps: {},
+  eventTimestamps: {
+    'w-green': [4],
+    'w-red': [38],
+    's-first-green': [49],
+    's-first-red': [61],
+    's-second-green': [71],
+    's-second-red': [84],
+  },
   inEditMode: true,
 }
 
