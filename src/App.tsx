@@ -3,6 +3,7 @@ import CycleSection from './Cycle/CycleSection'
 import JunctionSection from './Junction/JunctionSection'
 import RecordingSection from './Recording/RecordingSection'
 import { toggleEditMode } from './reducer'
+import SimulationSection from './Simulation/SimulationSection'
 import { useDispatch, useSelector } from './store'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <JunctionSection />
       <RecordingSection />
       <CycleSection />
+      <SimulationSection />
     </div>
   )
 }

@@ -23,6 +23,7 @@ export type State = {
   transitionSuggestion: TransitionSuggestion | null
   cycle: Cycle | null
   eventTimestamps: Partial<Record<TimedEventKey, number[]>>
+  walkTimes: Partial<Record<CrosswalkKey, number>>
   inEditMode: boolean
 }
 
@@ -82,6 +83,7 @@ const emptyState: State = {
   transitionSuggestion: null,
   cycle: null,
   eventTimestamps: {},
+  walkTimes: {},
   inEditMode: true,
 }
 
@@ -156,6 +158,11 @@ const szoldState: State = {
     's-first-red': [61],
     's-second-green': [71],
     's-second-red': [84],
+  },
+  walkTimes: {
+    w: 7,
+    's-first': 9,
+    's-second': 7,
   },
   inEditMode: true,
 }
@@ -290,6 +297,12 @@ const { reducer, actions } = createSlice({
     ) {
       state.eventTimestamps[action.payload.eventKey] = action.payload.timestamps
     },
+    setCrosswalkWalkTime(
+      state,
+      action: PayloadAction<{ crosswalkKey: CrosswalkKey; duration: number }>,
+    ) {
+      state.walkTimes[action.payload.crosswalkKey] = action.payload.duration
+    },
   },
 })
 
@@ -330,6 +343,7 @@ export const {
   setCycleOffset,
   toggleEditMode,
   setEventTimestamps,
+  setCrosswalkWalkTime,
 } = actions
 
 export const selectCrosswalkTransitionsAndIds = createSelector<
