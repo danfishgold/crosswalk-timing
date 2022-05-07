@@ -69,7 +69,9 @@ function EventInputs({
   inputCount: number
 }) {
   const dispatch = useDispatch()
-  const timestamps = useSelector((state) => state.events[eventKey] ?? [])
+  const timestamps = useSelector(
+    (state) => state.eventTimestamps[eventKey] ?? [],
+  )
   const talliedSuggestions = sortBy(
     Array.from(tally(suggestions).entries()),
     ([, count]) => count,

@@ -74,6 +74,16 @@ export function splice<T>(array: T[], betweenEveryTwoItems: T): T[] {
   )
 }
 
+export function pairs<T>(array: T[]): [T, T][] {
+  if (array.length < 2) {
+    return []
+  }
+  return range(array.length - 1).map((index) => [
+    array[index],
+    array[index + 1],
+  ])
+}
+
 export const colorColors: Record<Color, string> = {
   green: '#28e23f',
   red: '#e91c32',

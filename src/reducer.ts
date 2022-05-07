@@ -15,7 +15,7 @@ export type State = {
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
   cycle: Cycle | null
-  events: Partial<Record<TimedEventKey, number[]>>
+  eventTimestamps: Partial<Record<TimedEventKey, number[]>>
   inEditMode: boolean
 }
 
@@ -74,7 +74,7 @@ const emptyState: State = {
   cursor: null,
   transitionSuggestion: null,
   cycle: null,
-  events: {},
+  eventTimestamps: {},
   inEditMode: true,
 }
 
@@ -142,7 +142,7 @@ const szoldState: State = {
   cursor: null,
   transitionSuggestion: null,
   cycle: { duration: 90, recordingOffset: 44 },
-  events: {},
+  eventTimestamps: {},
   inEditMode: true,
 }
 
@@ -274,7 +274,7 @@ const { reducer, actions } = createSlice({
       state,
       action: PayloadAction<{ eventKey: TimedEventKey; timestamps: number[] }>,
     ) {
-      state.events[action.payload.eventKey] = action.payload.timestamps
+      state.eventTimestamps[action.payload.eventKey] = action.payload.timestamps
     },
   },
 })

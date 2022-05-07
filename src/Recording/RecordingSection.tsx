@@ -59,7 +59,6 @@ function NewTransitionForm() {
   return (
     <form
       onSubmit={(event) => {
-        console.log('fsdfsd')
         event.preventDefault()
         dispatch(addTransitionThroughForm(transitionInForm))
       }}

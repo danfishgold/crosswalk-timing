@@ -4,14 +4,14 @@ import {
   crosswalkKey,
   Cycle,
   selectCrosswalkIds,
-  selectCrosswalkTransitionsAndIds as selectCrosswalkTransitionsAndIds,
-  Transition,
 } from '../reducer'
 import { useSelector } from '../store'
-import { colorColors, groupBy, mod } from '../utils'
+import { colorColors, compact, mod, pairs, sortBy } from '../utils'
+import { timedEventKey } from './timedEvents'
 
 export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
   const crosswalkIds = useSelector(selectCrosswalkIds)
+  const events = useSelector((state) => state.eventTimestamps)
 
   return (
     <div>
@@ -36,21 +36,18 @@ function DiagramTrack({
   crosswalkIndex: number
   cycle: Cycle
 }) {
-  const transitionsAndIds = useSelector((state) =>
-    selectCrosswalkTransitionsAndIds(state, crosswalkId),
-  )
-  const transitions = transitionsAndIds.map(([, transition]) => transition)
-  const trackTimings = timings(transitions, cycle)
-  if (!trackTimings) {
+  const reds =
+    useSelector(
+      (state) => state.eventTimestamps[timedEventKey(crosswalkId, 'red')],
+    ) ?? []
+  const greens =
+    useSelector(
+      (state) => state.eventTimestamps[timedEventKey(crosswalkId, 'green')],
+    ) ?? []
+  const trackSegments = calculateTrackSegments(reds, greens, cycle.duration)
+  if (!trackSegments) {
     return <div>no data</div>
   }
-
-  const { red, green } = trackTimings
-  const isRedFirst = red < green
-  const [t0, t3] = [0, cycle.duration]
-  const [t1, t2, c0, c1, c2]: [number, number, Color, Color, Color] = isRedFirst
-    ? [red, green, 'green', 'red', 'green']
-    : [green, red, 'red', 'green', 'red']
 
   return (
     <div
@@ -62,37 +59,67 @@ function DiagramTrack({
         margin: '5px 0',
       }}
     >
-      <TrackSegment
-        color={c0}
-        offset={t0}
-        duration={t1 - t0}
-        cycleDuratiton={cycle.duration}
-      />
-      <TrackSegment
-        color={c1}
-        offset={t1}
-        duration={t2 - t1}
-        cycleDuratiton={cycle.duration}
-      />
-      <TrackSegment
-        color={c2}
-        offset={t2}
-        duration={t3 - t2}
-        cycleDuratiton={cycle.duration}
-      />
+      {trackSegments.map((segment, index) => (
+        <TrackSegment
+          key={index}
+          segment={segment}
+          cycleDuratiton={cycle.duration}
+        />
+      ))}
     </div>
   )
 }
 
+type Segment = { color: Color; offset: number; duration: number }
+
+function calculateTrackSegments(
+  reds: number[],
+  greens: number[],
+  cycleDuration: number,
+): Segment[] | null {
+  const sortedEvents: { timestamp: number; color: Color }[] = sortBy(
+    [
+      ...reds.map((timestamp) => ({ timestamp, color: 'red' as const })),
+      ...greens.map((timestamp) => ({ timestamp, color: 'green' as const })),
+    ],
+    (event) => mod(event.timestamp, cycleDuration),
+  )
+  const eventCount = sortedEvents.length
+  if (eventCount < 2) {
+    return null
+  }
+
+  const eventsWithExplicitBorderEvents = compact([
+    sortedEvents[0].timestamp === 0
+      ? null
+      : { timestamp: 0, color: sortedEvents[1].color },
+    ...sortedEvents,
+    sortedEvents[eventCount - 1].timestamp === cycleDuration
+      ? null
+      : { timestamp: cycleDuration, color: sortedEvents[eventCount - 2].color },
+  ])
+
+  const eventPairs = pairs(eventsWithExplicitBorderEvents)
+
+  if (
+    eventPairs.length === 0 ||
+    eventPairs.some(([event1, event2]) => event1.color === event2.color)
+  ) {
+    return null
+  }
+
+  return eventPairs.map(([event1, event2]) => ({
+    color: event1.color,
+    offset: event1.timestamp,
+    duration: event2.timestamp - event1.timestamp,
+  }))
+}
+
 function TrackSegment({
-  color,
-  offset,
-  duration,
+  segment,
   cycleDuratiton,
 }: {
-  color: Color
-  offset: number
-  duration: number
+  segment: Segment
   cycleDuratiton: number
 }) {
   return (
@@ -100,38 +127,11 @@ function TrackSegment({
       style={{
         position: 'absolute',
         top: 0,
-        left: `${(offset / cycleDuratiton) * 100}%`,
-        width: `${(duration / cycleDuratiton) * 100}%`,
+        left: `${(segment.offset / cycleDuratiton) * 100}%`,
+        width: `${(segment.duration / cycleDuratiton) * 100}%`,
         height: '100%',
-        background: colorColors[color],
+        background: colorColors[segment.color],
       }}
     ></div>
   )
-}
-
-function timings(
-  transitions: Transition[],
-  cycle: Cycle,
-): { red: number; green: number } | null {
-  const transitionGroups = groupBy(
-    transitions,
-    (transition) => transition.toColor,
-  )
-  const timingMap = new Map(
-    Array.from(transitionGroups.entries()).map(
-      ([color, crosswalkTransitions]) => {
-        const possibleTimings = crosswalkTransitions.map((transition) =>
-          mod(transition.timestamp - cycle.recordingOffset, cycle.duration),
-        )
-        // TODO: fancy calculation
-        return [color, possibleTimings[0]]
-      },
-    ),
-  )
-  const { red, green } = Object.fromEntries(timingMap.entries())
-  if (red !== null && green !== null) {
-    return { red, green }
-  } else {
-    return null
-  }
 }

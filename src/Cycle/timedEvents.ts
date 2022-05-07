@@ -65,7 +65,6 @@ function conflictCount(
     duration,
     recordingOffset: 0,
   })
-  console.log({ timings })
   return sumBy(
     Object.values(timings),
     (timestamps) => uniques(timestamps).length - 1,
