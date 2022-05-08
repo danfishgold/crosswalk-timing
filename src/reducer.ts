@@ -304,6 +304,9 @@ const { reducer, actions } = createSlice({
     ) {
       state.walkTimes[action.payload.crosswalkKey] = action.payload.duration
     },
+    replaceEntireState(state, action: PayloadAction<State>) {
+      return action.payload
+    },
   },
 })
 
@@ -345,6 +348,7 @@ export const {
   toggleEditMode,
   setEventTimestamps,
   setCrosswalkWalkTime,
+  replaceEntireState,
 } = actions
 
 export const selectCrosswalkTransitionsAndIds = createSelector<
