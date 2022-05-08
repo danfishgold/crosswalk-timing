@@ -25,9 +25,9 @@ export default function JourneyCrosswalkIndexEditor({
 }
 
 function parseJourneyCrosswalkIndexes(valueString: string): number[] | null {
-  const numbers = valueString
-    .split(',')
-    .map((indexString) => parseInt(indexString.trim()) - 1)
+  const numbers = (valueString.match(/\d+/g) ?? []).map(
+    (indexString) => parseInt(indexString.trim()) - 1,
+  )
   if (numbers.some(isNaN)) {
     return null
   }
