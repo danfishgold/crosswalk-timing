@@ -10,20 +10,22 @@ import { useDispatch, useSelector } from './store'
 
 function App() {
   const state = useSelector((state) => state)
+  const inEditMode = useSelector((state) => state.inEditMode)
   return (
     <div>
       <p>
         <strong>נוהל בטא</strong>: אם תנסו לשבור זה ישבר. אם תנסו להשתמש בזה
         בטלפון זה כנראה גם ישבר
       </p>
+      <EditModeToggle />
+      <JunctionSection />
+      {inEditMode && <RecordingSection />}
+      <CycleSection />
+      <SimulationSection />
+      <h2>שטויות</h2>
       <StateClipboardButtons />
       <p>{encodeState(state)}</p>
       <p>{JSON.stringify(decodeState(encodeState(state)))}</p>
-      <EditModeToggle />
-      <JunctionSection />
-      <RecordingSection />
-      <CycleSection />
-      <SimulationSection />
     </div>
   )
 }

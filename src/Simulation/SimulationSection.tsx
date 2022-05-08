@@ -11,6 +11,8 @@ import SimulationGraph from './SimulationGraph'
 
 export default function SimulationSection() {
   const cycle = useSelector((state) => state.cycle)
+  const inEditMode = useSelector((state) => state.inEditMode)
+
   const [crosswalkIndexes, setCrosswalkIndexes] = useState<number[] | null>(
     null,
   )
@@ -30,7 +32,7 @@ export default function SimulationSection() {
   return (
     <div>
       <h2>סימולציה</h2>
-      <WalkingTimes />
+      {inEditMode && <WalkingTimes />}
       <JourneyCrosswalkIndexEditor setIndexes={setCrosswalkIndexes} />
       {cycle && (
         <SimulationGraph

@@ -12,14 +12,15 @@ import TimedEventEditor from './TimedEventEditor'
 
 export default function CycleSection() {
   const cycle = useSelector((state) => state.cycle)
+  const inEditMode = useSelector((state) => state.inEditMode)
 
   return (
     <div>
       <h2>מחזור</h2>
-      <CycleDurationSelector />
+      {inEditMode && <CycleDurationSelector />}
       {cycle && (
         <>
-          <TimedEventEditor cycle={cycle} />
+          {inEditMode && <TimedEventEditor cycle={cycle} />}
           <CycleOffsetInput cycle={cycle} />
           <CycleDiagram cycle={cycle} />
         </>
