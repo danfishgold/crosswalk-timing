@@ -168,6 +168,156 @@ const szoldState: State = {
   inEditMode: true,
 }
 
+const weizmannState: State = {
+  junction: {
+    n: { crosswalk: true, island: true },
+    e: { crosswalk: true, island: true },
+    s: { crosswalk: true, island: true },
+    w: { crosswalk: true, island: true },
+  },
+  junctionTitle: 'ארלוזורוב/ויצמן',
+  recordingDuration: 399,
+  transitions: {
+    '0.5223888119273669': {
+      timestamp: 35,
+      crosswalkId: { legId: 'n', part: 'first' },
+      toColor: 'green',
+    },
+    '0.7534059214753597': {
+      timestamp: 37,
+      crosswalkId: { legId: 'n', part: 'second' },
+      toColor: 'green',
+    },
+    '0.42789173422594307': {
+      timestamp: 51,
+      crosswalkId: { legId: 'n', part: 'first' },
+      toColor: 'red',
+    },
+    '0.4910721850368728': {
+      timestamp: 60,
+      crosswalkId: { legId: 'n', part: 'second' },
+      toColor: 'red',
+    },
+    '0.019021264114906233': {
+      timestamp: 125,
+      crosswalkId: { legId: 'n', part: 'first' },
+      toColor: 'green',
+    },
+    '0.5901882857959485': {
+      timestamp: 127,
+      crosswalkId: { legId: 'n', part: 'second' },
+      toColor: 'green',
+    },
+    '0.0713502050993875': {
+      timestamp: 147,
+      crosswalkId: { legId: 'e', part: 'second' },
+      toColor: 'red',
+    },
+    '0.5288307101029167': {
+      timestamp: 150,
+      crosswalkId: { legId: 'e', part: 'first' },
+      toColor: 'green',
+    },
+    '0.3696954515072949': {
+      timestamp: 193,
+      crosswalkId: { legId: 'e', part: 'second' },
+      toColor: 'green',
+    },
+    '0.48580480924008884': {
+      timestamp: 202,
+      crosswalkId: { legId: 'e', part: 'first' },
+      toColor: 'red',
+    },
+    '0.20179185833384095': {
+      timestamp: 236,
+      crosswalkId: { legId: 'e', part: 'second' },
+      toColor: 'red',
+    },
+    '0.9901914862470048': {
+      timestamp: 243,
+      crosswalkId: { legId: 's', part: 'first' },
+      toColor: 'green',
+    },
+    '0.46491366153151437': {
+      timestamp: 244,
+      crosswalkId: { legId: 's', part: 'second' },
+      toColor: 'green',
+    },
+    '0.04853160026547032': {
+      timestamp: 271,
+      crosswalkId: { legId: 's', part: 'first' },
+      toColor: 'red',
+    },
+    '0.1410476561303039': {
+      timestamp: 273,
+      crosswalkId: { legId: 's', part: 'second' },
+      toColor: 'red',
+    },
+    '0.5753717319694281': {
+      timestamp: 281,
+      crosswalkId: { legId: 'w', part: 'first' },
+      toColor: 'green',
+    },
+    '0.7199638828397977': {
+      timestamp: 296,
+      crosswalkId: { legId: 'w', part: 'second' },
+      toColor: 'red',
+    },
+    '0.2979234493538847': {
+      timestamp: 396,
+      crosswalkId: { legId: 'n', part: 'second' },
+      toColor: 'green',
+    },
+    '0.7290582020914632': {
+      timestamp: 394,
+      crosswalkId: { legId: 'n', part: 'first' },
+      toColor: 'green',
+    },
+    '0.02871591746746094': {
+      crosswalkId: { legId: 'w', part: 'first' },
+      timestamp: 321,
+      toColor: 'red',
+    },
+    '0.8512535069566213': {
+      crosswalkId: { legId: 'w', part: 'second' },
+      timestamp: 272,
+      toColor: 'green',
+    },
+  },
+  cursor: null,
+  transitionSuggestion: null,
+  cycle: { duration: 90, offset: 28 },
+  eventTimestamps: {
+    'n-first-green': [34],
+    'n-first-red': [51],
+    'n-second-green': [36],
+    'n-second-red': [60],
+    'e-first-green': [60],
+    'e-first-red': [22],
+    'e-second-green': [13],
+    'e-second-red': [57],
+    's-first-green': [63],
+    's-first-red': [1],
+    's-second-green': [64],
+    's-second-red': [3],
+    'w-first-green': [11],
+    'w-first-red': [51],
+    'w-second-green': [2],
+    'w-second-red': [26],
+  },
+  walkTimes: {
+    'n-first': 7,
+    'n-second': 7,
+    'e-first': 7,
+    'e-second': 7,
+    's-first': 7,
+    's-second': 7,
+    'w-first': 7,
+    'w-second': 7,
+  },
+  inEditMode: false,
+}
+
 const { reducer, actions } = createSlice({
   name: 'reducer',
   initialState: szoldState,
