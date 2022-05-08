@@ -6,6 +6,7 @@ import {
   setCrosswalkWalkTime,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
+import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'
 import SimulationGraph from './SimulationGraph'
 
 export default function SimulationSection() {
@@ -14,7 +15,7 @@ export default function SimulationSection() {
     <div>
       <h2>סימולציה</h2>
       <WalkingTimes />
-
+      {cycle && <JourneyCrosswalkIndexEditor />}
       {cycle && <SimulationGraph cycle={cycle} />}
     </div>
   )

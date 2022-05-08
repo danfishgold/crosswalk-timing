@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { setJourneyIndexes } from '../reducer'
+import { useDispatch, useSelector } from '../store'
 
-export default function JourneyCrosswalkIndexEditor({
-  setIndexes,
-}: {
-  setIndexes: (indexes: number[] | null) => void
-}) {
-  const [journeyInputValue, setJourneyInputValue] = useState('')
+export default function JourneyCrosswalkIndexEditor() {
+  const dispatch = useDispatch()
+  const journeyIndexes = useSelector((state) => state.journeyIndexes)
+
+  const [journeyInputValue, setJourneyInputValue] = useState(
+    journeyIndexes.map((index) => index + 1).join(' '),
+  )
 
   return (
     <div>
@@ -17,7 +20,7 @@ export default function JourneyCrosswalkIndexEditor({
           const valueString = event.target.value
           setJourneyInputValue(valueString)
           const indexes = parseJourneyCrosswalkIndexes(valueString)
-          setIndexes(indexes)
+          dispatch(setJourneyIndexes(indexes ?? []))
         }}
       />
     </div>

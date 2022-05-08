@@ -2,7 +2,7 @@ import {
   createSelector,
   createSlice,
   PayloadAction,
-  Selector,
+  Selector
 } from '@reduxjs/toolkit'
 import { WritableDraft } from 'immer/dist/internal'
 import {
@@ -10,7 +10,7 @@ import {
   cycleDurationSuggestions,
   Segment,
   timedEventKey,
-  TimedEventKey,
+  TimedEventKey
 } from './Cycle/timedEvents'
 import { canonicalWaitTimes } from './Simulation/waitTimes'
 import { compact } from './utils'
@@ -26,6 +26,7 @@ export type State = {
   eventTimestamps: Partial<Record<TimedEventKey, number[]>>
   walkTimes: Partial<Record<CrosswalkKey, number>>
   inEditMode: boolean
+  journeyIndexes: number[]
 }
 
 export const legIds = ['n', 'e', 's', 'w'] as const
@@ -86,6 +87,7 @@ const emptyState: State = {
   eventTimestamps: {},
   walkTimes: {},
   inEditMode: true,
+  journeyIndexes: [],
 }
 
 const szoldState: State = {
@@ -165,7 +167,8 @@ const szoldState: State = {
     's-first': 9,
     's-second': 7,
   },
-  inEditMode: true,
+  inEditMode: false,
+  journeyIndexes: [0, 1, 2],
 }
 
 const weizmannState: State = {
@@ -316,6 +319,7 @@ const weizmannState: State = {
     'w-second': 7,
   },
   inEditMode: false,
+  journeyIndexes: [],
 }
 
 const { reducer, actions } = createSlice({
@@ -454,6 +458,9 @@ const { reducer, actions } = createSlice({
     ) {
       state.walkTimes[action.payload.crosswalkKey] = action.payload.duration
     },
+    setJourneyIndexes(state, action: PayloadAction<number[]>) {
+      state.journeyIndexes = action.payload
+    },
     replaceEntireState(state, action: PayloadAction<State>) {
       return action.payload
     },
@@ -501,6 +508,7 @@ export const {
   toggleEditMode,
   setEventTimestamps,
   setCrosswalkWalkTime,
+  setJourneyIndexes,
   replaceEntireState,
   resetState,
 } = actions
