@@ -36,7 +36,7 @@ const legRotation: Record<LegId, number> = {
   w: 180,
 }
 
-export function Svg({
+export function JunctionSvg({
   inEditMode,
   onLegClick,
 }: {

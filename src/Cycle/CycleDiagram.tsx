@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
+import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
   Cycle,
@@ -14,16 +15,20 @@ export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
   const canonicalSegments = useSelector(selectCanonicalCycleSegments)
 
   return (
-    <div>
+    <div
+      style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px' }}
+    >
       {crosswalkIds.map((crosswalkId, index) => (
-        <DiagramTrack
-          key={crosswalkKey(crosswalkId)}
-          crosswalkIndex={index}
-          cycle={cycle}
-          canonicalSegments={
-            canonicalSegments.get(crosswalkKey(crosswalkId)) ?? null
-          }
-        />
+        <React.Fragment key={crosswalkKey(crosswalkId)}>
+          <CrosswalkNumberIndicator number={index + 1} highlight={null} />
+          <DiagramTrack
+            crosswalkIndex={index}
+            cycle={cycle}
+            canonicalSegments={
+              canonicalSegments.get(crosswalkKey(crosswalkId)) ?? null
+            }
+          />
+        </React.Fragment>
       ))}
     </div>
   )
@@ -51,10 +56,8 @@ function DiagramTrack({
     <div
       style={{
         position: 'relative',
-        width: '500px',
         height: '30px',
         border: '1px solid black',
-        margin: '5px 0',
       }}
     >
       {segments.map((segment, index) => (

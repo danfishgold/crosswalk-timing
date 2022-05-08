@@ -12,12 +12,14 @@ import TransitionFormElements from './TransitionFormElements'
 import TransitionList from './TransitionList'
 
 export default function TimelineEditor() {
+  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const hasCrosswalks = crosswalkIds.length > 0
   return (
     <div>
       <h2>הקלטה</h2>
       <RecordingDurationEditor />
       <Timeline />
-      <NewTransitionForm />
+      {hasCrosswalks && <NewTransitionForm />}
       <TransitionList />
     </div>
   )

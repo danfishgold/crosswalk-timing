@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
@@ -6,28 +6,16 @@ import {
   setCrosswalkWalkTime,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'
 import SimulationGraph from './SimulationGraph'
 
 export default function SimulationSection() {
   const cycle = useSelector((state) => state.cycle)
-  const inEditMode = useSelector((state) => state.inEditMode)
-
-  const [crosswalkIndexes, setCrosswalkIndexes] = useState<number[] | null>(
-    null,
-  )
-
   return (
     <div>
       <h2>סימולציה</h2>
-      {inEditMode && <WalkingTimes />}
-      <JourneyCrosswalkIndexEditor setIndexes={setCrosswalkIndexes} />
-      {cycle && (
-        <SimulationGraph
-          journeyCrosswalkIndexes={crosswalkIndexes ?? []}
-          cycle={cycle}
-        />
-      )}
+      <WalkingTimes />
+
+      {cycle && <SimulationGraph cycle={cycle} />}
     </div>
   )
 }

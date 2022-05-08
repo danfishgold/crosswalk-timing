@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   VictoryAxis,
   VictoryChart,
@@ -15,18 +15,18 @@ import {
 } from '../reducer'
 import { useSelector } from '../store'
 import { compact, formatTimestamp, mod } from '../utils'
+import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'
 import { journeyDurationOverCycle } from './waitTimes'
 
-export default function SimulationGraph({
-  journeyCrosswalkIndexes,
-  cycle,
-}: {
-  journeyCrosswalkIndexes: number[]
-  cycle: Cycle
-}) {
+export default function SimulationGraph({ cycle }: { cycle: Cycle }) {
   const canonicalWaitTimes = useSelector(selectCanonicalWaitTimes)
   const walkTimes = useSelector((state) => state.walkTimes)
   const crosswalkIds = useSelector(selectCrosswalkIds)
+
+  const [crosswalkIndexes, setCrosswalkIndexes] = useState<number[] | null>(
+    null,
+  )
+  const journeyCrosswalkIndexes = crosswalkIndexes ?? []
 
   const journeyCrosswalkIds = useMemo(() => {
     if (
@@ -102,61 +102,64 @@ export default function SimulationGraph({
   }
 
   return (
-    <div style={{ width: '700px', direction: 'ltr' }}>
-      <VictoryChart padding={70}>
-        <VictoryAxis
-          tickFormat={formatTimestamp}
-          tickCount={Math.ceil(cycle.duration / 15)}
-          label='(זמן הגעה לצומת במחזור הרמזורים (שרירותי'
-          axisLabelComponent={<VictoryLabel dy={10} />}
-          style={{
-            grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
-            axisLabel: labelStyle,
-            tickLabels: labelStyle,
-          }}
-        />
-        <VictoryAxis
-          dependentAxis
-          tickFormat={formatTimestamp}
-          tickValues={[0, 30, 60, 90, 120, 150, 180, 210, 240]}
-          label={'(הזמן שלוקח לעבור את הצומת (בדקות'}
-          axisLabelComponent={<VictoryLabel dy={-20} />}
-          style={{
-            grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
-            axisLabel: labelStyle,
-            tickLabels: labelStyle,
-          }}
-        />
-        {hasJourney && (
-          <VictoryLine
-            data={data}
-            x='timestamp'
-            y='duration'
-            style={{ data: { stroke: 'indigo' } }}
-          />
-        )}
-        {hasJourney && hasAsymmetricJourney && (
-          <VictoryLine
-            data={reverseData}
-            x='timestamp'
-            y='duration'
-            style={{ data: { stroke: 'tomato' } }}
-          />
-        )}
-        {hasJourney && (
-          <VictoryLegend
-            x={69}
-            y={25}
-            orientation='horizontal'
-            gutter={40}
+    <div>
+      <JourneyCrosswalkIndexEditor setIndexes={setCrosswalkIndexes} />
+      <div style={{ width: '700px', direction: 'ltr' }}>
+        <VictoryChart padding={{ top: 70, left: 70, right: 70, bottom: 30 }}>
+          <VictoryAxis
+            tickFormat={formatTimestamp}
+            tickCount={Math.ceil(cycle.duration / 15)}
+            label='(זמן הגעה לצומת במחזור הרמזורים (שרירותי'
+            axisLabelComponent={<VictoryLabel dy={10} />}
             style={{
-              border: { stroke: 'black' },
-              labels: { fontFamily: 'inherit' },
+              grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
+              axisLabel: labelStyle,
+              tickLabels: labelStyle,
             }}
-            data={legendData}
           />
-        )}
-      </VictoryChart>
+          <VictoryAxis
+            dependentAxis
+            tickFormat={formatTimestamp}
+            tickValues={[0, 30, 60, 90, 120, 150, 180, 210, 240]}
+            label={'(הזמן שלוקח לעבור את הצומת (בדקות'}
+            axisLabelComponent={<VictoryLabel dy={-20} />}
+            style={{
+              grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
+              axisLabel: labelStyle,
+              tickLabels: labelStyle,
+            }}
+          />
+          {hasJourney && (
+            <VictoryLine
+              data={data}
+              x='timestamp'
+              y='duration'
+              style={{ data: { stroke: 'indigo' } }}
+            />
+          )}
+          {hasJourney && hasAsymmetricJourney && (
+            <VictoryLine
+              data={reverseData}
+              x='timestamp'
+              y='duration'
+              style={{ data: { stroke: 'tomato' } }}
+            />
+          )}
+          {hasJourney && (
+            <VictoryLegend
+              x={69}
+              y={25}
+              orientation='horizontal'
+              gutter={40}
+              style={{
+                border: { stroke: 'black' },
+                labels: { fontFamily: 'inherit' },
+              }}
+              data={legendData}
+            />
+          )}
+        </VictoryChart>
+      </div>
     </div>
   )
 }
