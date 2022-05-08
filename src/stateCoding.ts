@@ -47,6 +47,7 @@ export function decodeState(stateString: string): State | null {
       recordingDuration: 180,
       transitions: {},
       inEditMode: false,
+      journeyIndexes: [],
     }
   } catch (error) {
     console.warn(error)
