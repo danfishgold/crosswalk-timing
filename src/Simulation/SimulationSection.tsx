@@ -24,7 +24,7 @@ export default function SimulationSection() {
       <JourneyCrosswalkIndexEditor setIndexes={setCrosswalkIndexes} />
       {cycle && (
         <SimulationGraph
-          journeyCrosswalkIndexes={crosswalkIndexes}
+          journeyCrosswalkIndexes={crosswalkIndexes ?? []}
           cycle={cycle}
         />
       )}

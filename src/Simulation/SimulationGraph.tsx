@@ -6,9 +6,15 @@ import {
   VictoryLegend,
   VictoryLine,
 } from 'victory'
-import { Cycle, selectCanonicalWaitTimes, selectCrosswalkIds } from '../reducer'
+import {
+  CrosswalkId,
+  crosswalkKey,
+  Cycle,
+  selectCanonicalWaitTimes,
+  selectCrosswalkIds,
+} from '../reducer'
 import { useSelector } from '../store'
-import { formatTimestamp, mod } from '../utils'
+import { compact, formatTimestamp, mod } from '../utils'
 import { journeyDurationOverCycle } from './waitTimes'
 
 export default function SimulationGraph({
@@ -24,7 +30,6 @@ export default function SimulationGraph({
 
   const journeyCrosswalkIds = useMemo(() => {
     if (
-      !journeyCrosswalkIndexes ||
       Math.min(...journeyCrosswalkIndexes) < 0 ||
       Math.max(...journeyCrosswalkIndexes) >= crosswalkIds.length
     ) {
@@ -33,6 +38,9 @@ export default function SimulationGraph({
       return journeyCrosswalkIndexes.map((index) => crosswalkIds[index])
     }
   }, [crosswalkIds, journeyCrosswalkIndexes])
+
+  const hasJourney = journeyCrosswalkIds.length > 0
+  const hasAsymmetricJourney = isAsymmetric(journeyCrosswalkIds)
 
   const [canonicalDurations, canonicalReverseDurations] = useMemo(() => {
     return [
@@ -64,6 +72,24 @@ export default function SimulationGraph({
     [canonicalDurations, cycle],
   )
 
+  const legendData = useMemo(
+    () =>
+      compact([
+        {
+          name: journeyCrosswalkIndexes.map((index) => index + 1).join('→'),
+          symbol: { fill: 'indigo' },
+        },
+        hasAsymmetricJourney && {
+          name: [...journeyCrosswalkIndexes]
+            .reverse()
+            .map((index) => index + 1)
+            .join('→'),
+          symbol: { fill: 'tomato' },
+        },
+      ]),
+    [journeyCrosswalkIds],
+  )
+
   if (!data || !reverseData) {
     return <p>יש בעיה איפשהו</p>
   }
@@ -73,7 +99,7 @@ export default function SimulationGraph({
       <VictoryChart padding={70}>
         <VictoryAxis
           tickFormat={formatTimestamp}
-          tickCount={Math.ceil(cycle.duration / 10)}
+          tickCount={Math.ceil(cycle.duration / 15)}
           label='(זמן הגעה לצומת במחזור הרמזורים (שרירותי'
           axisLabelComponent={<VictoryLabel dy={10} />}
           style={{
@@ -90,41 +116,39 @@ export default function SimulationGraph({
             grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
           }}
         />
-        <VictoryLine
-          data={data}
-          x='timestamp'
-          y='duration'
-          domain={{ x: [0, cycle.duration], y: [0, 250] }}
-          style={{ data: { stroke: 'tomato' } }}
-        />
-        <VictoryLine
-          data={reverseData}
-          x='timestamp'
-          y='duration'
-          domain={{ x: [0, cycle.duration], y: [0, 250] }}
-          style={{ data: { stroke: 'indigo' } }}
-        />
-        <VictoryLegend
-          x={190}
-          y={25}
-          orientation='horizontal'
-          gutter={40}
-          style={{ border: { stroke: 'black' }, title: { fontSize: 20 } }}
-          data={[
-            {
-              name: journeyCrosswalkIndexes.map((index) => index + 1).join('→'),
-              symbol: { fill: 'tomato' },
-            },
-            {
-              name: [...journeyCrosswalkIndexes]
-                .reverse()
-                .map((index) => index + 1)
-                .join('→'),
-              symbol: { fill: 'indigo' },
-            },
-          ]}
-        />
+        {hasJourney && (
+          <VictoryLine
+            data={data}
+            x='timestamp'
+            y='duration'
+            style={{ data: { stroke: 'indigo' } }}
+          />
+        )}
+        {hasJourney && hasAsymmetricJourney && (
+          <VictoryLine
+            data={reverseData}
+            x='timestamp'
+            y='duration'
+            style={{ data: { stroke: 'tomato' } }}
+          />
+        )}
+        {hasJourney && (
+          <VictoryLegend
+            x={69}
+            y={25}
+            orientation='horizontal'
+            gutter={40}
+            style={{ border: { stroke: 'black' }, title: { fontSize: 20 } }}
+            data={legendData}
+          />
+        )}
       </VictoryChart>
     </div>
   )
+}
+
+function isAsymmetric(journey: CrosswalkId[]): boolean {
+  const keys = journey.map(crosswalkKey).join(',')
+  const reverseKeys = [...journey].reverse().map(crosswalkKey).join(',')
+  return keys !== reverseKeys
 }
