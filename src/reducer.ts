@@ -457,6 +457,9 @@ const { reducer, actions } = createSlice({
     replaceEntireState(state, action: PayloadAction<State>) {
       return action.payload
     },
+    resetState(state) {
+      return { ...emptyState, inEditMode: true }
+    },
   },
 })
 
@@ -499,6 +502,7 @@ export const {
   setEventTimestamps,
   setCrosswalkWalkTime,
   replaceEntireState,
+  resetState,
 } = actions
 
 export const selectCrosswalkTransitionsAndIds = createSelector<

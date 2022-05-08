@@ -38,6 +38,17 @@ function EditModeToggle() {
       <button onClick={() => dispatch(toggleEditMode())}>
         {inEditMode ? 'שמירה' : 'עריכה'}
       </button>
+      {inEditMode && (
+        <button
+          onClick={() => {
+            if (window.confirm('בטוח?')) {
+              dispatch(resetState())
+            }
+          }}
+        >
+          טאבולה ראסה
+        </button>
+      )}
     </div>
   )
 }
