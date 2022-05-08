@@ -21,7 +21,7 @@ export default function CycleSection() {
       {cycle && (
         <>
           {inEditMode && <TimedEventEditor cycle={cycle} />}
-          <CycleOffsetInput cycle={cycle} />
+          {inEditMode && <CycleOffsetInput cycle={cycle} />}
           <CycleDiagram cycle={cycle} />
         </>
       )}

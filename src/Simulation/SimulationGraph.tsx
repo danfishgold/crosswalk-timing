@@ -76,22 +76,29 @@ export default function SimulationGraph({
     () =>
       compact([
         {
-          name: journeyCrosswalkIndexes.map((index) => index + 1).join('→'),
+          name: journeyCrosswalkIndexes.map((index) => index + 1).join(' → '),
           symbol: { fill: 'indigo' },
         },
-        hasAsymmetricJourney && {
-          name: [...journeyCrosswalkIndexes]
-            .reverse()
-            .map((index) => index + 1)
-            .join('→'),
-          symbol: { fill: 'tomato' },
-        },
+        hasAsymmetricJourney
+          ? {
+              name: [...journeyCrosswalkIndexes]
+                .reverse()
+                .map((index) => index + 1)
+                .join(' → '),
+              symbol: { fill: 'tomato' },
+            }
+          : null,
       ]),
     [journeyCrosswalkIds],
   )
 
   if (!data || !reverseData) {
     return <p>יש בעיה איפשהו</p>
+  }
+
+  const labelStyle = {
+    fontFamily: 'inherit',
+    fontSize: '12px',
   }
 
   return (
@@ -104,6 +111,8 @@ export default function SimulationGraph({
           axisLabelComponent={<VictoryLabel dy={10} />}
           style={{
             grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
+            axisLabel: labelStyle,
+            tickLabels: labelStyle,
           }}
         />
         <VictoryAxis
@@ -114,6 +123,8 @@ export default function SimulationGraph({
           axisLabelComponent={<VictoryLabel dy={-20} />}
           style={{
             grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
+            axisLabel: labelStyle,
+            tickLabels: labelStyle,
           }}
         />
         {hasJourney && (
@@ -138,7 +149,10 @@ export default function SimulationGraph({
             y={25}
             orientation='horizontal'
             gutter={40}
-            style={{ border: { stroke: 'black' }, title: { fontSize: 20 } }}
+            style={{
+              border: { stroke: 'black' },
+              labels: { fontFamily: 'inherit' },
+            }}
             data={legendData}
           />
         )}
