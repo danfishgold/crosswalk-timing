@@ -4,6 +4,7 @@ import {
   Label,
   Line,
   LineChart,
+  ReferenceDot,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -71,6 +72,14 @@ export default function RechartsSimulationGraph({
               style={{ textAnchor: 'middle' }}
             />
           </YAxis>
+          {journeys.length === 0 && (
+            <ReferenceDot
+              x={cycle.duration / 2}
+              y={35}
+              label='הכניסו מסלול כדי לראות חישוב זמני חציה'
+              r={0}
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>

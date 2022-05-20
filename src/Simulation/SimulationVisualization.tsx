@@ -11,7 +11,9 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
   return (
     <div>
       <SimulationGraph cycle={cycle} journeys={journeys} data={data} />
-      <SimulationLegend journeys={journeys} data={data} />
+      {journeys.length > 0 && (
+        <SimulationLegend journeys={journeys} data={data} />
+      )}
     </div>
   )
 }
@@ -34,6 +36,9 @@ function useJourneys(): Journey[] {
 
   const journeys = compact(
     journeyIndexes.map((indexes, journeyIndex) => {
+      if (indexes.length === 0) {
+        return null
+      }
       try {
         const ids = indexes.map((index) => crosswalkId(index, crosswalkIds))
         const key = indexes.join('->')
