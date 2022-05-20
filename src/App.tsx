@@ -6,8 +6,8 @@ import { JunctionSvg } from './Junction/JunctionSvg'
 import RecordingSection from './Recording/RecordingSection'
 import { resetState, setJunctionTitle, toggleEditMode } from './reducer'
 import JourneyCrosswalkIndexEditor from './Simulation/JourneyCrosswalkIndexEditor'
-import SimulationGraph from './Simulation/SimulationGraph'
 import SimulationSection from './Simulation/SimulationSection'
+import SimulationVisualization from './Simulation/SimulationVisualization'
 import StateClipboardButtons from './StateClipboardButtons'
 import { decodeState, encodeState } from './stateCoding'
 import { useDispatch, useSelector } from './store'
@@ -54,7 +54,7 @@ function App() {
           <br />
           <br />
           {cycle && <JourneyCrosswalkIndexEditor />}
-          {cycle && <SimulationGraph cycle={cycle} />}
+          {cycle && <SimulationVisualization cycle={cycle} />}
         </>
       )}
 

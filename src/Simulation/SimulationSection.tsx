@@ -7,7 +7,7 @@ import {
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'
-import SimulationGraph from './SimulationGraph'
+import SimulationVisualization from './SimulationVisualization'
 
 export default function SimulationSection() {
   const cycle = useSelector((state) => state.cycle)
@@ -16,7 +16,7 @@ export default function SimulationSection() {
       <h2>סימולציה</h2>
       <WalkingTimes />
       {cycle && <JourneyCrosswalkIndexEditor />}
-      {cycle && <SimulationGraph cycle={cycle} />}
+      {cycle && <SimulationVisualization cycle={cycle} />}
     </div>
   )
 }

@@ -2,7 +2,7 @@ import {
   createSelector,
   createSlice,
   PayloadAction,
-  Selector
+  Selector,
 } from '@reduxjs/toolkit'
 import { WritableDraft } from 'immer/dist/internal'
 import {
@@ -10,7 +10,7 @@ import {
   cycleDurationSuggestions,
   Segment,
   timedEventKey,
-  TimedEventKey
+  TimedEventKey,
 } from './Cycle/timedEvents'
 import { canonicalWaitTimes } from './Simulation/waitTimes'
 import { compact } from './utils'
@@ -320,6 +320,121 @@ const weizmannState: State = {
   },
   inEditMode: false,
   journeyIndexes: [],
+}
+
+const ibnGavirolState: State = {
+  junction: {
+    n: { crosswalk: true, island: false },
+    e: { crosswalk: true, island: false },
+    s: { crosswalk: true, island: true },
+    w: { crosswalk: true, island: true },
+  },
+  junctionTitle: 'אבן גבירול/מלכי ישראל/צייטלין',
+  recordingDuration: 381,
+  transitions: {
+    '0.6560413026551709': {
+      timestamp: 16,
+      crosswalkId: { legId: 's', part: 'second' },
+      toColor: 'red',
+    },
+    '0.32769534005971723': {
+      timestamp: 50,
+      crosswalkId: { legId: 's', part: 'first' },
+      toColor: 'green',
+    },
+    '0.3655223187793696': {
+      timestamp: 63,
+      crosswalkId: { legId: 's', part: 'first' },
+      toColor: 'red',
+    },
+    '0.7882365378100387': {
+      timestamp: 74,
+      crosswalkId: { legId: 's', part: 'second' },
+      toColor: 'green',
+    },
+    '0.007307066977294663': {
+      timestamp: 130,
+      crosswalkId: { legId: 'w', part: 'first' },
+      toColor: 'red',
+    },
+    '0.4411148316770346': {
+      timestamp: 141,
+      crosswalkId: { legId: 'w', part: 'second' },
+      toColor: 'green',
+    },
+    '0.4361864580513888': {
+      timestamp: 158,
+      crosswalkId: { legId: 'w', part: 'second' },
+      toColor: 'red',
+    },
+    '0.6431062651411903': {
+      timestamp: 163,
+      crosswalkId: { legId: 'w', part: 'first' },
+      toColor: 'green',
+    },
+    '0.6382024372367233': {
+      timestamp: 219,
+      crosswalkId: { legId: 'w', part: 'first' },
+      toColor: 'red',
+    },
+    '0.6186025020741253': {
+      timestamp: 256,
+      crosswalkId: { legId: 'n' },
+      toColor: 'green',
+    },
+    '0.34244479898243874': {
+      timestamp: 286,
+      crosswalkId: { legId: 'e' },
+      toColor: 'red',
+    },
+    '0.48836639545964533': {
+      timestamp: 345,
+      crosswalkId: { legId: 'e' },
+      toColor: 'green',
+    },
+    '0.9604670394325503': {
+      timestamp: 346,
+      crosswalkId: { legId: 'n' },
+      toColor: 'green',
+    },
+    '0.12581529052436036': {
+      timestamp: 365,
+      crosswalkId: { legId: 'n' },
+      toColor: 'red',
+    },
+    '0.21683608413261712': {
+      timestamp: 376,
+      crosswalkId: { legId: 'e' },
+      toColor: 'red',
+    },
+  },
+  cursor: null,
+  transitionSuggestion: null,
+  cycle: { duration: 90, offset: -21 },
+  eventTimestamps: {
+    'n-green': [76],
+    'n-red': [5],
+    'e-green': [75],
+    'e-red': [16],
+    's-first-green': [50],
+    's-first-red': [63],
+    's-second-green': [74],
+    's-second-red': [16],
+    'w-first-green': [73],
+    'w-first-red': [40],
+    'w-second-green': [51],
+    'w-second-red': [68],
+  },
+  walkTimes: {
+    n: 8,
+    e: 8,
+    's-first': 8,
+    's-second': 8,
+    'w-first': 8,
+    'w-second': 8,
+  },
+  inEditMode: false,
+  journeyIndexes: [4, 5, 0],
 }
 
 const { reducer, actions } = createSlice({

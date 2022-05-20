@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react'
 import {
-  VictoryAxis,
-  VictoryChart,
-  VictoryLabel,
-  VictoryLegend,
-  VictoryLine,
-} from 'victory'
+  CartesianGrid,
+  Label,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import {
   CrosswalkId,
   crosswalkKey,
@@ -14,10 +16,10 @@ import {
   selectCrosswalkIds,
 } from '../reducer'
 import { useSelector } from '../store'
-import { compact, formatTimestamp, mod } from '../utils'
+import { formatTimestamp, mod, range } from '../utils'
 import { journeyDurationOverCycle } from './waitTimes'
 
-export default function SimulationGraph({ cycle }: { cycle: Cycle }) {
+export default function RechartsSimulationGraph({ cycle }: { cycle: Cycle }) {
   const canonicalWaitTimes = useSelector(selectCanonicalWaitTimes)
   const walkTimes = useSelector((state) => state.walkTimes)
   const crosswalkIds = useSelector(selectCrosswalkIds)
@@ -34,7 +36,6 @@ export default function SimulationGraph({ cycle }: { cycle: Cycle }) {
     }
   }, [crosswalkIds, journeyIndexes])
 
-  const hasJourney = journeyCrosswalkIds.length > 0
   const hasAsymmetricJourney = isAsymmetric(journeyCrosswalkIds)
 
   const [canonicalDurations, canonicalReverseDurations] = useMemo(() => {
@@ -53,105 +54,76 @@ export default function SimulationGraph({ cycle }: { cycle: Cycle }) {
       ),
     ]
   }, [journeyCrosswalkIds, canonicalWaitTimes, cycle.duration])
-  const [data, reverseData] = useMemo(
-    () => [
-      canonicalDurations?.map((duration, timestamp) => ({
-        duration: duration,
-        timestamp: mod(timestamp - cycle.offset, cycle.duration),
-      })),
-      canonicalReverseDurations?.map((duration, timestamp) => ({
-        duration: duration,
-        timestamp: mod(timestamp - cycle.offset, cycle.duration),
-      })),
-    ],
-    [canonicalDurations, cycle],
-  )
-
-  const legendData = useMemo(
+  const data = useMemo(
     () =>
-      compact([
-        {
-          name: journeyIndexes.map((index) => index + 1).join(' → '),
-          symbol: { fill: 'indigo' },
-        },
-        hasAsymmetricJourney
-          ? {
-              name: [...journeyIndexes]
-                .reverse()
-                .map((index) => index + 1)
-                .join(' → '),
-              symbol: { fill: 'tomato' },
-            }
-          : null,
-      ]),
-    [journeyCrosswalkIds],
+      range(cycle.duration + 1).map((timestamp) => ({
+        timestamp,
+        journeyDuration:
+          canonicalDurations?.[mod(timestamp + cycle.offset, cycle.duration)],
+        reverseJourneyDuration:
+          canonicalReverseDurations?.[
+            mod(timestamp + cycle.offset, cycle.duration)
+          ],
+      })),
+    [canonicalDurations, canonicalReverseDurations, cycle],
   )
-
-  if (!data || !reverseData) {
-    return <p>יש בעיה איפשהו</p>
-  }
-
-  const labelStyle = {
-    fontFamily: 'inherit',
-    fontSize: '12px',
-  }
 
   return (
-    <div style={{ width: '700px', direction: 'ltr' }}>
-      <VictoryChart padding={{ top: 70, left: 70, right: 70, bottom: 30 }}>
-        <VictoryAxis
-          tickFormat={formatTimestamp}
-          tickCount={Math.ceil(cycle.duration / 15)}
-          label='(זמן הגעה לצומת במחזור הרמזורים (שרירותי'
-          axisLabelComponent={<VictoryLabel dy={10} />}
-          style={{
-            grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
-            axisLabel: labelStyle,
-            tickLabels: labelStyle,
-          }}
-        />
-        <VictoryAxis
-          dependentAxis
-          tickFormat={formatTimestamp}
-          tickValues={[0, 30, 60, 90, 120, 150, 180, 210, 240]}
-          label={'(הזמן שלוקח לעבור את הצומת (בדקות'}
-          axisLabelComponent={<VictoryLabel dy={-20} />}
-          style={{
-            grid: { stroke: '#888', strokeWidth: 0.5, strokeDasharray: '' },
-            axisLabel: labelStyle,
-            tickLabels: labelStyle,
-          }}
-        />
-        {hasJourney && (
-          <VictoryLine
-            data={data}
-            x='timestamp'
-            y='duration'
-            style={{ data: { stroke: 'indigo' } }}
+    <div style={{ direction: 'ltr' }}>
+      <ResponsiveContainer width='100%' height={300}>
+        <LineChart
+          data={data}
+          margin={{ top: 10, right: 10, left: 20, bottom: 30 }}
+        >
+          <CartesianGrid stroke='#ccc' />
+          <Line
+            type='monotone'
+            dataKey='journeyDuration'
+            dot={false}
+            animationDuration={0}
+            strokeWidth={3}
           />
-        )}
-        {hasJourney && hasAsymmetricJourney && (
-          <VictoryLine
-            data={reverseData}
-            x='timestamp'
-            y='duration'
-            style={{ data: { stroke: 'tomato' } }}
-          />
-        )}
-        {hasJourney && (
-          <VictoryLegend
-            x={69}
-            y={25}
-            orientation='horizontal'
-            gutter={40}
-            style={{
-              border: { stroke: 'black' },
-              labels: { fontFamily: 'inherit' },
-            }}
-            data={legendData}
-          />
-        )}
-      </VictoryChart>
+          {hasAsymmetricJourney && (
+            <Line
+              type='monotone'
+              dataKey='reverseJourneyDuration'
+              dot={false}
+              animationDuration={0}
+              strokeWidth={3}
+            />
+          )}
+          <XAxis
+            dataKey='timestamp'
+            type='number'
+            tickFormatter={formatTimestamp}
+            domain={['dataMin', 'dataMax']}
+            tickCount={Math.ceil(cycle.duration / 15) + 1}
+          >
+            <Label
+              value='(זמן התחלה במחזור הרמזור (שרירותי'
+              position='insideBottom'
+              offset={-20}
+              style={{ textAnchor: 'middle' }}
+            />
+          </XAxis>
+          <YAxis
+            type='number'
+            tickFormatter={formatTimestamp}
+            domain={[
+              0,
+              (dataMax: number) => Math.ceil(Math.max(dataMax, 60) / 60) * 60,
+            ]}
+          >
+            <Label
+              angle={-90}
+              value='(משך חציית הצומת (בדקות'
+              position='insideLeft'
+              offset={-5}
+              style={{ textAnchor: 'middle' }}
+            />
+          </YAxis>
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   )
 }
