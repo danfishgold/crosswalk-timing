@@ -31,17 +31,17 @@ export function encodeState(state: State): string {
     encodeJourneyIndexes(journeyIndexes),
   ].join('|')
 
-  // return `${junctionTitle}/${squeeze(otherStuff)}`
-  return squeeze(otherStuff)
+  return `${nicerEncodeURI(junctionTitle)}/${squeeze(otherStuff)}`
 }
 
 export function decodeState(stateString: string): State | null {
   try {
-    // const [junctionTitleString, otherStuffString] = stateString.split('/')
-    const [junctionTitleString, squeezedOtherStuffString] = ['', stateString]
+    const urlParts = stateString.split('/')
+    const junctionTitleString = urlParts.slice(0, -1).join('/')
+    const squeezedOtherStuffString = urlParts[urlParts.length - 1]
     const otherStuffString = unsqueeze(squeezedOtherStuffString)
 
-    const junctionTitle = decodeURIComponent(junctionTitleString)
+    const junctionTitle = decodeURI(junctionTitleString)
     const { junction, cycle, eventTimestamps, walkTimes } =
       decodeOtherStuff(otherStuffString)
     return {
@@ -292,4 +292,12 @@ function unsqueeze(base64String: string): string {
     .map((character) => base13CharacterDecoding[character])
     .join('')
   return string.replace(/\-/g, '/').replace(/_/g, '+')
+}
+
+function nicerEncodeURI(stringWithHebrew: string): string {
+  return [...stringWithHebrew]
+    .map((character) =>
+      /[א-תףםןץך]/.test(character) ? character : encodeURI(character),
+    )
+    .join('')
 }

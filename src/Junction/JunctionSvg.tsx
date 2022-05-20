@@ -28,6 +28,7 @@ const islandY =
 const islandHeight = crosswalkSegmentLength * (islandWidthInSegments * 2 - 1)
 const circleRadius = crosswalkSegmentLength * 1.5
 const crosswalkOffset = islandHeight
+const viewBoxOffset = legWidth / 2 + legLength
 
 const legRotation: Record<LegId, number> = {
   n: -90,
@@ -46,8 +47,6 @@ export function JunctionSvg({
   const junction = useSelector((state) => state.junction)
   const crosswalkIds = useSelector(selectCrosswalkIds)
   const highlights = useSelector(selectCrosswalkHighlightColors)
-
-  const viewBoxOffset = legWidth / 2 + legLength
 
   return (
     <svg
