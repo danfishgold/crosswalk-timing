@@ -17,6 +17,7 @@ export default function SimulationLegend({
         display: 'grid',
         gridTemplateColumns: 'auto auto auto auto auto',
         gap: '20px',
+        alignItems: 'center',
       }}
     >
       <span />
@@ -45,7 +46,15 @@ function JourneyRow({
   const stats = useStatistics(journey, data)
   return (
     <>
-      <span>
+      <span
+        style={{
+          padding: '5px',
+          borderRadius: '4px',
+          background: journey.color,
+          color: textColor(...rgbValuesForColor(journey.color)),
+          fontWeight: '700',
+        }}
+      >
         {journey.crosswalkIndexes.map((index) => index + 1).join(' → ')}
       </span>
       <span>{formatTimestamp(stats.min)}</span>
@@ -70,4 +79,24 @@ function useStatistics(
     journey.crosswalkIds.map((id) => walkTimes[crosswalkKey(id)] ?? Infinity),
   )
   return { min, max, mean, kippur }
+}
+
+// https://stackoverflow.com/a/69057776
+function rgbValuesForColor(color: string): [number, number, number] {
+  var canvas = document.createElement('canvas')
+  var context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error(`No canvas context somehow`)
+  }
+  context.fillStyle = color
+  context.fillRect(0, 0, 1, 1)
+  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+  return [r, g, b]
+}
+
+function textColor(r: number, g: number, b: number): string {
+  // http://www.w3.org/TR/AERT#color-contrast
+  const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000)
+  const textColor = brightness > 125 ? 'black' : 'white'
+  return textColor
 }
