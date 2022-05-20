@@ -26,7 +26,7 @@ export type State = {
   eventTimestamps: Partial<Record<TimedEventKey, number[]>>
   walkTimes: Partial<Record<CrosswalkKey, number>>
   inEditMode: boolean
-  journeyIndexes: number[]
+  journeyIndexes: number[][]
 }
 
 export const legIds = ['n', 'e', 's', 'w'] as const
@@ -168,7 +168,10 @@ const szoldState: State = {
     's-second': 7,
   },
   inEditMode: false,
-  journeyIndexes: [0, 1, 2],
+  journeyIndexes: [
+    [0, 1, 2],
+    [2, 1, 0],
+  ],
 }
 
 const weizmannState: State = {
@@ -434,7 +437,7 @@ const ibnGavirolState: State = {
     'w-second': 8,
   },
   inEditMode: false,
-  journeyIndexes: [4, 5, 0],
+  journeyIndexes: [[4, 5, 0]],
 }
 
 const { reducer, actions } = createSlice({
@@ -573,7 +576,7 @@ const { reducer, actions } = createSlice({
     ) {
       state.walkTimes[action.payload.crosswalkKey] = action.payload.duration
     },
-    setJourneyIndexes(state, action: PayloadAction<number[]>) {
+    setJourneyIndexes(state, action: PayloadAction<number[][]>) {
       state.journeyIndexes = action.payload
     },
     replaceEntireState(state, action: PayloadAction<State>) {

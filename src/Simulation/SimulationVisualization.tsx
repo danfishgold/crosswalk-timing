@@ -25,14 +25,11 @@ export type Journey = {
   color: string
 }
 
-const journeyColors = ['navy', 'darkorange']
+const journeyColors = ['navy', 'darkorange', 'purple', 'brown', 'darkgreen']
 
 function useJourneys(): Journey[] {
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  const inputJourneyIndexes = useSelector((state) => state.journeyIndexes)
-  const journeyIndexes = isAsymmetric(inputJourneyIndexes)
-    ? [inputJourneyIndexes, [...inputJourneyIndexes].reverse()]
-    : [inputJourneyIndexes]
+  const journeyIndexes = useSelector((state) => state.journeyIndexes)
 
   const journeys = compact(
     journeyIndexes.map((indexes, journeyIndex) => {
@@ -41,7 +38,7 @@ function useJourneys(): Journey[] {
       }
       try {
         const ids = indexes.map((index) => crosswalkId(index, crosswalkIds))
-        const key = indexes.join('->')
+        const key = `${indexes.join('->')} (${journeyIndex + 1})`
         return {
           crosswalkIndexes: indexes,
           crosswalkIds: ids,

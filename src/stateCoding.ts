@@ -195,12 +195,12 @@ function decodeLeg(legValue: number): Leg | null {
 
 // JOURNEY
 
-function encodeJourneyIndexes(indexes: number[]): string {
-  return encodeNumberArray(indexes)
+function encodeJourneyIndexes(indexes: number[][]): string {
+  return indexes.map((journey) => encodeNumberArray(journey)).join('-')
 }
 
-function decodeJourneyIndexes(str: string): number[] {
-  return decodeNumberArray(str)
+function decodeJourneyIndexes(str: string): number[][] {
+  return str.split('-').map((journeyString) => decodeNumberArray(journeyString))
 }
 
 // HELPERS
