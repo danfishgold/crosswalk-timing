@@ -13,7 +13,14 @@ import {
 } from './reducer'
 
 export function encodeState(state: State): string {
-  const { junctionTitle, junction, cycle, eventTimestamps, walkTimes } = state
+  const {
+    junctionTitle,
+    junction,
+    cycle,
+    eventTimestamps,
+    walkTimes,
+    journeyIndexes,
+  } = state
   const crosswalkIds = junctionCrosswalkIds(junction)
 
   const otherStuff = [
@@ -21,6 +28,7 @@ export function encodeState(state: State): string {
     encodeCycle(cycle),
     encodeTimestamps(eventTimestamps, crosswalkIds),
     encodeWalkTimes(walkTimes, crosswalkIds),
+    encodeJourneyIndexes(journeyIndexes),
   ].join('|')
 
   // return `${junctionTitle}/${squeeze(otherStuff)}`
@@ -57,16 +65,25 @@ export function decodeState(stateString: string): State | null {
 
 function decodeOtherStuff(
   otherStuffString: string,
-): Pick<State, 'junction' | 'cycle' | 'eventTimestamps' | 'walkTimes'> {
-  const [junctionString, cycleString, timestampsString, walkTimesString] =
-    otherStuffString.split('|')
+): Pick<
+  State,
+  'junction' | 'cycle' | 'eventTimestamps' | 'walkTimes' | 'journeyIndexes'
+> {
+  const [
+    junctionString,
+    cycleString,
+    timestampsString,
+    walkTimesString,
+    journeyIndexesString,
+  ] = otherStuffString.split('|')
 
   const junction = decodeJunction(junctionString)
   const crosswalkIds = junctionCrosswalkIds(junction)
   const cycle = decodeCycle(cycleString)
   const eventTimestamps = decodeTimestamps(timestampsString, crosswalkIds)
   const walkTimes = decodeWalkTimes(walkTimesString, crosswalkIds)
-  return { junction, cycle, eventTimestamps, walkTimes }
+  const journeyIndexes = decodeJourneyIndexes(journeyIndexesString)
+  return { junction, cycle, eventTimestamps, walkTimes, journeyIndexes }
 }
 
 // WALK TIMES
@@ -174,6 +191,16 @@ function decodeLeg(legValue: number): Leg | null {
     const island = legValue % 2 === 1
     return { crosswalk, island }
   }
+}
+
+// JOURNEY
+
+function encodeJourneyIndexes(indexes: number[]): string {
+  return encodeNumberArray(indexes)
+}
+
+function decodeJourneyIndexes(str: string): number[] {
+  return decodeNumberArray(str)
 }
 
 // HELPERS
