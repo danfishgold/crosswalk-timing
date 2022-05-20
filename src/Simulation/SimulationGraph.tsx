@@ -10,15 +10,17 @@ import {
 } from 'recharts'
 import { Cycle } from '../reducer'
 import { formatTimestamp } from '../utils'
+import { Journey } from './SimulationVisualization'
+import { JourneyDurationData } from './useJourneyDurations'
 
 export default function RechartsSimulationGraph({
   cycle,
+  journeys,
   data,
-  hasAsymmetricJourney,
 }: {
   cycle: Cycle
-  data: any
-  hasAsymmetricJourney: boolean
+  journeys: Journey[]
+  data: JourneyDurationData
 }) {
   return (
     <div style={{ direction: 'ltr' }}>
@@ -28,22 +30,17 @@ export default function RechartsSimulationGraph({
           margin={{ top: 10, right: 10, left: 20, bottom: 30 }}
         >
           <CartesianGrid stroke='#ccc' />
-          <Line
-            type='monotone'
-            dataKey='journeyDuration'
-            dot={false}
-            animationDuration={0}
-            strokeWidth={3}
-          />
-          {hasAsymmetricJourney && (
+          {journeys.map((journey) => (
             <Line
+              key={journey.key}
               type='monotone'
-              dataKey='reverseJourneyDuration'
+              dataKey={journey.key}
               dot={false}
+              stroke={journey.color}
               animationDuration={0}
               strokeWidth={3}
             />
-          )}
+          ))}
           <XAxis
             dataKey='timestamp'
             type='number'

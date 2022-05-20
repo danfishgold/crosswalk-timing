@@ -47,3 +47,7 @@ export function journeyDurationOverCycle(
     return null
   }
 }
+
+export function journeyKey(journey: CrosswalkId[]): string {
+  return journey.map(crosswalkKey).join('->')
+}
