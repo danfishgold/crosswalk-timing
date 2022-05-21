@@ -10,6 +10,7 @@ const Table = styled.table({
   padding: '10px 0 0',
   overflowX: 'scroll',
 })
+
 const Th = styled.th({
   padding: '5px 8px',
   background: '#eeeeee',
@@ -74,7 +75,7 @@ function JourneyRow({
   const stats = useStatistics(journey, data)
   return (
     <tr>
-      <Td>
+      <Td dir='ltr'>
         <JourneyTitleLabel
           css={{
             background: journey.color,
