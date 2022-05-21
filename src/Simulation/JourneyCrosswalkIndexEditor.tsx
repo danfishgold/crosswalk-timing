@@ -18,6 +18,7 @@ export default function JourneyCrosswalkIndexEditor() {
       <label htmlFor='journey-input'>מסלולים</label>
       <input
         id='journey-input'
+        style={{ direction: 'ltr' }}
         value={journeyInputValue}
         onChange={(event) => {
           const valueString = event.target.value

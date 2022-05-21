@@ -66,7 +66,7 @@ export default function RechartsSimulationGraph({
           >
             <Label
               angle={-90}
-              value='(משך חציית הצומת (בדקות'
+              value='(משך חציית הצומת* (בדקות'
               position='insideLeft'
               offset={-5}
               style={{ textAnchor: 'middle' }}

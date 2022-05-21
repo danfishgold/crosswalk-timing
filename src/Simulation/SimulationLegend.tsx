@@ -26,7 +26,7 @@ export default function SimulationLegend({
       <span />
       <span />
       <span style={{ gridColumn: 'span 4', textAlign: 'center' }}>
-        משך חציית הצומת
+        משך חציית הצומת*
       </span>
       <span />
       <span style={{ gridColumn: 'span 2', textAlign: 'center' }}>מסלול</span>
