@@ -13,7 +13,7 @@ export default function CrosswalkNumberIndicator({
 
   return (
     <div
-      style={{
+      css={{
         display: 'grid',
         gridTemplateColumns: 'auto',
         gridTemplateRows: '1fr auto 1fr',
@@ -21,14 +21,14 @@ export default function CrosswalkNumberIndicator({
       }}
     >
       <div
-        style={{
+        css={{
           width: '5px',
           height: '100%',
           background: color,
         }}
       />
       <div
-        style={{
+        css={{
           width: '20px',
           height: '20px',
           borderRadius: '20px',
@@ -40,7 +40,7 @@ export default function CrosswalkNumberIndicator({
         {number}
       </div>
       <div
-        style={{
+        css={{
           width: '5px',
           height: '100%',
           background: color,

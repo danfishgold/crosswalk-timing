@@ -22,7 +22,7 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
     <div>
       <h3>תזמונים</h3>
       <div
-        style={{
+        css={{
           display: 'grid',
           gridTemplateColumns: 'auto 1fr 1fr',
           columnGap: '20px',

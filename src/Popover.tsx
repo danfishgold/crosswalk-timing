@@ -2,7 +2,6 @@ import React from 'react'
 export default function Popover({
   x,
   y,
-  style,
   ...props
 }: { x: number; y: number } & React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -10,8 +9,7 @@ export default function Popover({
 >) {
   return (
     <div
-      style={{
-        ...style,
+      css={{
         position: 'fixed',
         top: `${y}px`,
         left: `${x}px`,

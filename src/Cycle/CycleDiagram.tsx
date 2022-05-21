@@ -16,7 +16,7 @@ export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
 
   return (
     <div
-      style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px' }}
+      css={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px' }}
     >
       {crosswalkIds.map((crosswalkId, index) => (
         <React.Fragment key={crosswalkKey(crosswalkId)}>
@@ -54,7 +54,7 @@ function DiagramTrack({
 
   return (
     <div
-      style={{
+      css={{
         position: 'relative',
         height: '30px',
         border: '1px solid black',
@@ -80,7 +80,7 @@ function TrackSegment({
 }) {
   return (
     <div
-      style={{
+      css={{
         position: 'absolute',
         top: 0,
         left: `${(segment.offset / cycleDuratiton) * 100}%`,

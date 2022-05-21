@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { LegId, setJunctionTitle, setLeg } from '../reducer'
+import { LegId, setLeg } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import { JunctionSvg as JunctionSvg } from './JunctionSvg'
 
@@ -15,7 +15,7 @@ export default function JunctionBuilder() {
 
   return (
     <div
-      style={{
+      css={{
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -28,7 +28,7 @@ export default function JunctionBuilder() {
         onLegClick={(legId) => setSelectedLegId(legId)}
       />
       <div
-        style={{
+        css={{
           maxWidth: '280px',
           border: '1px solid black',
           padding: '20px',

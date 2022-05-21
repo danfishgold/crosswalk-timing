@@ -25,7 +25,7 @@ export default function RechartsSimulationGraph({
   data: JourneyDurationData
 }) {
   return (
-    <div style={{ direction: 'ltr' }}>
+    <div css={{ direction: 'ltr' }}>
       <ResponsiveContainer width='100%' height={300}>
         <LineChart
           data={data}

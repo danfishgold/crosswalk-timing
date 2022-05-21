@@ -36,7 +36,7 @@ function SimulationDisclamer() {
     .join(', ')
 
   return (
-    <div style={{ fontSize: '0.8rem', marginTop: '30px' }}>
+    <div css={{ fontSize: '0.8rem', marginTop: '30px' }}>
       *בהנחה של משך החציה הבא לכל מעבר חציה: {times}
     </div>
   )

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import CycleDiagram from './Cycle/CycleDiagram'
 import CycleSection from './Cycle/CycleSection'
 import JunctionSection from './Junction/JunctionSection'
@@ -41,7 +41,7 @@ function App() {
       ) : (
         <>
           <div
-            style={{
+            css={{
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-around',
@@ -51,7 +51,7 @@ function App() {
             }}
           >
             <JunctionSvg inEditMode={inEditMode} onLegClick={() => {}} />
-            <div style={{ width: '50%', maxWidth: '500px' }}>
+            <div css={{ width: '50%', maxWidth: '500px' }}>
               {cycle && <CycleDiagram cycle={cycle} />}
             </div>
           </div>
@@ -140,7 +140,7 @@ function JunctionTitle() {
       </div>
     )
   } else if (junctionTitle) {
-    return <h1 style={{ textAlign: 'center' }}>{junctionTitle}</h1>
+    return <h1 css={{ textAlign: 'center' }}>{junctionTitle}</h1>
   } else {
     return null
   }

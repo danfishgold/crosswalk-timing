@@ -31,7 +31,7 @@ function WalkingTimes() {
       <h3>זמני הליכה</h3>
       <p>(בשניות)</p>
       <div
-        style={{
+        css={{
           display: 'grid',
           gridTemplateColumns: 'auto 1fr',
           gap: '10px',

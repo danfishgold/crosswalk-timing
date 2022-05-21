@@ -14,7 +14,7 @@ export default function SimulationLegend({
 }) {
   return (
     <div
-      style={{
+      css={{
         display: 'grid',
         gridTemplateColumns: 'auto auto auto auto auto auto 1fr',
         gap: '20px',
@@ -25,11 +25,11 @@ export default function SimulationLegend({
     >
       <span />
       <span />
-      <span style={{ gridColumn: 'span 4', textAlign: 'center' }}>
+      <span css={{ gridColumn: 'span 4', textAlign: 'center' }}>
         משך חציית הצומת*
       </span>
       <span />
-      <span style={{ gridColumn: 'span 2', textAlign: 'center' }}>מסלול</span>
+      <span css={{ gridColumn: 'span 2', textAlign: 'center' }}>מסלול</span>
       <span>מינימלי</span>
       <span>מקסימלי</span>
       <span>ממוצע</span>
@@ -53,7 +53,7 @@ function JourneyRow({
   return (
     <>
       <span
-        style={{
+        css={{
           padding: '5px',
           borderRadius: '4px',
           background: journey.color,
@@ -142,7 +142,7 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
       viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${2 * viewBoxOffset} ${
         2 * viewBoxOffset
       }`}
-      style={{ width: '40px' }}
+      css={{ width: '40px' }}
     >
       <rect
         x={-legWidth / 2}

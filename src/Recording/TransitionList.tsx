@@ -46,7 +46,7 @@ function CrosswalkTransitionList({
 
   return (
     <div
-      style={{
+      css={{
         display: 'grid',
         gridTemplateColumns: 'auto 1fr',
         gap: '10px',

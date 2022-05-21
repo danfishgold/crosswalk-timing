@@ -28,7 +28,7 @@ export default function Timeline() {
 
   return (
     <div
-      style={{ position: 'relative' }}
+      css={{ position: 'relative' }}
       onMouseMove={(event) =>
         dispatch(
           hoverOverTimeline({
@@ -47,7 +47,7 @@ export default function Timeline() {
       ))}
       {cursor && (
         <div
-          style={{
+          css={{
             position: 'absolute',
             top: 0,
             left: `${(cursor.timestamp / duration) * 100}%`,
@@ -60,7 +60,7 @@ export default function Timeline() {
       )}
       {cursor && (
         <div
-          style={{
+          css={{
             marginLeft: `${(cursor.timestamp / duration) * 100}%`,
             background: 'white',
           }}
@@ -125,7 +125,7 @@ function CrosswalkTrack({
         )
       }}
       key={crosswalkKey(crosswalkId)}
-      style={{
+      css={{
         width: '100%',
         height: '30px',
         margin: '5px 0',
@@ -159,7 +159,7 @@ function TrackTransition({
   return (
     <div
       onClick={onClick}
-      style={{
+      css={{
         position: 'absolute',
         top: 0,
         left: `${(transition.timestamp / duration) * 100}%`,
