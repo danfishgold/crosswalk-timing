@@ -110,11 +110,11 @@ function textColor(r: number, g: number, b: number): string {
 }
 
 const legWidth = 40
-const legLength = 30
+const legLength = 40
 const roadColor = '#ccc'
 const arrowColor = '#000'
-const arrowWidth = 4
-const arrowHeadDiagonalLength = 10
+const arrowWidth = 6
+const arrowHeadDiagonalLength = 15
 
 const viewBoxOffset = legWidth / 2 + legLength
 
