@@ -1,10 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import CycleDiagram from './Cycle/CycleDiagram'
 import CycleSection from './Cycle/CycleSection'
 import JunctionSection from './Junction/JunctionSection'
 import { JunctionSvg } from './Junction/JunctionSvg'
 import RecordingSection from './Recording/RecordingSection'
-import { resetState, setJunctionTitle, toggleEditMode } from './reducer'
+import {
+  replaceEntireState,
+  resetState,
+  setJunctionTitle,
+  toggleEditMode,
+} from './reducer'
 import JourneyCrosswalkIndexEditor from './Simulation/JourneyCrosswalkIndexEditor'
 import SimulationSection from './Simulation/SimulationSection'
 import SimulationVisualization from './Simulation/SimulationVisualization'
@@ -13,9 +18,9 @@ import { decodeState, encodeState } from './stateCoding'
 import { useDispatch, useSelector } from './store'
 
 function App() {
-  const state = useSelector((state) => state)
   const inEditMode = useSelector((state) => state.inEditMode)
   const cycle = useSelector((state) => state.cycle)
+  useStateUrlSync()
 
   return (
     <div>
@@ -57,13 +62,28 @@ function App() {
           {cycle && <SimulationVisualization cycle={cycle} />}
         </>
       )}
-
-      <h2>שטויות</h2>
+      <h2>דיבוג</h2>
       <StateClipboardButtons />
-      <p>{encodeState(state)}</p>
-      <p>{JSON.stringify(decodeState(encodeState(state)))}</p>
     </div>
   )
+}
+
+function useStateUrlSync() {
+  const dispatch = useDispatch()
+  const state = useSelector((state) => state)
+
+  useEffect(() => {
+    const stateString = window.location.hash.replace(/^#/, '')
+    const preloadedState = decodeState(stateString)
+    console.log({ stateString, preloadedState })
+    if (preloadedState) {
+      dispatch(replaceEntireState(preloadedState))
+    }
+  }, [])
+
+  useEffect(() => {
+    window.history.replaceState(null, '', `#${encodeState(state)}`)
+  }, [state])
 }
 
 function EditModeToggle() {

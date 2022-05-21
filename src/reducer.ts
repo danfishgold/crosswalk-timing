@@ -26,7 +26,7 @@ export type State = {
   eventTimestamps: Partial<Record<TimedEventKey, number[]>>
   walkTimes: Partial<Record<CrosswalkKey, number>>
   inEditMode: boolean
-  journeyIndexes: number[][]
+  journeyIndexesString: string
 }
 
 export const legIds = ['n', 'e', 's', 'w'] as const
@@ -87,7 +87,7 @@ const emptyState: State = {
   eventTimestamps: {},
   walkTimes: {},
   inEditMode: true,
-  journeyIndexes: [],
+  journeyIndexesString: '',
 }
 
 const szoldState: State = {
@@ -168,10 +168,7 @@ const szoldState: State = {
     's-second': 7,
   },
   inEditMode: false,
-  journeyIndexes: [
-    [0, 1, 2],
-    [2, 1, 0],
-  ],
+  journeyIndexesString: '1 2 3, 3 2 1',
 }
 
 const weizmannState: State = {
@@ -322,7 +319,7 @@ const weizmannState: State = {
     'w-second': 7,
   },
   inEditMode: false,
-  journeyIndexes: [],
+  journeyIndexesString: '',
 }
 
 const ibnGavirolState: State = {
@@ -437,7 +434,7 @@ const ibnGavirolState: State = {
     'w-second': 8,
   },
   inEditMode: false,
-  journeyIndexes: [[4, 5, 0]],
+  journeyIndexesString: '5 6 0',
 }
 
 const { reducer, actions } = createSlice({
@@ -576,8 +573,8 @@ const { reducer, actions } = createSlice({
     ) {
       state.walkTimes[action.payload.crosswalkKey] = action.payload.duration
     },
-    setJourneyIndexes(state, action: PayloadAction<number[][]>) {
-      state.journeyIndexes = action.payload
+    setJourneyIndexesString(state, action: PayloadAction<string>) {
+      state.journeyIndexesString = action.payload
     },
     replaceEntireState(state, action: PayloadAction<State>) {
       return action.payload
@@ -626,7 +623,7 @@ export const {
   toggleEditMode,
   setEventTimestamps,
   setCrosswalkWalkTime,
-  setJourneyIndexes,
+  setJourneyIndexesString,
   replaceEntireState,
   resetState,
 } = actions
@@ -751,3 +748,26 @@ export const selectCanonicalWaitTimes = createSelector<
     )
   },
 )
+
+export const selectJourneyIndexes = createSelector<
+  [Selector<State, string>],
+  number[][]
+>((state) => state.journeyIndexesString, parseJourneyCrosswalkIndexes)
+
+function parseJourneyCrosswalkIndexes(valueString: string): number[][] {
+  const journeyStrings = valueString.trim().split(',')
+  const journeyIndexes = compact(
+    journeyStrings.map((journeyString) => {
+      const numbers = journeyString
+        .trim()
+        .split(/\s+/)
+        .map((indexString) => parseInt(indexString.trim()) - 1)
+      if (numbers.some(isNaN) || numbers.length === 0) {
+        return null
+      } else {
+        return numbers
+      }
+    }),
+  )
+  return journeyIndexes
+}

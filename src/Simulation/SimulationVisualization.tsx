@@ -3,6 +3,7 @@ import {
   crosswalkKey,
   Cycle,
   selectCrosswalkIds,
+  selectJourneyIndexes,
 } from '../reducer'
 import { useSelector } from '../store'
 import { compact, mod } from '../utils'
@@ -53,7 +54,7 @@ const journeyColors = ['navy', 'darkorange', 'purple', 'brown', 'darkgreen']
 
 function useJourneys(): Journey[] {
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  const journeyIndexes = useSelector((state) => state.journeyIndexes)
+  const journeyIndexes = useSelector(selectJourneyIndexes)
 
   const journeys = compact(
     journeyIndexes.map((indexes, journeyIndex) => {

@@ -19,7 +19,7 @@ export function encodeState(state: State): string {
     cycle,
     eventTimestamps,
     walkTimes,
-    journeyIndexes,
+    journeyIndexesString,
   } = state
   const crosswalkIds = junctionCrosswalkIds(junction)
 
@@ -28,7 +28,7 @@ export function encodeState(state: State): string {
     encodeCycle(cycle),
     encodeTimestamps(eventTimestamps, crosswalkIds),
     encodeWalkTimes(walkTimes, crosswalkIds),
-    encodeJourneyIndexes(journeyIndexes),
+    encodeJourneyIndexesString(journeyIndexesString),
   ].join('|')
 
   return `${nicerEncodeURI(junctionTitle)}/${squeeze(otherStuff)}`
@@ -42,8 +42,13 @@ export function decodeState(stateString: string): State | null {
     const otherStuffString = unsqueeze(squeezedOtherStuffString)
 
     const junctionTitle = decodeURI(junctionTitleString)
-    const { junction, cycle, eventTimestamps, walkTimes } =
-      decodeOtherStuff(otherStuffString)
+    const {
+      junction,
+      cycle,
+      eventTimestamps,
+      walkTimes,
+      journeyIndexesString,
+    } = decodeOtherStuff(otherStuffString)
     return {
       junctionTitle,
       junction,
@@ -55,7 +60,7 @@ export function decodeState(stateString: string): State | null {
       recordingDuration: 180,
       transitions: {},
       inEditMode: false,
-      journeyIndexes: [],
+      journeyIndexesString,
     }
   } catch (error) {
     console.warn(error)
@@ -67,7 +72,11 @@ function decodeOtherStuff(
   otherStuffString: string,
 ): Pick<
   State,
-  'junction' | 'cycle' | 'eventTimestamps' | 'walkTimes' | 'journeyIndexes'
+  | 'junction'
+  | 'cycle'
+  | 'eventTimestamps'
+  | 'walkTimes'
+  | 'journeyIndexesString'
 > {
   const [
     junctionString,
@@ -82,8 +91,15 @@ function decodeOtherStuff(
   const cycle = decodeCycle(cycleString)
   const eventTimestamps = decodeTimestamps(timestampsString, crosswalkIds)
   const walkTimes = decodeWalkTimes(walkTimesString, crosswalkIds)
-  const journeyIndexes = decodeJourneyIndexes(journeyIndexesString)
-  return { junction, cycle, eventTimestamps, walkTimes, journeyIndexes }
+  const decodedJourneyIndexesString =
+    decodeJourneyIndexesString(journeyIndexesString)
+  return {
+    junction,
+    cycle,
+    eventTimestamps,
+    walkTimes,
+    journeyIndexesString: decodedJourneyIndexesString,
+  }
 }
 
 // WALK TIMES
@@ -195,12 +211,12 @@ function decodeLeg(legValue: number): Leg | null {
 
 // JOURNEY
 
-function encodeJourneyIndexes(indexes: number[][]): string {
-  return indexes.map((journey) => encodeNumberArray(journey)).join('-')
+function encodeJourneyIndexesString(indexesString: string): string {
+  return indexesString.replaceAll(',', '-').replaceAll(' ', ',')
 }
 
-function decodeJourneyIndexes(str: string): number[][] {
-  return str.split('-').map((journeyString) => decodeNumberArray(journeyString))
+function decodeJourneyIndexesString(str: string): string {
+  return str.replaceAll(',', ' ').replaceAll('-', ',')
 }
 
 // HELPERS
@@ -282,16 +298,23 @@ function squeeze(stateString: string): string {
     .join('')
   const base16String = base13String // const base16String = parseInt(base13String, 13).toString(16)
   const base64String = hexToBase64(base16String)
-  return base64String.replace(/=/g, '').replace(/\//g, '-').replace(/\+/g, '_')
+  const modifiedBase64String = base64String
+    .replaceAll(/=/g, '')
+    .replaceAll(/\//g, '-')
+    .replaceAll(/\+/g, '_')
+  return modifiedBase64String
 }
 
-function unsqueeze(base64String: string): string {
+function unsqueeze(modifiedBase64String: string): string {
+  const base64String = modifiedBase64String
+    .replaceAll(/\-/g, '/')
+    .replaceAll(/_/g, '+')
   const base16String = base64ToHex(base64String)
   const base13String = base16String // const base13String = parseInt(base16String, 16).toString(13)
   const string = Array.from(base13String)
     .map((character) => base13CharacterDecoding[character])
     .join('')
-  return string.replace(/\-/g, '/').replace(/_/g, '+')
+  return string
 }
 
 function nicerEncodeURI(stringWithHebrew: string): string {

@@ -1,16 +1,11 @@
-import React, { useState } from 'react'
-import { setJourneyIndexes } from '../reducer'
+import React from 'react'
+import { setJourneyIndexesString } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import { compact } from '../utils'
 
 export default function JourneyCrosswalkIndexEditor() {
   const dispatch = useDispatch()
-  const journeyIndexes = useSelector((state) => state.journeyIndexes)
-
-  const [journeyInputValue, setJourneyInputValue] = useState(
-    journeyIndexes
-      .map((indexes) => indexes.map((index) => index + 1).join(' '))
-      .join(','),
+  const journeyIndexesString = useSelector(
+    (state) => state.journeyIndexesString,
   )
 
   return (
@@ -19,32 +14,11 @@ export default function JourneyCrosswalkIndexEditor() {
       <input
         id='journey-input'
         style={{ direction: 'ltr' }}
-        value={journeyInputValue}
+        value={journeyIndexesString}
         onChange={(event) => {
-          const valueString = event.target.value
-          setJourneyInputValue(valueString)
-          const indexes = parseJourneyCrosswalkIndexes(valueString)
-          dispatch(setJourneyIndexes(indexes ?? []))
+          dispatch(setJourneyIndexesString(event.target.value))
         }}
       />
     </div>
   )
-}
-
-function parseJourneyCrosswalkIndexes(valueString: string): number[][] {
-  const journeyStrings = valueString.trim().split(',')
-  const journeyIndexes = compact(
-    journeyStrings.map((journeyString) => {
-      const numbers = journeyString
-        .trim()
-        .split(/\s+/)
-        .map((indexString) => parseInt(indexString.trim()) - 1)
-      if (numbers.some(isNaN) || numbers.length === 0) {
-        return null
-      } else {
-        return numbers
-      }
-    }),
-  )
-  return journeyIndexes
 }
