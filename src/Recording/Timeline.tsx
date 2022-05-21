@@ -16,7 +16,8 @@ import {
   Transition,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import { colorColors, formatTimestamp } from '../utils'
+import { colorColors } from '../styleUtils'
+import { formatTimestamp } from '../utils'
 
 export default function Timeline() {
   const dispatch = useDispatch()

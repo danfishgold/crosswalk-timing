@@ -6,18 +6,21 @@ import {
   setCrosswalkWalkTime,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
+import { sectionWidthCss } from '../styleUtils'
 import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'
 import SimulationVisualization from './SimulationVisualization'
 
 export default function SimulationSection() {
   const cycle = useSelector((state) => state.cycle)
   return (
-    <div>
-      <h2>סימולציה</h2>
-      <WalkingTimes />
-      {cycle && <JourneyCrosswalkIndexEditor />}
+    <>
+      <div css={sectionWidthCss}>
+        <h2>סימולציה</h2>
+        <WalkingTimes />
+        {cycle && <JourneyCrosswalkIndexEditor />}
+      </div>
       {cycle && <SimulationVisualization cycle={cycle} />}
-    </div>
+    </>
   )
 }
 
@@ -41,7 +44,11 @@ function WalkingTimes() {
       >
         {crosswalkIds.map((id, index) => (
           <React.Fragment key={crosswalkKey(id)}>
-            <CrosswalkNumberIndicator number={index + 1} highlight={null} />
+            <CrosswalkNumberIndicator
+              number={index + 1}
+              highlight={null}
+              withLegs={false}
+            />
             <input
               type='number'
               min='0'

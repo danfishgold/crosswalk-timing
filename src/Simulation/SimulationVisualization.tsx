@@ -1,12 +1,13 @@
+import React from 'react'
 import {
   CrosswalkId,
-  crosswalkKey,
   Cycle,
   selectCrosswalkIds,
   selectJourneyIndexes,
 } from '../reducer'
 import { useSelector } from '../store'
 import { compact, mod } from '../utils'
+import SimulationDisclaimer from './SimulationDisclaimer'
 import SimulationGraph from './SimulationGraph'
 import SimulationLegend from './SimulationLegend'
 import useJourneyDurations from './useJourneyDurations'
@@ -15,7 +16,14 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
   const journeys = useJourneys()
   const data = useJourneyDurations(cycle, journeys)
   return (
-    <div>
+    <div
+      css={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       <div
         css={{
           display: 'flex',
@@ -23,6 +31,7 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
           flexWrap: 'wrap',
           justifyContent: 'center',
           gap: '20px',
+          width: '100%',
         }}
       >
         <SimulationGraph
@@ -50,24 +59,7 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
           />
         )}
       </div>
-      <SimulationDisclamer />
-    </div>
-  )
-}
-
-function SimulationDisclamer() {
-  const crosswalkIds = useSelector(selectCrosswalkIds)
-  const walkTimes = useSelector((state) => state.walkTimes)
-
-  const times = crosswalkIds
-    .map(
-      (id, index) => `${walkTimes[crosswalkKey(id)]} שניות במעבר ${index + 1}`,
-    )
-    .join(', ')
-
-  return (
-    <div css={{ fontSize: '0.8rem', marginTop: '30px' }}>
-      *בהנחה של משך החציה הבא לכל מעבר חציה: {times}
+      <SimulationDisclaimer />
     </div>
   )
 }

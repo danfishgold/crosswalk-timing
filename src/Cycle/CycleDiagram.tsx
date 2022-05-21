@@ -7,20 +7,31 @@ import {
   selectCrosswalkIds,
 } from '../reducer'
 import { useSelector } from '../store'
-import { colorColors } from '../utils'
+import { colorColors } from '../styleUtils'
 import { cutSegmentsToFit, Segment } from './timedEvents'
 
-export default function CycleDiagram({ cycle }: { cycle: Cycle }) {
+export default function CycleDiagram({
+  cycle,
+  className,
+}: {
+  cycle: Cycle
+  className?: string
+}) {
   const crosswalkIds = useSelector(selectCrosswalkIds)
   const canonicalSegments = useSelector(selectCanonicalCycleSegments)
 
   return (
     <div
+      className={className}
       css={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px' }}
     >
       {crosswalkIds.map((crosswalkId, index) => (
         <React.Fragment key={crosswalkKey(crosswalkId)}>
-          <CrosswalkNumberIndicator number={index + 1} highlight={null} />
+          <CrosswalkNumberIndicator
+            number={index + 1}
+            highlight={null}
+            withLegs={false}
+          />
           <DiagramTrack
             crosswalkIndex={index}
             cycle={cycle}

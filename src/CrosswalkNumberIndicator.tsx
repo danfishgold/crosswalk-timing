@@ -1,12 +1,14 @@
 import React from 'react'
 import { Highlight } from './reducer'
-import { highlightColors } from './utils'
+import { highlightColors } from './styleUtils'
 
 export default function CrosswalkNumberIndicator({
   number,
+  withLegs,
   highlight,
 }: {
   number: number
+  withLegs: boolean
   highlight: Highlight | null
 }) {
   const color = highlight ? highlightColors[highlight] : 'black'
@@ -23,7 +25,7 @@ export default function CrosswalkNumberIndicator({
       <div
         css={{
           width: '5px',
-          height: '100%',
+          height: withLegs ? '100%' : '0',
           background: color,
         }}
       />
@@ -42,7 +44,7 @@ export default function CrosswalkNumberIndicator({
       <div
         css={{
           width: '5px',
-          height: '100%',
+          height: withLegs ? '100%' : '0',
           background: color,
         }}
       />

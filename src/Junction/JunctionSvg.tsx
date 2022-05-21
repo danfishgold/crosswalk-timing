@@ -10,7 +10,8 @@ import {
   selectCrosswalkIds,
 } from '../reducer'
 import { useSelector } from '../store'
-import { highlightColors, range } from '../utils'
+import { highlightColors } from '../styleUtils'
+import { range } from '../utils'
 
 // Sizes
 const legWidth = 30
@@ -50,12 +51,21 @@ export function JunctionSvg({
 
   return (
     <svg
-      width='300px'
-      height='300px'
+      css={{
+        height: '250px',
+        width: '250px',
+      }}
       viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${viewBoxOffset * 2} ${
         viewBoxOffset * 2
       }`}
     >
+      <rect
+        x={-viewBoxOffset}
+        y={-viewBoxOffset}
+        width={viewBoxOffset * 2}
+        height={viewBoxOffset * 2}
+        fill='#f4f4f4'
+      />
       <rect
         className='road'
         x={-legWidth / 2}

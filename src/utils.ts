@@ -1,5 +1,3 @@
-import { Color, Highlight } from './reducer'
-
 export function formatTimestamp(timestamp: number): string {
   const minutes = Math.floor(timestamp / 60)
   const seconds = Math.round(timestamp % 60)
@@ -82,13 +80,4 @@ export function pairs<T>(array: T[]): [T, T][] {
     array[index],
     array[index + 1],
   ])
-}
-
-export const colorColors: Record<Color, string> = {
-  green: '#28e23f',
-  red: '#e91c32',
-}
-export const highlightColors: Record<Highlight, string> = {
-  highlight: 'lightsalmon',
-  ...colorColors,
 }

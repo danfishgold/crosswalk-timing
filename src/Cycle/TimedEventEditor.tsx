@@ -8,6 +8,7 @@ import {
   setEventTimestamps,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
+import { colorColors, Label } from '../styleUtils'
 import TimestampInput from '../TimestampInput'
 import { formatTimestamp, range, sortBy, tally } from '../utils'
 import { TimedEventKey, timedEventKey, timingSuggestions } from './timedEvents'
@@ -30,13 +31,18 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
         }}
       >
         <span />
-        <span>מעברים לירוק</span>
-        <span>מעברים לאדום</span>
+        <div>
+          <Label color={colorColors['green']}>מעברים לירוק</Label>
+        </div>
+        <div>
+          <Label color={colorColors['red']}>מעברים לאדום</Label>
+        </div>
         {crosswalkIds.map((id, index) => (
           <React.Fragment key={crosswalkKey(id)}>
             <CrosswalkNumberIndicator
               number={index + 1}
               highlight={highlights[crosswalkKey(id)]}
+              withLegs={true}
             />
             <EventInputs
               eventKey={timedEventKey(id, 'green')}
@@ -88,24 +94,25 @@ function EventInputs({
 
   return (
     <div>
-      <p>
-        {talliedSuggestions.length > 0
-          ? talliedSuggestions.map(([timestamp, counts]) => {
-              return (
-                <button
-                  key={timestamp}
-                  onClick={() =>
-                    dispatch(
-                      setEventTimestamps({ eventKey, timestamps: [timestamp] }),
-                    )
-                  }
-                >{`${formatTimestamp(
-                  timestamp,
-                )} (הופיע ${counts} פעמים)`}</button>
-              )
-            })
-          : 'לא היו מעברים כאלה בהקלטה'}
-      </p>
+      {talliedSuggestions.length > 0 && (
+        <p>
+          {talliedSuggestions.map(([timestamp, counts]) => {
+            return (
+              <button
+                key={timestamp}
+                onClick={() =>
+                  dispatch(
+                    setEventTimestamps({ eventKey, timestamps: [timestamp] }),
+                  )
+                }
+              >{`${formatTimestamp(
+                timestamp,
+              )} (הופיע ${counts} פעמים)`}</button>
+            )
+          })}
+        </p>
+      )}
+
       {range(inputCount).map((index) => (
         <TimestampInput
           key={index}

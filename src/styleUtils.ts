@@ -1,0 +1,45 @@
+import { css } from '@emotion/react'
+import styled from '@emotion/styled'
+import { Color, Highlight } from './reducer'
+
+export const sectionWidthCss = css({
+  width: '100%',
+  maxWidth: '700px',
+})
+
+// https://stackoverflow.com/a/69057776
+export function rgbValuesForColor(color: string): [number, number, number] {
+  var canvas = document.createElement('canvas')
+  var context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error(`No canvas context somehow`)
+  }
+  context.fillStyle = color
+  context.fillRect(0, 0, 1, 1)
+  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+  return [r, g, b]
+}
+
+export function textColor(r: number, g: number, b: number): string {
+  // http://www.w3.org/TR/AERT#color-contrast
+  const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000)
+  const textColor = brightness > 125 ? 'black' : 'white'
+  return textColor
+}
+
+export const colorColors: Record<Color, string> = {
+  green: '#28e23f',
+  red: '#e91c32',
+}
+export const highlightColors: Record<Highlight, string> = {
+  highlight: 'lightsalmon',
+  ...colorColors,
+}
+
+export const Label = styled.span<{ color: string }>((props) => ({
+  padding: '5px',
+  borderRadius: '4px',
+  fontWeight: '700',
+  background: props.color,
+  color: textColor(...rgbValuesForColor(props.color)),
+}))

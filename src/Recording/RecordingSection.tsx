@@ -6,6 +6,7 @@ import {
   Transition,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
+import { sectionWidthCss } from '../styleUtils'
 import TimestampInput from '../TimestampInput'
 import Timeline from './Timeline'
 import TransitionFormElements from './TransitionFormElements'
@@ -15,7 +16,7 @@ export default function TimelineEditor() {
   const crosswalkIds = useSelector(selectCrosswalkIds)
   const hasCrosswalks = crosswalkIds.length > 0
   return (
-    <div>
+    <div css={sectionWidthCss}>
       <h2>הקלטה</h2>
       <RecordingDurationEditor />
       <Timeline />

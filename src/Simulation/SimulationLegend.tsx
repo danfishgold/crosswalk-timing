@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import React from 'react'
 import { crosswalkKey, LegId, legIds, selectCrosswalkIds } from '../reducer'
 import { useSelector } from '../store'
+import { Label } from '../styleUtils'
 import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
@@ -20,12 +21,6 @@ const Td = styled.td({
   padding: '5px',
   background: '#f4f4f4',
   textAlign: 'center',
-})
-
-const JourneyTitleLabel = styled.span({
-  padding: '5px',
-  borderRadius: '4px',
-  fontWeight: '700',
 })
 
 export default function SimulationLegend({
@@ -76,14 +71,7 @@ function JourneyRow({
   return (
     <tr>
       <Td dir='ltr'>
-        <JourneyTitleLabel
-          css={{
-            background: journey.color,
-            color: textColor(...rgbValuesForColor(journey.color)),
-          }}
-        >
-          {journey.title}
-        </JourneyTitleLabel>
+        <Label color={journey.color}>{journey.title}</Label>
       </Td>
       <Td>
         <LittleJourneyDiagram journey={journey} />
@@ -110,26 +98,6 @@ function useStatistics(
     journey.crosswalkIds.map((id) => walkTimes[crosswalkKey(id)] ?? Infinity),
   )
   return { min, max, mean, kippur }
-}
-
-// https://stackoverflow.com/a/69057776
-function rgbValuesForColor(color: string): [number, number, number] {
-  var canvas = document.createElement('canvas')
-  var context = canvas.getContext('2d')
-  if (!context) {
-    throw new Error(`No canvas context somehow`)
-  }
-  context.fillStyle = color
-  context.fillRect(0, 0, 1, 1)
-  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
-  return [r, g, b]
-}
-
-function textColor(r: number, g: number, b: number): string {
-  // http://www.w3.org/TR/AERT#color-contrast
-  const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000)
-  const textColor = brightness > 125 ? 'black' : 'white'
-  return textColor
 }
 
 const legWidth = 40

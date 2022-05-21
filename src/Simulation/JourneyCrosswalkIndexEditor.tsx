@@ -2,14 +2,18 @@ import React from 'react'
 import { setJourneyIndexesString } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 
-export default function JourneyCrosswalkIndexEditor() {
+export default function JourneyCrosswalkIndexEditor({
+  className,
+}: {
+  className?: string
+}) {
   const dispatch = useDispatch()
   const journeyIndexesString = useSelector(
     (state) => state.journeyIndexesString,
   )
 
   return (
-    <div>
+    <div className={className}>
       <label htmlFor='journey-input'>מסלולים</label>
       <input
         id='journey-input'

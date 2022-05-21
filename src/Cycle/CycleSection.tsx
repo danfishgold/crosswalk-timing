@@ -6,6 +6,7 @@ import {
   setCycleOffset,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
+import { sectionWidthCss } from '../styleUtils'
 import { formatTimestamp } from '../utils'
 import CycleDiagram from './CycleDiagram'
 import TimedEventEditor from './TimedEventEditor'
@@ -14,7 +15,7 @@ export default function CycleSection() {
   const cycle = useSelector((state) => state.cycle)
 
   return (
-    <div>
+    <div css={sectionWidthCss}>
       <h2>מחזור</h2>
       <CycleDurationSelector />
       {cycle && (
