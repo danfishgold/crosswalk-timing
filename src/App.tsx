@@ -75,7 +75,6 @@ function useStateUrlSync() {
   useEffect(() => {
     const stateString = window.location.hash.replace(/^#/, '')
     const preloadedState = decodeState(stateString)
-    console.log({ stateString, preloadedState })
     if (preloadedState) {
       dispatch(replaceEntireState(preloadedState))
     }

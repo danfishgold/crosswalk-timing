@@ -15,7 +15,6 @@ export default function TransitionFormElements({
   isTrackIndexFieldHidden?: boolean
 }) {
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  console.log({ crosswalkIds, a: transition.crosswalkId })
   const trackIndex = crosswalkIds.findIndex(
     (id) => crosswalkKey(id) === crosswalkKey(transition.crosswalkId),
   )
