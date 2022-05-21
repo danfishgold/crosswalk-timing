@@ -16,10 +16,40 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
   const data = useJourneyDurations(cycle, journeys)
   return (
     <div>
-      <SimulationGraph cycle={cycle} journeys={journeys} data={data} />
-      {journeys.length > 0 && (
-        <SimulationLegend journeys={journeys} data={data} />
-      )}
+      <div
+        css={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '20px',
+        }}
+      >
+        <SimulationGraph
+          cycle={cycle}
+          journeys={journeys}
+          data={data}
+          css={{
+            height: '400px',
+            minWidth: '350px',
+            flexBasis: '400px',
+            maxWidth: '700px',
+            flexShrink: 1,
+            flexGrow: 1,
+          }}
+        />
+        {journeys.length > 0 && (
+          <SimulationLegend
+            journeys={journeys}
+            data={data}
+            css={{
+              justifySelf: 'flex-start',
+              display: 'block',
+              whiteSpace: 'nowrap',
+            }}
+          />
+        )}
+      </div>
       <SimulationDisclamer />
     </div>
   )

@@ -19,14 +19,16 @@ export default function RechartsSimulationGraph({
   cycle,
   journeys,
   data,
+  className,
 }: {
   cycle: Cycle
   journeys: Journey[]
   data: JourneyDurationData
+  className?: string
 }) {
   return (
-    <div css={{ direction: 'ltr' }}>
-      <ResponsiveContainer width='100%' height={300}>
+    <div className={className} css={{ direction: 'ltr' }}>
+      <ResponsiveContainer width='100%' height='100%'>
         <LineChart
           data={data}
           margin={{ top: 10, right: 10, left: 20, bottom: 30 }}

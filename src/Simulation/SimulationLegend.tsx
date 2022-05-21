@@ -6,10 +6,13 @@ import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
 
-const JourneyTitleLabel = styled.span({
-  padding: '5px',
-  borderRadius: '4px',
-  fontWeight: '700',
+const Table = styled.table({
+  padding: '10px 0 0',
+  overflowX: 'scroll',
+})
+const Th = styled.th({
+  padding: '5px 8px',
+  background: '#eeeeee',
 })
 
 const Td = styled.td({
@@ -18,24 +21,23 @@ const Td = styled.td({
   textAlign: 'center',
 })
 
-const Th = styled.th({
-  padding: '5px 8px',
-  background: '#eeeeee',
+const JourneyTitleLabel = styled.span({
+  padding: '5px',
+  borderRadius: '4px',
+  fontWeight: '700',
 })
 
 export default function SimulationLegend({
   journeys,
   data,
+  className,
 }: {
   journeys: Journey[]
   data: JourneyDurationData
+  className?: string
 }) {
   return (
-    <table
-      css={{
-        padding: '40px 0',
-      }}
-    >
+    <Table className={className}>
       <thead>
         <tr>
           <Td colSpan={2} css={{ background: 'white' }} />
@@ -58,7 +60,7 @@ export default function SimulationLegend({
           <JourneyRow key={journey.key} journey={journey} data={data} />
         ))}
       </tbody>
-    </table>
+    </Table>
   )
 }
 
