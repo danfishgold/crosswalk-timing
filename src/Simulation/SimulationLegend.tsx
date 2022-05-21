@@ -1,9 +1,27 @@
+import styled from '@emotion/styled'
 import React from 'react'
 import { crosswalkKey, LegId, legIds, selectCrosswalkIds } from '../reducer'
 import { useSelector } from '../store'
 import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
+
+const JourneyTitleLabel = styled.span({
+  padding: '5px',
+  borderRadius: '4px',
+  fontWeight: '700',
+})
+
+const Td = styled.td({
+  padding: '5px',
+  background: '#f4f4f4',
+  textAlign: 'center',
+})
+
+const Th = styled.th({
+  padding: '5px 8px',
+  background: '#eeeeee',
+})
 
 export default function SimulationLegend({
   journeys,
@@ -13,32 +31,34 @@ export default function SimulationLegend({
   data: JourneyDurationData
 }) {
   return (
-    <div
+    <table
       css={{
-        display: 'grid',
-        gridTemplateColumns: 'auto auto auto auto auto auto 1fr',
-        gap: '20px',
-        alignItems: 'center',
-        width: 'auto',
-        marginTop: '40px',
+        padding: '40px 0',
       }}
     >
-      <span />
-      <span />
-      <span css={{ gridColumn: 'span 4', textAlign: 'center' }}>
-        משך חציית הצומת*
-      </span>
-      <span />
-      <span css={{ gridColumn: 'span 2', textAlign: 'center' }}>מסלול</span>
-      <span>מינימלי</span>
-      <span>מקסימלי</span>
-      <span>ממוצע</span>
-      <span>ביום כיפור</span>
-      <span />
-      {journeys.map((journey) => (
-        <JourneyRow key={journey.key} journey={journey} data={data} />
-      ))}
-    </div>
+      <thead>
+        <tr>
+          <Td colSpan={2} css={{ background: 'white' }} />
+          <Th colSpan={4} scope='colgroup'>
+            משך חציית הצומת*
+          </Th>
+        </tr>
+        <tr>
+          <Th colSpan={2} scope='colgroup'>
+            מסלול
+          </Th>
+          <Th scope='col'>מינימלי</Th>
+          <Th scope='col'>מקסימלי</Th>
+          <Th scope='col'>ממוצע</Th>
+          <Th scope='col'>ביום כיפור</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {journeys.map((journey) => (
+          <JourneyRow key={journey.key} journey={journey} data={data} />
+        ))}
+      </tbody>
+    </table>
   )
 }
 
@@ -51,25 +71,25 @@ function JourneyRow({
 }) {
   const stats = useStatistics(journey, data)
   return (
-    <>
-      <span
-        css={{
-          padding: '5px',
-          borderRadius: '4px',
-          background: journey.color,
-          color: textColor(...rgbValuesForColor(journey.color)),
-          fontWeight: '700',
-        }}
-      >
-        {journey.title}
-      </span>
-      <LittleJourneyDiagram journey={journey} />
-      <span>{formatTimestamp(stats.min)}</span>
-      <span>{formatTimestamp(stats.max)}</span>
-      <span>{formatTimestamp(stats.mean)}</span>
-      <span>{formatTimestamp(stats.kippur)}</span>
-      <span></span>
-    </>
+    <tr>
+      <Td>
+        <JourneyTitleLabel
+          css={{
+            background: journey.color,
+            color: textColor(...rgbValuesForColor(journey.color)),
+          }}
+        >
+          {journey.title}
+        </JourneyTitleLabel>
+      </Td>
+      <Td>
+        <LittleJourneyDiagram journey={journey} />
+      </Td>
+      <Td>{formatTimestamp(stats.min)}</Td>
+      <Td>{formatTimestamp(stats.max)}</Td>
+      <Td>{formatTimestamp(stats.mean)}</Td>
+      <Td>{formatTimestamp(stats.kippur)}</Td>
+    </tr>
   )
 }
 
@@ -114,7 +134,7 @@ const legLength = 40
 const roadColor = '#ccc'
 const arrowColor = '#000'
 const arrowWidth = 6
-const arrowHeadDiagonalLength = 15
+const arrowHeadDiagonalLength = 12
 
 const viewBoxOffset = legWidth / 2 + legLength
 
