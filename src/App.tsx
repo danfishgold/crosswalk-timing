@@ -64,15 +64,29 @@ function App() {
       )}
       <h2>דיבוג</h2>
       <StateClipboardButtons />
+      <p>
+        <a href='#ארלוזורוב/הנרייטה%20סולד/QWuQpEtJxhxJyExMOLmnp7Gio8OioQ'>
+          דוגמה סולד 1
+        </a>
+      </p>
+      <p>
+        <a href='#ארלוזורוב/הנרייטה%20סולד/BBa5CkS0nGHHHITEw4uaensaKjyjoqE'>
+          דוגמה סולד 2
+        </a>
+      </p>
     </div>
   )
 }
 
 function useStateUrlSync() {
   const dispatch = useDispatch()
-  const state = useSelector((state) => state)
+  const encodedState = useSelector(encodeState)
+  const urlFragment = `#${encodedState}`
 
   useEffect(() => {
+    if (window.location.hash === urlFragment) {
+      return
+    }
     const stateString = window.location.hash.replace(/^#/, '')
     const preloadedState = decodeState(stateString)
     if (preloadedState) {
@@ -81,8 +95,8 @@ function useStateUrlSync() {
   }, [])
 
   useEffect(() => {
-    window.history.replaceState(null, '', `#${encodeState(state)}`)
-  }, [state])
+    window.history.replaceState(null, '', urlFragment)
+  }, [encodedState])
 }
 
 function EditModeToggle() {

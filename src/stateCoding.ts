@@ -31,7 +31,7 @@ export function encodeState(state: State): string {
     encodeJourneyIndexesString(journeyIndexesString),
   ].join('|')
 
-  return `${nicerEncodeURI(junctionTitle)}/${squeeze(otherStuff)}`
+  return `${junctionTitle}/${squeeze(otherStuff)}`
 }
 
 export function decodeState(stateString: string): State | null {
@@ -212,11 +212,11 @@ function decodeLeg(legValue: number): Leg | null {
 // JOURNEY
 
 function encodeJourneyIndexesString(indexesString: string): string {
-  return indexesString.replaceAll(',', '-').replaceAll(' ', ',')
+  return indexesString.replaceAll(/\s*,\s*/g, '-').replaceAll(/\s+/g, ',')
 }
 
 function decodeJourneyIndexesString(str: string): string {
-  return str.replaceAll(',', ' ').replaceAll('-', ',')
+  return str.replaceAll(',', ' ').replaceAll('-', ', ')
 }
 
 // HELPERS
@@ -315,12 +315,4 @@ function unsqueeze(modifiedBase64String: string): string {
     .map((character) => base13CharacterDecoding[character])
     .join('')
   return string
-}
-
-function nicerEncodeURI(stringWithHebrew: string): string {
-  return [...stringWithHebrew]
-    .map((character) =>
-      /[א-תףםןץך]/.test(character) ? character : encodeURI(character),
-    )
-    .join('')
 }
