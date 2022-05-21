@@ -6,8 +6,7 @@ export default function Header() {
   return (
     <div css={sectionWidthCss}>
       <p>
-        <strong>נוהל בטא</strong>: אם תנסו לשבור זה ישבר. אם תנסו להשתמש בזה
-        בטלפון זה כנראה גם ישבר
+        <strong>נוהל בטא</strong>: אם תנסו לשבור זה ישבר.
       </p>
       <EditModeToggle />
       <JunctionTitle />
