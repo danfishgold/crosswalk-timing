@@ -61,7 +61,7 @@ function JourneyRow({
           fontWeight: '700',
         }}
       >
-        {journey.crosswalkIndexes.map((index) => index + 1).join(' → ')}
+        {journey.title}
       </span>
       <LittleJourneyDiagram journey={journey} />
       <span>{formatTimestamp(stats.min)}</span>

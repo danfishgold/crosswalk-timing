@@ -45,6 +45,7 @@ export type Journey = {
   crosswalkIndexes: number[]
   crosswalkIds: CrosswalkId[]
   key: string
+  title: string
   color: string
 }
 
@@ -64,10 +65,12 @@ function useJourneys(): Journey[] {
           crosswalkIdAtIndex(index, crosswalkIds),
         )
         const key = `${indexes.join('->')} (${journeyIndex + 1})`
+        const title = indexes.map((index) => index + 1).join(' → ')
         return {
           crosswalkIndexes: indexes,
           crosswalkIds: ids,
           key,
+          title,
           color: journeyColors[mod(journeyIndex, journeyColors.length)],
         }
       } catch {

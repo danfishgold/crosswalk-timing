@@ -6,6 +6,7 @@ import {
   LineChart,
   ReferenceDot,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
@@ -42,6 +43,13 @@ export default function RechartsSimulationGraph({
               strokeWidth={3}
             />
           ))}
+          <Tooltip
+            formatter={(value: number, key: string) => {
+              const journey = journeys.find((j) => j.key === key)
+              return [formatTimestamp(value), journey?.title]
+            }}
+            labelFormatter={formatTimestamp}
+          />
           <XAxis
             dataKey='timestamp'
             type='number'
