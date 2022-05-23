@@ -20,8 +20,7 @@ export default function TimelineEditor() {
       <h2>הקלטה</h2>
       <RecordingDurationEditor />
       <Timeline />
-      {hasCrosswalks && <NewTransitionForm />}
-      <TransitionList />
+      {hasCrosswalks && <TransitionList />}
     </div>
   )
 }
@@ -43,35 +42,5 @@ function RecordingDurationEditor() {
         id='duration-input'
       />
     </div>
-  )
-}
-
-function NewTransitionForm() {
-  const dispatch = useDispatch()
-  const crosswalkIds = useSelector(selectCrosswalkIds)
-  const [transitionInForm, setTransitionInForm] = useState<Transition>({
-    timestamp: 0,
-    crosswalkId: crosswalkIds[0],
-    toColor: 'green',
-  })
-
-  useEffect(() => {
-    setTransitionInForm({ ...transitionInForm, crosswalkId: crosswalkIds[0] })
-  }, [crosswalkIds])
-
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault()
-        dispatch(addTransitionThroughForm(transitionInForm))
-      }}
-    >
-      <TransitionFormElements
-        transition={transitionInForm}
-        onChange={(transition) => setTransitionInForm(transition)}
-        formIdPrefix='main-form'
-      />
-      <button type='submit'>הוספה</button>
-    </form>
   )
 }

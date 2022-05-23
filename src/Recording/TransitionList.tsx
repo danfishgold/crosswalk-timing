@@ -11,6 +11,7 @@ import {
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import CrosswalkNumberIndicator from './../CrosswalkNumberIndicator'
+import NewTransitionForm from './NewTransitionForm'
 import TransitionFormElements from './TransitionFormElements'
 
 export default function TransitionList() {
@@ -19,6 +20,8 @@ export default function TransitionList() {
 
   return (
     <div>
+      <h3>רשימת המעברים בהקלטה</h3>
+      <NewTransitionForm />
       {crosswalkIds.map((id, index) => (
         <CrosswalkTransitionList
           key={crosswalkKey(id)}

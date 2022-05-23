@@ -14,12 +14,27 @@ export default function SimulationSection() {
   const cycle = useSelector((state) => state.cycle)
   return (
     <>
-      <div css={sectionWidthCss}>
-        <h2>סימולציה</h2>
-        <WalkingTimes />
-        {cycle && <JourneyCrosswalkIndexEditor />}
+      <div
+        css={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      >
+        <div css={sectionWidthCss}>
+          <h2>סימולציה</h2>
+          <WalkingTimes />
+        </div>
+        {cycle && (
+          <div
+            css={{
+              marginTop: '40px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <JourneyCrosswalkIndexEditor css={sectionWidthCss} />
+            <SimulationVisualization cycle={cycle} />
+          </div>
+        )}
       </div>
-      {cycle && <SimulationVisualization cycle={cycle} />}
     </>
   )
 }
@@ -31,12 +46,11 @@ function WalkingTimes() {
 
   return (
     <div>
-      <h3>זמני הליכה</h3>
-      <p>(בשניות)</p>
+      <h3>זמני הליכה (בשניות)</h3>
       <div
         css={{
           display: 'grid',
-          gridTemplateColumns: 'auto 1fr',
+          gridTemplateColumns: 'auto 1fr auto 1fr auto 1fr auto 1fr',
           gap: '10px',
           width: '100px',
           padding: '5px',
@@ -51,6 +65,7 @@ function WalkingTimes() {
             />
             <input
               type='number'
+              css={{ maxWidth: '50px', marginLeft: '20px' }}
               min='0'
               value={walkTimes[crosswalkKey(id)] ?? 0}
               onChange={(event) =>
