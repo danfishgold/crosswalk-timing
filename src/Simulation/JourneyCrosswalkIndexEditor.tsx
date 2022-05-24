@@ -1,3 +1,4 @@
+import { FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react'
 import React from 'react'
 import { setJourneyIndexesString } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -14,15 +15,21 @@ export default function JourneyCrosswalkIndexEditor({
 
   return (
     <div className={className}>
-      <label htmlFor='journey-input'>מסלולים</label>
-      <input
-        id='journey-input'
-        css={{ direction: 'ltr' }}
-        value={journeyIndexesString}
-        onChange={(event) => {
-          dispatch(setJourneyIndexesString(event.target.value))
-        }}
-      />
+      <FormControl>
+        <FormLabel htmlFor='journey-input'>מסלולים</FormLabel>
+        <Input
+          id='journey-input'
+          css={{ direction: 'ltr' }}
+          value={journeyIndexesString}
+          onChange={(event) => {
+            dispatch(setJourneyIndexesString(event.target.value))
+          }}
+        />
+        <FormHelperText>
+          מסלול מורכב ממספרי מעברי החציה שלו מופרדים ברווחים (למשל ״1 2 3״).
+          אפשר להכניס כמה מסלולים מופרדים בפסיק.
+        </FormHelperText>
+      </FormControl>
     </div>
   )
 }

@@ -1,4 +1,15 @@
-import React, { ChangeEvent, ChangeEventHandler } from 'react'
+import { UseCounterProps } from '@chakra-ui/counter'
+import { HStack } from '@chakra-ui/layout'
+import {
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from '@chakra-ui/number-input'
+import { Radio, RadioGroup } from '@chakra-ui/radio'
+import { FormControl, FormLabel } from '@chakra-ui/react'
+import React from 'react'
 import { Color, crosswalkKey, selectCrosswalkIds, Transition } from '../reducer'
 import { useSelector } from '../store'
 import TimestampInput from '../TimestampInput'
@@ -24,80 +35,79 @@ export default function TransitionFormElements({
       onChange({ ...transition, timestamp })
     }
   }
-  const onCrosswalkChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const index = event.target.valueAsNumber - 1
+  const onCrosswalkChange: UseCounterProps['onChange'] = (_, numberValue) => {
+    const index = numberValue - 1
     const crosswalkId = crosswalkIds[index]
     onChange({ ...transition, crosswalkId })
   }
-  const onColorChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const toColor = event.target.value as Color
+  const setSelectedColor = (toColor: Color) => {
     onChange({ ...transition, toColor })
   }
 
   return (
-    <>
-      <label htmlFor={`${formIdPrefix}-timestamp-input`}>נקודת זמן: </label>
-      <TimestampInput
-        id={`${formIdPrefix}-timestamp-input`}
-        timestamp={transition.timestamp}
-        setTimestamp={onTimestampChange}
-        css={{ maxWidth: '100px' }}
-      />
+    <HStack>
+      <FormControl>
+        <FormLabel htmlFor={`${formIdPrefix}-timestamp-input`}>
+          נקודת זמן
+        </FormLabel>
+        <TimestampInput
+          id={`${formIdPrefix}-timestamp-input`}
+          timestamp={transition.timestamp}
+          setTimestamp={onTimestampChange}
+          css={{ maxWidth: '100px' }}
+        />
+      </FormControl>
+
       {!isTrackIndexFieldHidden && (
-        <>
-          <label htmlFor={`${formIdPrefix}-crosswalk-index`}>
-            מספר מעבר חציה:{' '}
-          </label>
-          <input
-            type='number'
+        <FormControl>
+          <FormLabel htmlFor={`${formIdPrefix}-crosswalk-index`}>
+            מספר מעבר חציה
+          </FormLabel>
+          <NumberInput
             id={`${formIdPrefix}-crosswalk-index`}
+            size='sm'
             min={1}
             max={crosswalkIds.length}
             value={trackIndex + 1}
             onChange={onCrosswalkChange}
-          />
-        </>
+            css={{ direction: 'ltr' }}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        </FormControl>
       )}
-      <ColorSwitcher
-        formIdPrefix={formIdPrefix}
-        selectedColor={transition.toColor}
-        onColorChange={onColorChange}
-      />
-    </>
+      <FormControl>
+        <FormLabel>צבע הרמזור</FormLabel>
+        <ColorSwitcher
+          selectedColor={transition.toColor}
+          setSelectedColor={setSelectedColor}
+        />
+      </FormControl>
+    </HStack>
   )
 }
 
 function ColorSwitcher({
   selectedColor,
-  onColorChange,
-  formIdPrefix,
+  setSelectedColor,
 }: {
   selectedColor: Color
-  onColorChange: ChangeEventHandler<HTMLInputElement>
-  formIdPrefix: string
+  setSelectedColor: (color: Color) => void
 }) {
   return (
-    <>
-      <input
-        type='radio'
-        name={`${formIdPrefix}-new-transition-color`}
-        id={`${formIdPrefix}-new-transition-color--red`}
-        value='red'
-        checked={selectedColor === 'red'}
-        onChange={onColorChange}
-      />
-      <label htmlFor={`${formIdPrefix}-new-transition-color--red`}>אדום</label>
-      <input
-        type='radio'
-        name={`${formIdPrefix}-new-transition-color`}
-        id={`${formIdPrefix}-new-transition-color--green`}
-        value='green'
-        checked={selectedColor === 'green'}
-        onChange={onColorChange}
-      />
-      <label htmlFor={`${formIdPrefix}-new-transition-color--green`}>
-        ירוק
-      </label>
-    </>
+    <RadioGroup value={selectedColor} onChange={setSelectedColor}>
+      <HStack direction='row-reverse'>
+        <Radio value='red' colorScheme={'red'}>
+          אדום
+        </Radio>
+        <Radio value='green' colorScheme={'green'}>
+          ירוק
+        </Radio>
+      </HStack>
+    </RadioGroup>
   )
 }

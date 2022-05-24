@@ -1,5 +1,6 @@
 import { Button } from '@chakra-ui/button'
 import { Heading } from '@chakra-ui/layout'
+import { HStack } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import {
   addTransitionThroughForm,
@@ -30,15 +31,19 @@ export default function NewTransitionForm() {
         dispatch(addTransitionThroughForm(transitionInForm))
       }}
     >
-      <Heading as='h4' size='sm'>
+      <Heading as='h4' size='sm' marginBottom='5'>
         הוספת מעבר
       </Heading>
-      <TransitionFormElements
-        transition={transitionInForm}
-        onChange={(transition) => setTransitionInForm(transition)}
-        formIdPrefix='main-form'
-      />
-      <Button type='submit'>הוספה</Button>
+      <HStack align='flex-end'>
+        <TransitionFormElements
+          transition={transitionInForm}
+          onChange={(transition) => setTransitionInForm(transition)}
+          formIdPrefix='main-form'
+        />
+        <Button type='submit' size='sm'>
+          הוספה
+        </Button>
+      </HStack>
     </form>
   )
 }

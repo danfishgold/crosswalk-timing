@@ -1,6 +1,7 @@
 import { Button, ButtonGroup } from '@chakra-ui/button'
 import { Input } from '@chakra-ui/input'
-import { Flex, Heading } from '@chakra-ui/layout'
+import { Heading } from '@chakra-ui/layout'
+import { FormControl, FormLabel } from '@chakra-ui/react'
 import { resetState, setJunctionTitle, toggleEditMode } from './reducer'
 import { useDispatch, useSelector } from './store'
 import { sectionWidthCss } from './styleUtils'
@@ -48,14 +49,15 @@ function JunctionTitle() {
 
   if (inEditMode) {
     return (
-      <Flex direction='row' align='center' gap='16px'>
-        <label css={{ flexShrink: 0 }}>שם הצומת</label>
+      <FormControl>
+        <FormLabel>שם הצומת</FormLabel>
         <Input
           size='lg'
+          placeholder='שם הצומת'
           value={junctionTitle}
           onChange={(event) => dispatch(setJunctionTitle(event.target.value))}
         />
-      </Flex>
+      </FormControl>
     )
   } else if (junctionTitle) {
     return (
