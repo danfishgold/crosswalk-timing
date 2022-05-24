@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import { Button, ButtonGroup, useToken } from '@chakra-ui/react'
 import React, { MouseEvent } from 'react'
 import Popover from '../Popover'
 import {
@@ -17,7 +17,7 @@ import {
   Transition,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import { colorColors } from '../styleUtils'
+import { useColorColors } from '../styleUtils'
 import { formatTimestamp } from '../utils'
 
 export default function Timeline() {
@@ -119,6 +119,7 @@ function CrosswalkTrack({
       }),
     )
   }
+  const background = useToken('colors', isSelected ? 'orange.400' : 'white')
 
   return (
     <div
@@ -138,7 +139,7 @@ function CrosswalkTrack({
         height: '30px',
         margin: '5px 0',
         border: '1px solid black',
-        background: isSelected ? 'lightsalmon' : 'white',
+        background,
         position: 'relative',
       }}
     >
@@ -164,6 +165,7 @@ function TrackTransition({
     )
   }
   const duration = useSelector((state) => state.recordingDuration)
+  const colorColors = useColorColors()
   return (
     <div
       onClick={onClick}
@@ -175,7 +177,7 @@ function TrackTransition({
         height: '100%',
         background: `linear-gradient(to right, ${
           colorColors[transition.toColor]
-        },  ${colorColors[transition.toColor]}00`,
+        },  ${colorColors[transition.toColor]}00)`,
       }}
     ></div>
   )

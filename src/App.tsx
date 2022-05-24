@@ -9,7 +9,6 @@ import JunctionSvgAndCompanionWrapper from './Junction/JunctionSvgAndCompanionWr
 import RecordingSection from './Recording/RecordingSection'
 import { replaceEntireState } from './reducer'
 import JourneyCrosswalkIndexEditor from './Simulation/JourneyCrosswalkIndexEditor'
-import SimulationDisclaimer from './Simulation/SimulationDisclaimer'
 import SimulationSection from './Simulation/SimulationSection'
 import SimulationVisualization from './Simulation/SimulationVisualization'
 import { decodeState, encodeState } from './stateCoding'

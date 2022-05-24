@@ -5,7 +5,13 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/number-input'
-import { Button, ButtonGroup, Heading } from '@chakra-ui/react'
+import {
+  Button,
+  ButtonGroup,
+  FormControl,
+  FormLabel,
+  Heading,
+} from '@chakra-ui/react'
 import React from 'react'
 import {
   Cycle,
@@ -76,22 +82,21 @@ function CycleOffsetInput({ cycle }: { cycle: Cycle }) {
   const dispatch = useDispatch()
 
   return (
-    <div>
-      <label htmlFor='cycle-offset-input'>
+    <FormControl css={{ maxWidth: '400px' }}>
+      <FormLabel htmlFor='cycle-offset-input'>
         אני לא זוכר איך אומרים אופסט בעברית (בשניות):
-      </label>
+      </FormLabel>
       <NumberInput
         id='cycle-offset-input'
-        css={{ direction: 'ltr' }}
         value={cycle.offset}
         onChange={(_, value) => dispatch(setCycleOffset(value))}
       >
-        <NumberInputField />
+        <NumberInputField css={{ direction: 'ltr' }} />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />
         </NumberInputStepper>
       </NumberInput>
-    </div>
+    </FormControl>
   )
 }

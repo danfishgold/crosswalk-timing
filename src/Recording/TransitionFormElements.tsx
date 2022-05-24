@@ -1,5 +1,5 @@
 import { UseCounterProps } from '@chakra-ui/counter'
-import { HStack } from '@chakra-ui/layout'
+import { HStack, Stack } from '@chakra-ui/layout'
 import {
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -100,14 +100,14 @@ function ColorSwitcher({
 }) {
   return (
     <RadioGroup value={selectedColor} onChange={setSelectedColor}>
-      <HStack direction='row-reverse'>
+      <Stack direction='row-reverse' justify='flex-end'>
         <Radio value='red' colorScheme={'red'}>
           אדום
         </Radio>
         <Radio value='green' colorScheme={'green'}>
           ירוק
         </Radio>
-      </HStack>
+      </Stack>
     </RadioGroup>
   )
 }

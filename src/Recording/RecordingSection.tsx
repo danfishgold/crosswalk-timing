@@ -1,4 +1,5 @@
 import { Heading } from '@chakra-ui/layout'
+import { FormControl, FormLabel } from '@chakra-ui/react'
 import React from 'react'
 import { selectCrosswalkIds, setRecordingDuration } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -27,8 +28,8 @@ function RecordingDurationEditor() {
   const duration = useSelector((state) => state.recordingDuration)
 
   return (
-    <div>
-      <label htmlFor='duration-input'>משך ההקלטה:</label>
+    <FormControl css={{ maxWidth: '400px' }}>
+      <FormLabel htmlFor='duration-input'>משך ההקלטה</FormLabel>
       <TimestampInput
         timestamp={duration}
         setTimestamp={(value) => {
@@ -38,6 +39,6 @@ function RecordingDurationEditor() {
         }}
         id='duration-input'
       />
-    </div>
+    </FormControl>
   )
 }

@@ -28,6 +28,7 @@ function EditModeToggle() {
       </Button>
       {inEditMode && (
         <Button
+          variant='outline'
           colorScheme='red'
           onClick={() => {
             if (window.confirm('בטוח?')) {

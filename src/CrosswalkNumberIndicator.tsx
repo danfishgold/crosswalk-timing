@@ -1,6 +1,6 @@
+import { useToken } from '@chakra-ui/react'
 import React from 'react'
 import { Highlight } from './reducer'
-import { highlightColors } from './styleUtils'
 
 export default function CrosswalkNumberIndicator({
   number,
@@ -11,7 +11,7 @@ export default function CrosswalkNumberIndicator({
   withLegs: boolean
   highlight: Highlight | null
 }) {
-  const color = highlight ? highlightColors[highlight] : 'black'
+  const color = useToken('colors', highlight ? 'orange.500' : 'black')
 
   return (
     <div
@@ -37,6 +37,7 @@ export default function CrosswalkNumberIndicator({
           background: color,
           color: 'white',
           textAlign: 'center',
+          lineHeight: 1.25,
         }}
       >
         {number}

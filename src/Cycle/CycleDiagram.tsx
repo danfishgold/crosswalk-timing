@@ -7,7 +7,7 @@ import {
   selectCrosswalkIds,
 } from '../reducer'
 import { useSelector } from '../store'
-import { colorColors } from '../styleUtils'
+import { useColorColors } from '../styleUtils'
 import { cutSegmentsToFit, Segment } from './timedEvents'
 
 export default function CycleDiagram({
@@ -89,6 +89,7 @@ function TrackSegment({
   segment: Segment
   cycleDuratiton: number
 }) {
+  const colorColors = useColorColors()
   return (
     <div
       css={{

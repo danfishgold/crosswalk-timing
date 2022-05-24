@@ -1,4 +1,11 @@
-import { Heading } from '@chakra-ui/layout'
+import { Heading, HStack } from '@chakra-ui/layout'
+import {
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from '@chakra-ui/react'
 import React from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
@@ -52,39 +59,37 @@ function WalkingTimes() {
       <Heading as='h3' size='md'>
         זמני הליכה (בשניות)
       </Heading>
-      <div
-        css={{
-          display: 'grid',
-          gridTemplateColumns: 'auto 1fr auto 1fr auto 1fr auto 1fr',
-          gap: '10px',
-          width: '100px',
-          padding: '5px',
-        }}
-      >
+      <HStack spacing='40px' shouldWrapChildren css={sectionWidthCss}>
         {crosswalkIds.map((id, index) => (
-          <React.Fragment key={crosswalkKey(id)}>
+          <HStack key={crosswalkKey(id)}>
             <CrosswalkNumberIndicator
               number={index + 1}
               highlight={null}
               withLegs={false}
             />
-            <input
-              type='number'
-              css={{ maxWidth: '50px', marginLeft: '20px' }}
-              min='0'
+            <NumberInput
+              css={{ width: '100px' }}
+              size='sm'
+              min={0}
               value={walkTimes[crosswalkKey(id)] ?? 0}
-              onChange={(event) =>
+              onChange={(_, value) =>
                 dispatch(
                   setCrosswalkWalkTime({
                     crosswalkKey: crosswalkKey(id),
-                    duration: event.target.valueAsNumber,
+                    duration: value,
                   }),
                 )
               }
-            />
-          </React.Fragment>
+            >
+              <NumberInputField css={{ direction: 'ltr' }} />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </HStack>
         ))}
-      </div>
+      </HStack>
     </div>
   )
 }

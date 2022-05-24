@@ -15,7 +15,7 @@ export default function JourneyCrosswalkIndexEditor({
 
   return (
     <div className={className}>
-      <FormControl>
+      <FormControl css={{ maxWidth: '400px' }}>
         <FormLabel htmlFor='journey-input'>מסלולים</FormLabel>
         <Input
           id='journey-input'

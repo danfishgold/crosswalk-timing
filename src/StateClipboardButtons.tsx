@@ -21,9 +21,13 @@ export default function StateClipboardButtons() {
   }
 
   return (
-    <ButtonGroup>
-      <Button onClick={copy}>להעתיק state נוכחי</Button>
-      <Button onClick={paste}>להדביק state מה-clipboard</Button>
+    <ButtonGroup isAttached css={{ direction: 'ltr' }}>
+      <Button css={{ direction: 'rtl' }} onClick={paste}>
+        להדביק state מה-clipboard
+      </Button>
+      <Button css={{ direction: 'rtl' }} onClick={copy}>
+        להעתיק state נוכחי
+      </Button>
     </ButtonGroup>
   )
 }

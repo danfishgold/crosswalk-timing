@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/button'
-import { Heading } from '@chakra-ui/layout'
+import { Heading, HStack } from '@chakra-ui/layout'
 import React from 'react'
 import {
   CrosswalkId,
@@ -87,7 +87,7 @@ function TransitionRow({ id }: { id: string }) {
     }
   }
   return (
-    <div>
+    <HStack align='flex-end' spacing='20px'>
       <TransitionFormElements
         transition={transition}
         onChange={(updatedTransition) =>
@@ -98,9 +98,9 @@ function TransitionRow({ id }: { id: string }) {
         formIdPrefix={id}
         isTrackIndexFieldHidden={true}
       />
-      <Button size='xs' onClick={onDeleteClick}>
+      <Button size='sm' onClick={onDeleteClick}>
         מחיקה
       </Button>
-    </div>
+    </HStack>
   )
 }

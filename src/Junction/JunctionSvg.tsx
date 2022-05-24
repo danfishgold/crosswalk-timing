@@ -1,3 +1,4 @@
+import { useToken } from '@chakra-ui/system'
 import React, { MouseEventHandler, useMemo } from 'react'
 import {
   CrosswalkId,
@@ -10,7 +11,6 @@ import {
   selectCrosswalkIds,
 } from '../reducer'
 import { useSelector } from '../store'
-import { highlightColors } from '../styleUtils'
 import { range } from '../utils'
 
 // Sizes
@@ -133,7 +133,7 @@ function CrosswalkIndicatorGroup({
     }
   }, [crosswalkId.part])
 
-  const color = highlight ? highlightColors[highlight] : 'white'
+  const color = useToken('colors', highlight ? 'orange.300' : 'white')
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
       <line

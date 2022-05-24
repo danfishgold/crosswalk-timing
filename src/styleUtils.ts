@@ -1,5 +1,6 @@
+import { useToken } from '@chakra-ui/system'
 import { css } from '@emotion/react'
-import { Color, Highlight } from './reducer'
+import { Color } from './reducer'
 
 export const sectionWidthCss = css({
   width: '100%',
@@ -26,11 +27,7 @@ export function textColor(r: number, g: number, b: number): string {
   return textColor
 }
 
-export const colorColors: Record<Color, string> = {
-  green: '#28e23f',
-  red: '#e91c32',
-}
-export const highlightColors: Record<Highlight, string> = {
-  highlight: 'lightsalmon',
-  ...colorColors,
+export function useColorColors(): Record<Color, string> {
+  const [red, green] = useToken('colors', ['red.500', 'green.400'])
+  return { red, green }
 }
