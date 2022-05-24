@@ -1,3 +1,4 @@
+import { Input, InputProps } from '@chakra-ui/input'
 import React, { KeyboardEvent, useEffect, useState } from 'react'
 import { formatTimestamp } from './utils'
 
@@ -8,13 +9,7 @@ export default function TimestampInput({
 }: {
   timestamp: number | null
   setTimestamp: (timestamp: number | null) => void
-} & Exclude<
-  React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >,
-  'value' | 'onChange' | 'onKeyDown'
->) {
+} & Exclude<InputProps, 'value' | 'onChange' | 'onKeyDown'>) {
   const [value, setValue] = useState(
     timestamp !== null ? formatTimestamp(timestamp) : '',
   )
@@ -61,7 +56,8 @@ export default function TimestampInput({
   }
 
   return (
-    <input
+    <Input
+      size='sm'
       value={value}
       onChange={(event) => setValue(event.target.value)}
       onKeyDown={onMouseDown}

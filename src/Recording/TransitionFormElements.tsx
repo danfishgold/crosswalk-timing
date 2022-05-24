@@ -41,7 +41,7 @@ export default function TransitionFormElements({
         id={`${formIdPrefix}-timestamp-input`}
         timestamp={transition.timestamp}
         setTimestamp={onTimestampChange}
-        css={{ maxWidth: '50px' }}
+        css={{ maxWidth: '100px' }}
       />
       {!isTrackIndexFieldHidden && (
         <>

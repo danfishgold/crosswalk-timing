@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import {
-  addTransitionThroughForm,
-  selectCrosswalkIds,
-  setRecordingDuration,
-  Transition,
-} from '../reducer'
+import React from 'react'
+import { selectCrosswalkIds, setRecordingDuration } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import TimestampInput from '../TimestampInput'
 import Timeline from './Timeline'
-import TransitionFormElements from './TransitionFormElements'
 import TransitionList from './TransitionList'
 
 export default function TimelineEditor() {

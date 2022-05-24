@@ -1,3 +1,10 @@
+import {
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from '@chakra-ui/number-input'
 import React from 'react'
 import {
   Cycle,
@@ -67,14 +74,18 @@ function CycleOffsetInput({ cycle }: { cycle: Cycle }) {
       <label htmlFor='cycle-offset-input'>
         אני לא זוכר איך אומרים אופסט בעברית (בשניות):
       </label>
-      <input
+      <NumberInput
         id='cycle-offset-input'
-        type='number'
+        css={{ direction: 'ltr' }}
         value={cycle.offset}
-        onChange={(event) =>
-          dispatch(setCycleOffset(event.target.valueAsNumber))
-        }
-      />
+        onChange={(_, value) => dispatch(setCycleOffset(value))}
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInput>
     </div>
   )
 }
