@@ -1,5 +1,6 @@
 import { Button, ButtonGroup } from '@chakra-ui/button'
 import { Heading } from '@chakra-ui/layout'
+import { Tag } from '@chakra-ui/tag'
 import React, { useEffect } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
@@ -10,7 +11,6 @@ import {
   setEventTimestamps,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import { colorColors, Label } from '../styleUtils'
 import TimestampInput from '../TimestampInput'
 import { formatTimestamp, range, sortBy, tally } from '../utils'
 import { TimedEventKey, timedEventKey, timingSuggestions } from './timedEvents'
@@ -36,10 +36,10 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
       >
         <span />
         <div>
-          <Label color={colorColors['green']}>מעברים לירוק</Label>
+          <Tag colorScheme='green'>מעברים לירוק</Tag>
         </div>
         <div>
-          <Label color={colorColors['red']}>מעברים לאדום</Label>
+          <Tag colorScheme='red'>מעברים לאדום</Tag>
         </div>
         {crosswalkIds.map((id, index) => (
           <React.Fragment key={crosswalkKey(id)}>

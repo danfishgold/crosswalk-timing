@@ -1,3 +1,4 @@
+import { ThemingProps } from '@chakra-ui/system'
 import React from 'react'
 import {
   CrosswalkId,
@@ -57,10 +58,17 @@ export type Journey = {
   crosswalkIds: CrosswalkId[]
   key: string
   title: string
-  color: string
+  color: ThemingProps['colorScheme']
 }
 
-const journeyColors = ['navy', 'darkorange', 'purple', 'brown', 'darkgreen']
+const journeyColors: ThemingProps['colorScheme'][] = [
+  'blue',
+  'purple',
+  'teal',
+  'pink',
+  'orange',
+  'red',
+]
 
 function useJourneys(): Journey[] {
   const crosswalkIds = useSelector(selectCrosswalkIds)

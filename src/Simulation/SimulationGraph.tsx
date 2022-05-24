@@ -1,3 +1,4 @@
+import { useToken } from '@chakra-ui/system'
 import React from 'react'
 import {
   CartesianGrid,
@@ -26,21 +27,25 @@ export default function RechartsSimulationGraph({
   data: JourneyDurationData
   className?: string
 }) {
+  const colors = useToken(
+    'colors',
+    journeys.map((journey) => `${journey.color}.500`),
+  )
   return (
     <div className={className} css={{ direction: 'ltr' }}>
       <ResponsiveContainer width='100%' height='100%'>
         <LineChart
           data={data}
-          margin={{ top: 10, right: 10, left: 20, bottom: 30 }}
+          margin={{ top: 10, right: 0, left: 20, bottom: 30 }}
         >
           <CartesianGrid stroke='#ccc' />
-          {journeys.map((journey) => (
+          {journeys.map((journey, index) => (
             <Line
               key={journey.key}
               type='monotone'
               dataKey={journey.key}
               dot={false}
-              stroke={journey.color}
+              stroke={colors[index]}
               animationDuration={0}
               strokeWidth={3}
             />

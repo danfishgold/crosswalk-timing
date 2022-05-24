@@ -1,5 +1,4 @@
 import { css } from '@emotion/react'
-import styled from '@emotion/styled'
 import { Color, Highlight } from './reducer'
 
 export const sectionWidthCss = css({
@@ -35,11 +34,3 @@ export const highlightColors: Record<Highlight, string> = {
   highlight: 'lightsalmon',
   ...colorColors,
 }
-
-export const Label = styled.span<{ color: string }>((props) => ({
-  padding: '5px',
-  borderRadius: '4px',
-  fontWeight: '700',
-  background: props.color,
-  color: textColor(...rgbValuesForColor(props.color)),
-}))

@@ -2,6 +2,7 @@ import {
   Table,
   TableCaption,
   TableContainer,
+  Tag,
   Td,
   Th,
   Thead,
@@ -10,7 +11,6 @@ import {
 import React from 'react'
 import { crosswalkKey, LegId, legIds, selectCrosswalkIds } from '../reducer'
 import { useSelector } from '../store'
-import { Label } from '../styleUtils'
 import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
@@ -75,7 +75,9 @@ function JourneyRow({
   return (
     <tr>
       <Td dir='ltr' textAlign='center'>
-        <Label color={journey.color}>{journey.title}</Label>
+        <Tag variant='solid' colorScheme={journey.color}>
+          {journey.title}
+        </Tag>
       </Td>
       <Td>
         <LittleJourneyDiagram journey={journey} />
