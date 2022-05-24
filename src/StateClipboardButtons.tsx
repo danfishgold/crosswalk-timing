@@ -1,3 +1,4 @@
+import { Button, ButtonGroup } from '@chakra-ui/button'
 import React from 'react'
 import { replaceEntireState } from './reducer'
 import { useDispatch, useSelector } from './store'
@@ -20,9 +21,9 @@ export default function StateClipboardButtons() {
   }
 
   return (
-    <div>
-      <button onClick={copy}>להעתיק state נוכחי</button>
-      <button onClick={paste}>להדביק state מה-clipboard</button>
-    </div>
+    <ButtonGroup>
+      <Button onClick={copy}>להעתיק state נוכחי</Button>
+      <Button onClick={paste}>להדביק state מה-clipboard</Button>
+    </ButtonGroup>
   )
 }

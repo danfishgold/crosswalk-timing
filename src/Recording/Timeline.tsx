@@ -1,3 +1,4 @@
+import { Button, ButtonGroup } from '@chakra-ui/react'
 import React, { MouseEvent } from 'react'
 import Popover from '../Popover'
 import {
@@ -71,17 +72,23 @@ export default function Timeline() {
       )}
       {suggestion && (
         <Popover x={suggestion.x} y={suggestion.y}>
-          <button
-            onClick={() => dispatch(confirmTransitionSuggestion('green'))}
-          >
-            נהיה ירוק
-          </button>
-          <button onClick={() => dispatch(confirmTransitionSuggestion('red'))}>
-            נהיה אדום
-          </button>
-          <button onClick={() => dispatch(cancelTransitionSuggestion())}>
-            ביטול
-          </button>
+          <ButtonGroup size='sm' isAttached dir='ltr'>
+            <Button onClick={() => dispatch(cancelTransitionSuggestion())}>
+              ביטול
+            </Button>
+            <Button
+              colorScheme='green'
+              onClick={() => dispatch(confirmTransitionSuggestion('green'))}
+            >
+              נהיה ירוק
+            </Button>
+            <Button
+              colorScheme='red'
+              onClick={() => dispatch(confirmTransitionSuggestion('red'))}
+            >
+              נהיה אדום
+            </Button>
+          </ButtonGroup>
         </Popover>
       )}
     </div>

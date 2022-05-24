@@ -1,3 +1,4 @@
+import { Button, ButtonGroup } from '@chakra-ui/button'
 import { Heading } from '@chakra-ui/layout'
 import React, { useEffect } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
@@ -98,10 +99,10 @@ function EventInputs({
   return (
     <div>
       {talliedSuggestions.length > 0 && (
-        <p>
+        <ButtonGroup size='xs'>
           {talliedSuggestions.map(([timestamp, counts]) => {
             return (
-              <button
+              <Button
                 key={timestamp}
                 onClick={() =>
                   dispatch(
@@ -110,10 +111,10 @@ function EventInputs({
                 }
               >{`${formatTimestamp(
                 timestamp,
-              )} (הופיע ${counts} פעמים)`}</button>
+              )} (הופיע ${counts} פעמים)`}</Button>
             )
           })}
-        </p>
+        </ButtonGroup>
       )}
 
       {range(inputCount).map((index) => (

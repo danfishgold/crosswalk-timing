@@ -5,7 +5,7 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/number-input'
-import { Heading } from '@chakra-ui/react'
+import { Button, ButtonGroup, Heading } from '@chakra-ui/react'
 import React from 'react'
 import {
   Cycle,
@@ -55,16 +55,19 @@ function CycleDurationSelector() {
   return (
     <div>
       <span>זמני מחזור אפשריים:</span>
-      {cycleDurationSuggestions.map((suggestion) => (
-        <button
-          key={suggestion.duration}
-          onClick={() => dispatch(setCycleDuraration(suggestion.duration))}
-        >
-          {`${formatTimestamp(suggestion.duration)} (${
-            suggestion.conflictCount
-          } קונפליקטים)`}
-        </button>
-      ))}
+      <ButtonGroup>
+        {cycleDurationSuggestions.map((suggestion) => (
+          <Button
+            size='xs'
+            key={suggestion.duration}
+            onClick={() => dispatch(setCycleDuraration(suggestion.duration))}
+          >
+            {`${formatTimestamp(suggestion.duration)} (${
+              suggestion.conflictCount
+            } קונפליקטים)`}
+          </Button>
+        ))}
+      </ButtonGroup>
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { Heading } from '@chakra-ui/layout'
+import { Button } from '@chakra-ui/button'
+import { Heading, VStack } from '@chakra-ui/layout'
 import React, { useEffect, useState } from 'react'
 import { LegId, setLeg } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -51,15 +52,17 @@ function JunctionLegEditor({
       {selectedLegId === null ? (
         <p>לחצו על אחת הזרועות של הצומת כדי לערוך אותה</p>
       ) : (
-        <div>
-          <button
+        <VStack align='start'>
+          <Button
+            size='sm'
             onClick={() =>
               dispatch(setLeg({ legId: selectedLegId, leg: null }))
             }
           >
             שום כלום
-          </button>
-          <button
+          </Button>
+          <Button
+            size='sm'
             onClick={() =>
               dispatch(
                 setLeg({
@@ -73,8 +76,9 @@ function JunctionLegEditor({
             }
           >
             כביש בלי מעבר חציה
-          </button>
-          <button
+          </Button>
+          <Button
+            size='sm'
             onClick={() =>
               dispatch(
                 setLeg({
@@ -88,8 +92,9 @@ function JunctionLegEditor({
             }
           >
             מעבר חציה
-          </button>
-          <button
+          </Button>
+          <Button
+            size='sm'
             onClick={() =>
               dispatch(
                 setLeg({
@@ -103,8 +108,9 @@ function JunctionLegEditor({
             }
           >
             מעבר חציה + מפרדה
-          </button>
-          <button
+          </Button>
+          <Button
+            size='sm'
             onClick={() =>
               dispatch(
                 setLeg({
@@ -118,8 +124,8 @@ function JunctionLegEditor({
             }
           >
             בלי מעבר חציה אבל עם מפרדה
-          </button>
-        </div>
+          </Button>
+        </VStack>
       )}
     </div>
   )

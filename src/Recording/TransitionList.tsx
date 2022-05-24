@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/button'
 import { Heading } from '@chakra-ui/layout'
 import React from 'react'
 import {
@@ -97,7 +98,9 @@ function TransitionRow({ id }: { id: string }) {
         formIdPrefix={id}
         isTrackIndexFieldHidden={true}
       />
-      <button onClick={onDeleteClick}>מחיקה</button>
+      <Button size='xs' onClick={onDeleteClick}>
+        מחיקה
+      </Button>
     </div>
   )
 }

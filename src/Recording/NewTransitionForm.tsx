@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/button'
 import { Heading } from '@chakra-ui/layout'
 import React, { useEffect, useState } from 'react'
 import {
@@ -37,7 +38,7 @@ export default function NewTransitionForm() {
         onChange={(transition) => setTransitionInForm(transition)}
         formIdPrefix='main-form'
       />
-      <button type='submit'>הוספה</button>
+      <Button type='submit'>הוספה</Button>
     </form>
   )
 }
