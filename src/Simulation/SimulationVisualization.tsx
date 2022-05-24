@@ -7,7 +7,6 @@ import {
 } from '../reducer'
 import { useSelector } from '../store'
 import { compact, mod } from '../utils'
-import SimulationDisclaimer from './SimulationDisclaimer'
 import SimulationGraph from './SimulationGraph'
 import SimulationLegend from './SimulationLegend'
 import useJourneyDurations from './useJourneyDurations'
@@ -18,48 +17,37 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
   return (
     <div
       css={{
-        width: '100%',
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '20px',
+        width: '100%',
       }}
     >
-      <div
+      <SimulationGraph
+        cycle={cycle}
+        journeys={journeys}
+        data={data}
         css={{
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: '20px',
-          width: '100%',
+          height: '400px',
+          minWidth: '350px',
+          flexBasis: '400px',
+          maxWidth: '700px',
+          flexShrink: 1,
+          flexGrow: 1,
         }}
-      >
-        <SimulationGraph
-          cycle={cycle}
+      />
+      {journeys.length > 0 && (
+        <SimulationLegend
           journeys={journeys}
           data={data}
           css={{
-            height: '400px',
-            minWidth: '350px',
-            flexBasis: '400px',
-            maxWidth: '700px',
-            flexShrink: 1,
-            flexGrow: 1,
+            justifySelf: 'flex-start',
+            flexGrow: 0,
           }}
         />
-        {journeys.length > 0 && (
-          <SimulationLegend
-            journeys={journeys}
-            data={data}
-            css={{
-              justifySelf: 'flex-start',
-              display: 'block',
-              whiteSpace: 'nowrap',
-            }}
-          />
-        )}
-      </div>
-      <SimulationDisclaimer />
+      )}
     </div>
   )
 }

@@ -1,4 +1,12 @@
-import styled from '@emotion/styled'
+import {
+  Table,
+  TableCaption,
+  TableContainer,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react'
 import React from 'react'
 import { crosswalkKey, LegId, legIds, selectCrosswalkIds } from '../reducer'
 import { useSelector } from '../store'
@@ -6,22 +14,6 @@ import { Label } from '../styleUtils'
 import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
-
-const Table = styled.table({
-  padding: '10px 0 0',
-  overflowX: 'scroll',
-})
-
-const Th = styled.th({
-  padding: '5px 8px',
-  background: '#eeeeee',
-})
-
-const Td = styled.td({
-  padding: '5px',
-  background: '#f4f4f4',
-  textAlign: 'center',
-})
 
 export default function SimulationLegend({
   journeys,
@@ -32,31 +24,43 @@ export default function SimulationLegend({
   data: JourneyDurationData
   className?: string
 }) {
+  const caption = useWalkTimeCaption()
   return (
-    <Table className={className}>
-      <thead>
-        <tr>
-          <Td colSpan={2} css={{ background: 'white' }} />
-          <Th colSpan={4} scope='colgroup'>
-            משך חציית הצומת*
-          </Th>
-        </tr>
-        <tr>
-          <Th colSpan={2} scope='colgroup'>
-            מסלול
-          </Th>
-          <Th scope='col'>מינימלי</Th>
-          <Th scope='col'>מקסימלי</Th>
-          <Th scope='col'>ממוצע</Th>
-          <Th scope='col'>ביום כיפור</Th>
-        </tr>
-      </thead>
-      <tbody>
-        {journeys.map((journey) => (
-          <JourneyRow key={journey.key} journey={journey} data={data} />
-        ))}
-      </tbody>
-    </Table>
+    <TableContainer overflowX='scroll' className={className}>
+      <Table size='sm' colorScheme='black'>
+        {caption && <TableCaption>{caption}</TableCaption>}
+        <Thead>
+          <Tr>
+            <Th scope='col' rowSpan={2} textAlign='center'>
+              מסלול
+            </Th>
+            <Th rowSpan={2} />
+            <Th colSpan={4} scope='colgroup' textAlign='center'>
+              משך חציית הצומת*
+            </Th>
+          </Tr>
+          <Tr>
+            <Th scope='col' textAlign='center'>
+              מינימלי
+            </Th>
+            <Th scope='col' textAlign='center'>
+              מקסימלי
+            </Th>
+            <Th scope='col' textAlign='center'>
+              ממוצע
+            </Th>
+            <Th scope='col' textAlign='center'>
+              ביום כיפור
+            </Th>
+          </Tr>
+        </Thead>
+        <tbody>
+          {journeys.map((journey) => (
+            <JourneyRow key={journey.key} journey={journey} data={data} />
+          ))}
+        </tbody>
+      </Table>
+    </TableContainer>
   )
 }
 
@@ -70,16 +74,16 @@ function JourneyRow({
   const stats = useStatistics(journey, data)
   return (
     <tr>
-      <Td dir='ltr'>
+      <Td dir='ltr' textAlign='center'>
         <Label color={journey.color}>{journey.title}</Label>
       </Td>
       <Td>
         <LittleJourneyDiagram journey={journey} />
       </Td>
-      <Td>{formatTimestamp(stats.min)}</Td>
-      <Td>{formatTimestamp(stats.max)}</Td>
-      <Td>{formatTimestamp(stats.mean)}</Td>
-      <Td>{formatTimestamp(stats.kippur)}</Td>
+      <Td textAlign='center'>{formatTimestamp(stats.min)}</Td>
+      <Td textAlign='center'>{formatTimestamp(stats.max)}</Td>
+      <Td textAlign='center'>{formatTimestamp(stats.mean)}</Td>
+      <Td textAlign='center'>{formatTimestamp(stats.kippur)}</Td>
     </tr>
   )
 }
@@ -226,4 +230,21 @@ function ArrowHead({
       />
     </>
   )
+}
+
+function useWalkTimeCaption() {
+  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const walkTimes = useSelector((state) => state.walkTimes)
+
+  const times = crosswalkIds
+    .map(
+      (id, index) => `${walkTimes[crosswalkKey(id)]} שניות במעבר ${index + 1}`,
+    )
+    .join(', ')
+
+  if (!times) {
+    return null
+  }
+
+  return `*בהנחה של משך החציה הבא לכל מעבר חציה: ${times}`
 }
