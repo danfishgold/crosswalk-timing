@@ -5,6 +5,7 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/number-input'
+import { Heading } from '@chakra-ui/react'
 import React from 'react'
 import {
   Cycle,
@@ -23,7 +24,9 @@ export default function CycleSection() {
 
   return (
     <div css={sectionWidthCss}>
-      <h2>מחזור</h2>
+      <Heading as='h2' size='lg'>
+        מחזור
+      </Heading>
       <CycleDurationSelector />
       {cycle && (
         <>

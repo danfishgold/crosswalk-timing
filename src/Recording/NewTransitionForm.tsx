@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/layout'
 import React, { useEffect, useState } from 'react'
 import {
   addTransitionThroughForm,
@@ -28,7 +29,9 @@ export default function NewTransitionForm() {
         dispatch(addTransitionThroughForm(transitionInForm))
       }}
     >
-      <h4 css={{ marginLeft: '10px', marginTop: '5px' }}>הוספת מעבר</h4>
+      <Heading as='h4' size='sm'>
+        הוספת מעבר
+      </Heading>
       <TransitionFormElements
         transition={transitionInForm}
         onChange={(transition) => setTransitionInForm(transition)}

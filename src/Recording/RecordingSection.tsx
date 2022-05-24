@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/layout'
 import React from 'react'
 import { selectCrosswalkIds, setRecordingDuration } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -11,7 +12,9 @@ export default function TimelineEditor() {
   const hasCrosswalks = crosswalkIds.length > 0
   return (
     <div css={sectionWidthCss}>
-      <h2>הקלטה</h2>
+      <Heading as='h2' size='lg'>
+        הקלטה
+      </Heading>
       <RecordingDurationEditor />
       <Timeline />
       {hasCrosswalks && <TransitionList />}

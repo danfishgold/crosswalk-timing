@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/layout'
 import React, { useEffect } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
@@ -21,7 +22,9 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
 
   return (
     <div>
-      <h3>תזמונים</h3>
+      <Heading as='h3' size='md'>
+        תזמונים
+      </Heading>
       <div
         css={{
           display: 'grid',

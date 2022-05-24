@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/layout'
 import React, { useEffect, useState } from 'react'
 import { LegId, setLeg } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -44,7 +45,9 @@ function JunctionLegEditor({
         padding: '20px',
       }}
     >
-      <h2>עריכת צומת</h2>
+      <Heading as='h2' size='lg'>
+        עריכת צומת
+      </Heading>
       {selectedLegId === null ? (
         <p>לחצו על אחת הזרועות של הצומת כדי לערוך אותה</p>
       ) : (

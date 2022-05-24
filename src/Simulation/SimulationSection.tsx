@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/layout'
 import React from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
@@ -18,7 +19,9 @@ export default function SimulationSection() {
         css={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
         <div css={sectionWidthCss}>
-          <h2>סימולציה</h2>
+          <Heading as='h2' size='lg'>
+            סימולציה
+          </Heading>
           <WalkingTimes />
         </div>
         {cycle && (
@@ -46,7 +49,9 @@ function WalkingTimes() {
 
   return (
     <div>
-      <h3>זמני הליכה (בשניות)</h3>
+      <Heading as='h3' size='md'>
+        זמני הליכה (בשניות)
+      </Heading>
       <div
         css={{
           display: 'grid',

@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/layout'
 import React from 'react'
 import {
   CrosswalkId,
@@ -20,7 +21,9 @@ export default function TransitionList() {
 
   return (
     <div>
-      <h3>רשימת המעברים בהקלטה</h3>
+      <Heading as='h3' size='md'>
+        רשימת המעברים בהקלטה
+      </Heading>
       <NewTransitionForm />
       {crosswalkIds.map((id, index) => (
         <CrosswalkTransitionList

@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from '@chakra-ui/button'
 import { Input } from '@chakra-ui/input'
-import { Flex } from '@chakra-ui/layout'
+import { Flex, Heading } from '@chakra-ui/layout'
 import { resetState, setJunctionTitle, toggleEditMode } from './reducer'
 import { useDispatch, useSelector } from './store'
 import { sectionWidthCss } from './styleUtils'
@@ -58,7 +58,11 @@ function JunctionTitle() {
       </Flex>
     )
   } else if (junctionTitle) {
-    return <h1 css={{ textAlign: 'center' }}>{junctionTitle}</h1>
+    return (
+      <Heading as='h1' textAlign='center'>
+        {junctionTitle}
+      </Heading>
+    )
   } else {
     return null
   }
