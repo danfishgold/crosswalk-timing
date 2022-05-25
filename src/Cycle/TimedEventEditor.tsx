@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@chakra-ui/button'
-import { Heading } from '@chakra-ui/layout'
+import { Heading, VStack } from '@chakra-ui/layout'
 import { Tag } from '@chakra-ui/tag'
 import React, { useEffect } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
@@ -20,7 +20,7 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
   const eventTimingSuggestions = timingSuggestions(transitions, cycle)
 
   return (
-    <div>
+    <VStack align='start'>
       <Heading as='h3' size='md'>
         תזמונים
       </Heading>
@@ -63,7 +63,7 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
           </React.Fragment>
         ))}
       </div>
-    </div>
+    </VStack>
   )
 }
 
@@ -95,7 +95,7 @@ function EventInputs({
   }, [inputCount])
 
   return (
-    <div>
+    <VStack align='start'>
       {talliedSuggestions.length > 0 && (
         <ButtonGroup size='xs'>
           {talliedSuggestions.map(([timestamp, counts]) => {
@@ -129,6 +129,6 @@ function EventInputs({
           }
         />
       ))}
-    </div>
+    </VStack>
   )
 }

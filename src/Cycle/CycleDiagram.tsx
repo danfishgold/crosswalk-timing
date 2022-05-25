@@ -23,7 +23,11 @@ export default function CycleDiagram({
   return (
     <div
       className={className}
-      css={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px' }}
+      css={{
+        display: 'grid',
+        gridTemplateColumns: 'auto 1fr',
+        gap: '10px',
+      }}
     >
       {crosswalkIds.map((crosswalkId, index) => (
         <React.Fragment key={crosswalkKey(crosswalkId)}>

@@ -32,7 +32,7 @@ export default function Timeline() {
 
   return (
     <div
-      css={{ position: 'relative' }}
+      css={{ position: 'relative', width: '100%' }}
       onMouseMove={(event) =>
         dispatch(
           hoverOverTimeline({

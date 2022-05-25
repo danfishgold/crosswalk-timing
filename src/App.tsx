@@ -1,3 +1,4 @@
+import { VStack } from '@chakra-ui/react'
 import React, { useEffect } from 'react'
 import CycleDiagram from './Cycle/CycleDiagram'
 import CycleSection from './Cycle/CycleSection'
@@ -21,16 +22,7 @@ function App() {
   useStateUrlSync()
 
   return (
-    <div
-      css={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '20px',
-        width: 'calc(100% - 40px)',
-        gap: '40px',
-      }}
-    >
+    <VStack padding='20px' spacing='40px' align='center'>
       <Header />
       {inEditMode ? (
         <>
@@ -55,7 +47,7 @@ function App() {
         </>
       )}
       <DebugSection />
-    </div>
+    </VStack>
   )
 }
 

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from '../store'
 import { JunctionSvg as JunctionSvg } from './JunctionSvg'
 import JunctionSvgAndCompanionWrapper from './JunctionSvgAndCompanionWrapper'
 
-export default function JunctionBuilder() {
+export default function JunctionSection() {
   const inEditMode = useSelector((state) => state.inEditMode)
 
   const [selectedLegId, setSelectedLegId] = useState<LegId | null>(null)

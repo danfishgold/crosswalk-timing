@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from '@chakra-ui/button'
 import { Input } from '@chakra-ui/input'
-import { Heading } from '@chakra-ui/layout'
+import { Heading, VStack } from '@chakra-ui/layout'
 import { FormControl, FormLabel } from '@chakra-ui/react'
 import { resetState, setJunctionTitle, toggleEditMode } from './reducer'
 import { useDispatch, useSelector } from './store'
@@ -8,13 +8,13 @@ import { sectionWidthCss } from './styleUtils'
 
 export default function Header() {
   return (
-    <div css={sectionWidthCss}>
+    <VStack align='start' css={sectionWidthCss}>
       <p>
         <strong>נוהל בטא</strong>: אם תנסו לשבור זה ישבר.
       </p>
       <EditModeToggle />
       <JunctionTitle />
-    </div>
+    </VStack>
   )
 }
 
@@ -22,7 +22,7 @@ function EditModeToggle() {
   const dispatch = useDispatch()
   const inEditMode = useSelector((state) => state.inEditMode)
   return (
-    <ButtonGroup>
+    <ButtonGroup size='sm'>
       <Button onClick={() => dispatch(toggleEditMode())}>
         {inEditMode ? 'שמירה' : 'עריכה'}
       </Button>

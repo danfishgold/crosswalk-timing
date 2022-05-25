@@ -11,6 +11,7 @@ import {
   FormControl,
   FormLabel,
   Heading,
+  VStack,
 } from '@chakra-ui/react'
 import React from 'react'
 import {
@@ -29,7 +30,7 @@ export default function CycleSection() {
   const cycle = useSelector((state) => state.cycle)
 
   return (
-    <div css={sectionWidthCss}>
+    <VStack align='start' css={sectionWidthCss} spacing='20px'>
       <Heading as='h2' size='lg'>
         מחזור
       </Heading>
@@ -38,10 +39,10 @@ export default function CycleSection() {
         <>
           <TimedEventEditor cycle={cycle} />
           <CycleOffsetInput cycle={cycle} />
-          <CycleDiagram cycle={cycle} />
+          <CycleDiagram cycle={cycle} css={{ width: '100%' }} />
         </>
       )}
-    </div>
+    </VStack>
   )
 }
 
@@ -84,14 +85,15 @@ function CycleOffsetInput({ cycle }: { cycle: Cycle }) {
   return (
     <FormControl css={{ maxWidth: '400px' }}>
       <FormLabel htmlFor='cycle-offset-input'>
-        אני לא זוכר איך אומרים אופסט בעברית (בשניות):
+        אני לא זוכר איך אומרים אופסט בעברית (בשניות)
       </FormLabel>
       <NumberInput
+        size='sm'
         id='cycle-offset-input'
         value={cycle.offset}
         onChange={(_, value) => dispatch(setCycleOffset(value))}
       >
-        <NumberInputField css={{ direction: 'ltr' }} />
+        <NumberInputField css={{ direction: 'ltr', maxWidth: '100px' }} />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />

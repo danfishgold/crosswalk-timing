@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/button'
-import { Heading, HStack } from '@chakra-ui/layout'
+import { Heading, HStack, VStack } from '@chakra-ui/layout'
 import React, { useMemo } from 'react'
 import {
   CrosswalkId,
@@ -11,18 +11,16 @@ import {
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import CrosswalkNumberIndicator from './../CrosswalkNumberIndicator'
-import NewTransitionForm from './NewTransitionForm'
 import TransitionFormElements from './TransitionFormElements'
 
 export default function TransitionList() {
   const crosswalkIds = useSelector(selectCrosswalkIds)
 
   return (
-    <div>
+    <VStack align='start' spacing='10px'>
       <Heading as='h3' size='md'>
         רשימת המעברים בהקלטה
       </Heading>
-      <NewTransitionForm />
       {crosswalkIds.map((id, index) => (
         <CrosswalkTransitionList
           key={crosswalkKey(id)}
@@ -30,7 +28,7 @@ export default function TransitionList() {
           index={index}
         />
       ))}
-    </div>
+    </VStack>
   )
 }
 
