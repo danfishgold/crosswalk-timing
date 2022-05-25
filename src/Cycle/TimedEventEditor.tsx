@@ -6,7 +6,6 @@ import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
   Cycle,
-  selectCrosswalkHighlightColors,
   selectCrosswalkIds,
   setEventTimestamps,
 } from '../reducer'
@@ -19,7 +18,6 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
   const crosswalkIds = useSelector(selectCrosswalkIds)
   const transitions = useSelector((state) => state.transitions)
   const eventTimingSuggestions = timingSuggestions(transitions, cycle)
-  const highlights = useSelector(selectCrosswalkHighlightColors)
 
   return (
     <div>
@@ -44,8 +42,8 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
         {crosswalkIds.map((id, index) => (
           <React.Fragment key={crosswalkKey(id)}>
             <CrosswalkNumberIndicator
+              id={id}
               number={index + 1}
-              highlight={highlights[crosswalkKey(id)]}
               withLegs={true}
             />
             <EventInputs

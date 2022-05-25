@@ -64,7 +64,7 @@ function WalkingTimes() {
           <HStack key={crosswalkKey(id)}>
             <CrosswalkNumberIndicator
               number={index + 1}
-              highlight={null}
+              id={id}
               withLegs={false}
             />
             <NumberInput

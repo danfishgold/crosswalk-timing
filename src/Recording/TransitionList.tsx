@@ -1,14 +1,12 @@
 import { Button } from '@chakra-ui/button'
 import { Heading, HStack } from '@chakra-ui/layout'
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   CrosswalkId,
   crosswalkKey,
   deleteTransitionFromList,
-  Highlight,
-  selectCrosswalkHighlightColors,
+  makeSelectCrosswalkTransitionsAndIds,
   selectCrosswalkIds,
-  selectCrosswalkTransitionsAndIds,
   updateTransitionInList,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -18,7 +16,6 @@ import TransitionFormElements from './TransitionFormElements'
 
 export default function TransitionList() {
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  const highlights = useSelector(selectCrosswalkHighlightColors)
 
   return (
     <div>
@@ -31,7 +28,6 @@ export default function TransitionList() {
           key={crosswalkKey(id)}
           crosswalkId={id}
           index={index}
-          highlight={highlights[crosswalkKey(id)]}
         />
       ))}
     </div>
@@ -41,12 +37,15 @@ export default function TransitionList() {
 function CrosswalkTransitionList({
   crosswalkId,
   index,
-  highlight,
 }: {
   crosswalkId: CrosswalkId
   index: number
-  highlight: Highlight | null
 }) {
+  const selectCrosswalkTransitionsAndIds = useMemo(
+    makeSelectCrosswalkTransitionsAndIds,
+    [],
+  )
+
   const transitions = useSelector((state) =>
     selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )
@@ -62,8 +61,8 @@ function CrosswalkTransitionList({
       }}
     >
       <CrosswalkNumberIndicator
+        id={crosswalkId}
         number={index + 1}
-        highlight={highlight}
         withLegs={true}
       />
       <div>

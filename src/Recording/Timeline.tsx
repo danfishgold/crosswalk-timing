@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, useToken } from '@chakra-ui/react'
-import React, { MouseEvent } from 'react'
+import React, { MouseEvent, useMemo } from 'react'
 import Popover from '../Popover'
 import {
   cancelTransitionSuggestion,
@@ -10,10 +10,10 @@ import {
   crosswalkKey,
   Highlight,
   hoverOverTimeline,
+  makeSelectCrosswalkTransitionsAndIds,
   moveOutsideTimeline,
   selectCrosswalkHighlightColors,
   selectCrosswalkIds,
-  selectCrosswalkTransitionsAndIds,
   Transition,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -24,7 +24,9 @@ export default function Timeline() {
   const dispatch = useDispatch()
   const duration = useSelector((state) => state.recordingDuration)
   const suggestion = useSelector((state) => state.transitionSuggestion)
-  const cursor = useSelector((state) => state.cursor)
+  const cursorTimestamp = useSelector(
+    (state) => state.cursor?.timestamp ?? null,
+  )
   const crosswalkIds = useSelector(selectCrosswalkIds)
   const highlights = useSelector(selectCrosswalkHighlightColors)
 
@@ -47,12 +49,12 @@ export default function Timeline() {
           highlight={highlights[crosswalkKey(crosswalkId)]}
         />
       ))}
-      {cursor && (
+      {cursorTimestamp !== null && (
         <div
           css={{
             position: 'absolute',
             top: 0,
-            left: `${(cursor.timestamp / duration) * 100}%`,
+            left: `${(cursorTimestamp / duration) * 100}%`,
             height: '100%',
             width: '1px',
             background: 'black',
@@ -60,14 +62,14 @@ export default function Timeline() {
           }}
         ></div>
       )}
-      {cursor && (
+      {cursorTimestamp !== null && (
         <div
           css={{
-            marginLeft: `${(cursor.timestamp / duration) * 100}%`,
+            marginLeft: `${(cursorTimestamp / duration) * 100}%`,
             background: 'white',
           }}
         >
-          {formatTimestamp(cursor.timestamp)}
+          {formatTimestamp(cursorTimestamp)}
         </div>
       )}
       {suggestion && (
@@ -103,6 +105,10 @@ function CrosswalkTrack({
   highlight: Highlight | null
 }) {
   const dispatch = useDispatch()
+  const selectCrosswalkTransitionsAndIds = useMemo(
+    makeSelectCrosswalkTransitionsAndIds,
+    [],
+  )
   const transitionsAndIds = useSelector((state) =>
     selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )

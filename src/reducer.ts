@@ -628,24 +628,25 @@ export const {
   resetState,
 } = actions
 
-export const selectCrosswalkTransitionsAndIds = createSelector<
-  [
-    Selector<State, Record<string, Transition>>,
-    Selector<State, CrosswalkId, [CrosswalkId]>,
-  ],
-  [string, Transition][]
->(
-  (state) => state.transitions,
-  (_, crosswalkId) => crosswalkId,
-  (transitions, crosswalkId) =>
-    Object.entries(transitions)
-      .filter(
-        ([transitionId, transition]) =>
-          transition.crosswalkId.legId === crosswalkId.legId &&
-          transition.crosswalkId.part === crosswalkId.part,
-      )
-      .sort(([, a], [, b]) => a.timestamp - b.timestamp),
-)
+export const makeSelectCrosswalkTransitionsAndIds = () =>
+  createSelector<
+    [
+      Selector<State, Record<string, Transition>>,
+      Selector<State, CrosswalkId, [CrosswalkId]>,
+    ],
+    [string, Transition][]
+  >(
+    (state) => state.transitions,
+    (_, crosswalkId) => crosswalkId,
+    (transitions, crosswalkId) =>
+      Object.entries(transitions)
+        .filter(
+          ([transitionId, transition]) =>
+            transition.crosswalkId.legId === crosswalkId.legId &&
+            transition.crosswalkId.part === crosswalkId.part,
+        )
+        .sort(([, a], [, b]) => a.timestamp - b.timestamp),
+  )
 
 export const selectCrosswalkIds = createSelector(
   (state: State) => state.junction,
@@ -674,17 +675,21 @@ export const selectCycleDurationSuggestions = createSelector(
 )
 
 export const selectCrosswalkHighlightColors = createSelector<
-  [Selector<State, CrosswalkId[]>, Selector<State, Cursor | null>],
+  [Selector<State, CrosswalkId[]>, Selector<State, CrosswalkId | null>],
   Record<CrosswalkKey, Highlight | null>
->(selectCrosswalkIds, (state) => state.cursor, crosswalkHighlightColors)
+>(
+  selectCrosswalkIds,
+  (state) => state.cursor?.crosswalkId ?? null,
+  crosswalkHighlightColors,
+)
 
 function crosswalkHighlightColors(
   crosswalkIds: CrosswalkId[],
-  cursor: Cursor | null,
+  cursorCrosswalkId: CrosswalkId | null,
 ): Record<CrosswalkKey, Highlight | null> {
   const entries = crosswalkIds.map((id) => {
     const key = crosswalkKey(id)
-    if (cursor?.crosswalkId && crosswalkKey(cursor.crosswalkId) === key) {
+    if (cursorCrosswalkId && crosswalkKey(cursorCrosswalkId) === key) {
       return [key, 'highlight']
     } else {
       return [key, null]

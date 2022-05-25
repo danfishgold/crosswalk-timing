@@ -28,8 +28,8 @@ export default function CycleDiagram({
       {crosswalkIds.map((crosswalkId, index) => (
         <React.Fragment key={crosswalkKey(crosswalkId)}>
           <CrosswalkNumberIndicator
+            id={crosswalkId}
             number={index + 1}
-            highlight={null}
             withLegs={false}
           />
           <DiagramTrack

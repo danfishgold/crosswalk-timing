@@ -1,17 +1,26 @@
 import { useToken } from '@chakra-ui/react'
 import React from 'react'
-import { Highlight } from './reducer'
+import {
+  CrosswalkId,
+  crosswalkKey,
+  selectCrosswalkHighlightColors,
+} from './reducer'
+import { useSelector } from './store'
 
 export default function CrosswalkNumberIndicator({
+  id,
   number,
   withLegs,
-  highlight,
 }: {
+  id: CrosswalkId
   number: number
   withLegs: boolean
-  highlight: Highlight | null
 }) {
-  const color = useToken('colors', highlight ? 'orange.500' : 'black')
+  const highlights = useSelector(selectCrosswalkHighlightColors)
+  const color = useToken(
+    'colors',
+    highlights[crosswalkKey(id)] ? 'orange.500' : 'black',
+  )
 
   return (
     <div
