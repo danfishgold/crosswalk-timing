@@ -1,6 +1,15 @@
-import { Button, ButtonGroup, useToken } from '@chakra-ui/react'
+import {
+  Button,
+  ButtonGroup,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
+  useToken,
+} from '@chakra-ui/react'
 import React, { MouseEvent, useMemo } from 'react'
-import Popover from '../Popover'
 import {
   cancelTransitionSuggestion,
   clickOnExistingTransition,
@@ -8,7 +17,6 @@ import {
   confirmTransitionSuggestion,
   CrosswalkId,
   crosswalkKey,
-  Highlight,
   hoverOverTimeline,
   makeSelectCrosswalkTransitionsAndIds,
   moveOutsideTimeline,
@@ -28,7 +36,6 @@ export default function Timeline() {
     (state) => state.cursor?.timestamp ?? null,
   )
   const crosswalkIds = useSelector(selectCrosswalkIds)
-  const highlights = useSelector(selectCrosswalkHighlightColors)
 
   return (
     <div
@@ -46,7 +53,6 @@ export default function Timeline() {
         <CrosswalkTrack
           key={crosswalkKey(crosswalkId)}
           crosswalkId={crosswalkId}
-          highlight={highlights[crosswalkKey(crosswalkId)]}
         />
       ))}
       {cursorTimestamp !== null && (
@@ -62,48 +68,23 @@ export default function Timeline() {
           }}
         ></div>
       )}
-      {cursorTimestamp !== null && (
-        <div
-          css={{
-            marginLeft: `${(cursorTimestamp / duration) * 100}%`,
-            background: 'white',
-          }}
-        >
-          {formatTimestamp(cursorTimestamp)}
-        </div>
-      )}
-      {suggestion && (
-        <Popover x={suggestion.x} y={suggestion.y}>
-          <ButtonGroup size='sm' isAttached dir='ltr'>
-            <Button onClick={() => dispatch(cancelTransitionSuggestion())}>
-              ביטול
-            </Button>
-            <Button
-              colorScheme='green'
-              onClick={() => dispatch(confirmTransitionSuggestion('green'))}
-            >
-              נהיה ירוק
-            </Button>
-            <Button
-              colorScheme='red'
-              onClick={() => dispatch(confirmTransitionSuggestion('red'))}
-            >
-              נהיה אדום
-            </Button>
-          </ButtonGroup>
-        </Popover>
-      )}
+      <div
+        css={{
+          direction: 'ltr',
+          marginLeft: `calc(${
+            ((cursorTimestamp ?? 0) / duration) * 100
+          }% + 5px)`,
+          background: 'white',
+          color: cursorTimestamp !== null ? 'black' : 'white',
+        }}
+      >
+        {cursorTimestamp !== null ? formatTimestamp(cursorTimestamp) : 'hi'}
+      </div>
     </div>
   )
 }
 
-function CrosswalkTrack({
-  crosswalkId,
-  highlight,
-}: {
-  crosswalkId: CrosswalkId
-  highlight: Highlight | null
-}) {
+function CrosswalkTrack({ crosswalkId }: { crosswalkId: CrosswalkId }) {
   const dispatch = useDispatch()
   const selectCrosswalkTransitionsAndIds = useMemo(
     makeSelectCrosswalkTransitionsAndIds,
@@ -113,7 +94,16 @@ function CrosswalkTrack({
     selectCrosswalkTransitionsAndIds(state, crosswalkId),
   )
   const duration = useSelector((state) => state.recordingDuration)
-  const isSelected = highlight === 'highlight'
+  const highlights = useSelector(selectCrosswalkHighlightColors)
+  const isSelected = highlights[crosswalkKey(crosswalkId)] === 'highlight'
+  const trackSuggestion = useSelector((state) =>
+    state.transitionSuggestion?.crosswalkId
+      ? crosswalkKey(state.transitionSuggestion.crosswalkId) ===
+        crosswalkKey(crosswalkId)
+        ? state.transitionSuggestion
+        : null
+      : null,
+  )
 
   const onClick = (event: MouseEvent<HTMLDivElement>) => {
     dispatch(
@@ -128,31 +118,66 @@ function CrosswalkTrack({
   const background = useToken('colors', isSelected ? 'yellow.200' : 'white')
 
   return (
-    <div
-      onClick={onClick}
-      onMouseMove={(event) => {
-        event.stopPropagation()
-        dispatch(
-          hoverOverTimeline({
-            timestamp: timestampFromEvent(event, duration),
-            crosswalkId,
-          }),
-        )
-      }}
-      key={crosswalkKey(crosswalkId)}
-      css={{
-        width: '100%',
-        height: '30px',
-        margin: '5px 0',
-        border: '1px solid black',
-        background,
-        position: 'relative',
-      }}
+    <Popover
+      isOpen={trackSuggestion !== null}
+      onClose={() => dispatch(cancelTransitionSuggestion())}
     >
-      {transitionsAndIds.map(([id, transition]) => (
-        <TrackTransition key={id} transition={transition} id={id} />
-      ))}
-    </div>
+      <div
+        onClick={onClick}
+        onMouseMove={(event) => {
+          event.stopPropagation()
+          dispatch(
+            hoverOverTimeline({
+              timestamp: timestampFromEvent(event, duration),
+              crosswalkId,
+            }),
+          )
+        }}
+        key={crosswalkKey(crosswalkId)}
+        css={{
+          width: '100%',
+          height: '30px',
+          margin: '5px 0',
+          border: '1px solid black',
+          background,
+          position: 'relative',
+        }}
+      >
+        {transitionsAndIds.map(([id, transition]) => (
+          <TrackTransition key={id} transition={transition} id={id} />
+        ))}
+        <PopoverTrigger>
+          <div
+            css={{
+              position: 'absolute',
+              top: 0,
+              height: '100%',
+              left: `${((trackSuggestion?.timestamp ?? 0) / duration) * 100}%`,
+            }}
+          />
+        </PopoverTrigger>
+      </div>
+      <PopoverContent css={{ direction: 'ltr' }}>
+        <PopoverArrow />
+        <PopoverBody>
+          <PopoverCloseButton />
+          <ButtonGroup size='sm' isAttached dir='ltr'>
+            <Button
+              colorScheme='green'
+              onClick={() => dispatch(confirmTransitionSuggestion('green'))}
+            >
+              נהיה ירוק
+            </Button>
+            <Button
+              colorScheme='red'
+              onClick={() => dispatch(confirmTransitionSuggestion('red'))}
+            >
+              נהיה אדום
+            </Button>
+          </ButtonGroup>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
   )
 }
 
