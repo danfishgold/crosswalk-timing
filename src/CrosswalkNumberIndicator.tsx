@@ -6,6 +6,7 @@ import {
   selectCrosswalkHighlightColors,
 } from './reducer'
 import { useSelector } from './store'
+import { rgbValuesForColor, textColor } from './styleUtils'
 
 export default function CrosswalkNumberIndicator({
   id,
@@ -19,7 +20,7 @@ export default function CrosswalkNumberIndicator({
   const highlights = useSelector(selectCrosswalkHighlightColors)
   const color = useToken(
     'colors',
-    highlights[crosswalkKey(id)] ? 'orange.500' : 'black',
+    highlights[crosswalkKey(id)] ? 'yellow.400' : 'black',
   )
 
   return (
@@ -44,7 +45,7 @@ export default function CrosswalkNumberIndicator({
           height: '20px',
           borderRadius: '20px',
           background: color,
-          color: 'white',
+          color: textColor(...rgbValuesForColor(color)),
           textAlign: 'center',
           lineHeight: 1.25,
         }}

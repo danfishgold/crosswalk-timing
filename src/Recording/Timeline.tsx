@@ -125,7 +125,7 @@ function CrosswalkTrack({
       }),
     )
   }
-  const background = useToken('colors', isSelected ? 'orange.400' : 'white')
+  const background = useToken('colors', isSelected ? 'yellow.200' : 'white')
 
   return (
     <div

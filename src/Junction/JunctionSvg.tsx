@@ -133,7 +133,7 @@ function CrosswalkIndicatorGroup({
     }
   }, [crosswalkId.part])
 
-  const color = useToken('colors', highlight ? 'orange.300' : 'white')
+  const color = useToken('colors', highlight ? 'yellow.300' : 'white')
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
       <line
