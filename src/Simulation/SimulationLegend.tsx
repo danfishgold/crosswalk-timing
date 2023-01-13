@@ -8,8 +8,12 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react'
-import React from 'react'
-import { crosswalkKey, LegId, legIds, selectCrosswalkIds } from '../reducer'
+import {
+  crosswalkKey,
+  LegId,
+  legIds,
+  selectCrosswalkIdsWithTrafficLights,
+} from '../reducer'
 import { useSelector } from '../store'
 import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
@@ -120,11 +124,15 @@ const legRotation: Record<LegId, number> = {
   e: 0,
   s: 90,
   w: 180,
+  ne: -90,
+  se: 0,
+  sw: 90,
+  nw: 180,
 }
 
 function LittleJourneyDiagram({ journey }: { journey: Journey }) {
   const junction = useSelector((state) => state.junction)
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const secondToLastIndex =
     journey.crosswalkIndexes[mod(-2, journey.crosswalkIndexes.length)]
   const lastIndex =
@@ -163,6 +171,10 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
           ),
       )}
       {journey.crosswalkIds.map((id, index) => {
+        if (!id.main) {
+          return null
+          // TODO: support diagonal crosswalks
+        }
         const x = legWidth / 2 + legLength / 2
         const y1 = id.part === 'second' ? 0 : -legWidth / 2 - legLength / 2
         const y2 = id.part === 'first' ? 0 : legWidth / 2 + legLength / 2
@@ -235,7 +247,7 @@ function ArrowHead({
 }
 
 function useWalkTimeCaption() {
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const walkTimes = useSelector((state) => state.walkTimes)
 
   const times = crosswalkIds

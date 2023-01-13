@@ -1,9 +1,9 @@
 import { Button } from '@chakra-ui/button'
 import { Flex, Heading, Spacer, VStack } from '@chakra-ui/layout'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   addTransitionThroughForm,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
   Transition,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -11,7 +11,7 @@ import TransitionFormElements from './TransitionFormElements'
 
 export default function NewTransitionForm() {
   const dispatch = useDispatch()
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const [transitionInForm, setTransitionInForm] = useState<Transition>({
     timestamp: 0,
     crosswalkId: crosswalkIds[0],

@@ -1,9 +1,9 @@
 import { Button } from '@chakra-ui/button'
 import { Heading, VStack } from '@chakra-ui/layout'
-import React, { useEffect, useState } from 'react'
-import { LegId, setLeg } from '../reducer'
+import { useEffect, useState } from 'react'
+import { isMainLegId, LegId, setLeg } from '../reducer'
 import { useDispatch, useSelector } from '../store'
-import { JunctionSvg as JunctionSvg } from './JunctionSvg'
+import { JunctionSvg } from './JunctionSvg'
 import JunctionSvgAndCompanionWrapper from './JunctionSvgAndCompanionWrapper'
 
 export default function JunctionSection() {
@@ -51,6 +51,73 @@ function JunctionLegEditor({
       </Heading>
       {selectedLegId === null ? (
         <p>לחצו על אחת הזרועות של הצומת כדי לערוך אותה</p>
+      ) : isMainLegId(selectedLegId) ? (
+        <VStack align='start'>
+          <Button
+            size='sm'
+            onClick={() =>
+              dispatch(setLeg({ legId: selectedLegId, leg: null }))
+            }
+          >
+            שום כלום
+          </Button>
+          <Button
+            size='sm'
+            onClick={() =>
+              dispatch(
+                setLeg({
+                  legId: selectedLegId,
+                  leg: {
+                    main: true,
+                    crosswalk: false,
+                    island: false,
+                  },
+                }),
+              )
+            }
+          >
+            כביש בלי מעבר חציה
+          </Button>
+          <Button
+            size='sm'
+            onClick={() =>
+              dispatch(
+                setLeg({
+                  legId: selectedLegId,
+                  leg: { main: true, crosswalk: true, island: false },
+                }),
+              )
+            }
+          >
+            מעבר חציה
+          </Button>
+          <Button
+            size='sm'
+            onClick={() =>
+              dispatch(
+                setLeg({
+                  legId: selectedLegId,
+                  leg: { main: true, crosswalk: true, island: true },
+                }),
+              )
+            }
+          >
+            מעבר חציה + מפרדה
+          </Button>
+          <Button
+            size='sm'
+            onClick={() =>
+              dispatch(
+                setLeg({
+                  legId: selectedLegId,
+                  leg: { main: true, crosswalk: false, island: true },
+                }),
+              )
+            }
+          >
+            בלי מעבר חציה אבל עם מפרדה
+          </Button>
+        </VStack>
       ) : (
         <VStack align='start'>
           <Button
@@ -68,62 +135,14 @@ function JunctionLegEditor({
                 setLeg({
                   legId: selectedLegId,
                   leg: {
-                    crosswalk: false,
-                    island: false,
-                  },
-                }),
-              )
-            }
-          >
-            כביש בלי מעבר חציה
-          </Button>
-          <Button
-            size='sm'
-            onClick={() =>
-              dispatch(
-                setLeg({
-                  legId: selectedLegId,
-                  leg: {
-                    crosswalk: true,
-                    island: false,
+                    main: false,
+                    trafficLight: true,
                   },
                 }),
               )
             }
           >
             מעבר חציה
-          </Button>
-          <Button
-            size='sm'
-            onClick={() =>
-              dispatch(
-                setLeg({
-                  legId: selectedLegId,
-                  leg: {
-                    crosswalk: true,
-                    island: true,
-                  },
-                }),
-              )
-            }
-          >
-            מעבר חציה + מפרדה
-          </Button>
-          <Button
-            size='sm'
-            onClick={() =>
-              dispatch(
-                setLeg({
-                  legId: selectedLegId,
-                  leg: {
-                    crosswalk: false,
-                    island: true,
-                  },
-                }),
-              )
-            }
-          >
-            בלי מעבר חציה אבל עם מפרדה
           </Button>
         </VStack>
       )}

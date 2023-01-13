@@ -6,7 +6,7 @@ import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
   Cycle,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
   setEventTimestamps,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -15,7 +15,7 @@ import { formatTimestamp, range, sortBy, tally } from '../utils'
 import { TimedEventKey, timedEventKey, timingSuggestions } from './timedEvents'
 
 export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const transitions = useSelector((state) => state.transitions)
   const eventTimingSuggestions = timingSuggestions(transitions, cycle)
 

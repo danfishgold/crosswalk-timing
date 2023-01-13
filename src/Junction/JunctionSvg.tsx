@@ -1,41 +1,33 @@
 import { useToken } from '@chakra-ui/system'
-import React, { MouseEventHandler, useMemo } from 'react'
+import { MouseEventHandler, useMemo } from 'react'
 import {
-  CrosswalkId,
   crosswalkKey,
+  DiagonalCrosswalkId,
+  DiagonalLeg,
+  DiagonalLegId,
+  diagonalLegIds,
   Highlight,
-  Leg,
+  Junction,
   LegId,
-  legIds,
+  MainCrosswalkId,
+  MainLeg,
+  mainLegIds,
   selectCrosswalkHighlightColors,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
 } from '../reducer'
 import { useSelector } from '../store'
 import { range } from '../utils'
-
-// Sizes
-const legWidth = 30
-const legLength = 30
-const crosswalkLength = 15
-const crosswalkSegmentsInEachDirection = 3
-const islandWidthInSegments = 2
-
-// Derived sizes
-const crosswalkSegmentCount =
-  crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
-const crosswalkSegmentLength = legWidth / (crosswalkSegmentCount * 2 + 1)
-const islandY =
-  crosswalkSegmentLength * (crosswalkSegmentsInEachDirection * 2 + 1)
-const islandHeight = crosswalkSegmentLength * (islandWidthInSegments * 2 - 1)
-const circleRadius = crosswalkSegmentLength * 1.5
-const crosswalkOffset = islandHeight
-const viewBoxOffset = legWidth / 2 + legLength
+import { useSvgParameters } from './svgParameters'
 
 const legRotation: Record<LegId, number> = {
   n: -90,
   e: 0,
   s: 90,
   w: 180,
+  ne: -90,
+  se: 0,
+  sw: 90,
+  nw: 180,
 }
 
 export function JunctionSvg({
@@ -46,8 +38,10 @@ export function JunctionSvg({
   onLegClick: (legId: LegId) => void
 }) {
   const junction = useSelector((state) => state.junction)
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const highlights = useSelector(selectCrosswalkHighlightColors)
+  const { legWidth, legLength } = useSvgParameters()
+  const viewBoxOffset = legWidth / 2 + legLength
 
   return (
     <svg
@@ -73,7 +67,7 @@ export function JunctionSvg({
         width={legWidth}
         height={legWidth}
       />
-      {legIds.map((legId) => (
+      {mainLegIds.map((legId) => (
         <g
           key={legId}
           transform={`rotate(${legRotation[legId]}) translate(${legWidth / 2},${
@@ -81,7 +75,24 @@ export function JunctionSvg({
           })`}
         >
           {(inEditMode || junction[legId]) && (
-            <JunctionLegGroup
+            <MainJunctionLegGroup
+              leg={junction[legId]}
+              onClick={inEditMode ? () => onLegClick(legId) : undefined}
+              ariaLabel={junction[legId] ? 'עריכת כביש' : 'הוספת כביש'}
+            />
+          )}
+        </g>
+      ))}
+      {diagonalLegIds.map((legId) => (
+        <g
+          key={legId}
+          transform={`rotate(${legRotation[legId]}) translate(${legWidth / 2},${
+            legWidth / 2
+          })`}
+        >
+          {((inEditMode && shouldShowDiagonalLeg(legId, junction)) ||
+            junction[legId]) && (
+            <DiagonalJunctionLegGroup
               leg={junction[legId]}
               onClick={inEditMode ? () => onLegClick(legId) : undefined}
               ariaLabel={junction[legId] ? 'עריכת כביש' : 'הוספת כביש'}
@@ -90,29 +101,44 @@ export function JunctionSvg({
         </g>
       ))}
       <g>
-        {crosswalkIds.map((crosswalkId, index) => (
-          <CrosswalkIndicatorGroup
-            key={crosswalkKey(crosswalkId)}
-            crosswalkId={crosswalkId}
-            highlight={highlights[crosswalkKey(crosswalkId)]}
-            index={index}
-          />
-        ))}
+        {crosswalkIds.map((crosswalkId, index) =>
+          crosswalkId.main ? (
+            <MainCrosswalkIndicatorGroup
+              key={crosswalkKey(crosswalkId)}
+              crosswalkId={crosswalkId}
+              highlight={highlights[crosswalkKey(crosswalkId)]}
+              index={index}
+            />
+          ) : (
+            <DiagonalCrosswalkIndicatorGroup
+              key={crosswalkKey(crosswalkId)}
+              crosswalkId={crosswalkId}
+              highlight={highlights[crosswalkKey(crosswalkId)]}
+              index={index}
+            />
+          ),
+        )}
       </g>
     </svg>
   )
 }
 
-function CrosswalkIndicatorGroup({
+function MainCrosswalkIndicatorGroup({
   crosswalkId,
   highlight,
   index,
 }: {
-  crosswalkId: CrosswalkId
+  crosswalkId: MainCrosswalkId
   highlight: Highlight | null
   index: number
 }) {
-  const x = legWidth / 2 + crosswalkOffset
+  const {
+    legWidth,
+    circleRadius,
+    crosswalkSegmentLength,
+    crosswalkSegmentsInEachDirection,
+    circleOffset: x,
+  } = useSvgParameters()
   const [y1, y2] = useMemo(() => {
     if (!crosswalkId.part) {
       const y1 = -legWidth / 2 + crosswalkSegmentLength
@@ -136,19 +162,21 @@ function CrosswalkIndicatorGroup({
   const color = useToken('colors', highlight ? 'yellow.300' : 'white')
   return (
     <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
-      <line
-        x1={x}
-        x2={x}
-        y1={y1}
-        y2={y2}
-        stroke={color}
-        strokeWidth={crosswalkSegmentLength}
-      />
+      {!crosswalkId.part && (
+        <line
+          x1={x}
+          x2={x}
+          y1={y1}
+          y2={y2}
+          stroke={color}
+          strokeWidth={crosswalkSegmentLength}
+        />
+      )}
       <circle cx={x} cy={(y1 + y2) / 2} r={circleRadius} fill={color} />
       <text
         x={0}
         y={0}
-        fontSize={crosswalkSegmentLength * 2.5}
+        fontSize={circleRadius * 1.3}
         fill='black'
         textAnchor='middle'
         alignmentBaseline='middle'
@@ -162,15 +190,63 @@ function CrosswalkIndicatorGroup({
   )
 }
 
-function JunctionLegGroup({
+function DiagonalCrosswalkIndicatorGroup({
+  crosswalkId,
+  highlight,
+  index,
+}: {
+  crosswalkId: DiagonalCrosswalkId
+  highlight: Highlight | null
+  index: number
+}) {
+  const { circleRadius, crosswalkSegmentLength, circleOffset } =
+    useSvgParameters()
+
+  const color = useToken('colors', highlight ? 'yellow.300' : 'black')
+  return (
+    <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
+      <circle
+        cx={circleOffset}
+        cy={circleOffset}
+        r={circleRadius}
+        fill={color}
+      />
+      <text
+        x={0}
+        y={0}
+        fontSize={circleRadius * 1.3}
+        fill={highlight ? 'black' : 'white'}
+        textAnchor='middle'
+        alignmentBaseline='middle'
+        transform={`translate(${circleOffset}, ${circleOffset}) rotate(${-legRotation[
+          crosswalkId.legId
+        ]})`}
+      >
+        {index + 1}
+      </text>
+    </g>
+  )
+}
+
+function MainJunctionLegGroup({
   leg,
   onClick,
   ariaLabel,
 }: {
-  leg: Leg | null
+  leg: MainLeg | null
   onClick?: MouseEventHandler<SVGElement>
   ariaLabel?: string
 }) {
+  const {
+    legLength,
+    legWidth,
+    crosswalkSegmentCount,
+    crosswalkOffset,
+    crosswalkSegmentLength,
+    crosswalkLength,
+    islandY,
+    islandHeight,
+  } = useSvgParameters()
   return (
     <g
       className={`leg ${leg === null ? 'leg--placeholder' : ''} ${
@@ -188,7 +264,7 @@ function JunctionLegGroup({
             <rect
               className='crosswalk-stripe'
               key={segmentIndex}
-              x={crosswalkOffset + circleRadius * 2}
+              x={crosswalkOffset}
               y={crosswalkSegmentLength * (segmentIndex * 2 + 1)}
               width={crosswalkLength}
               height={crosswalkSegmentLength}
@@ -224,4 +300,124 @@ function JunctionLegGroup({
       />
     </g>
   )
+}
+
+function DiagonalJunctionLegGroup({
+  leg,
+  onClick,
+  ariaLabel,
+}: {
+  leg: DiagonalLeg | null
+  onClick?: MouseEventHandler<SVGElement>
+  ariaLabel?: string
+}) {
+  const {
+    legLength,
+    crosswalkLength,
+    crosswalkSegmentLength,
+    crosswalkSegmentsInDiagonal,
+    cornerWidth,
+  } = useSvgParameters()
+  const laneWidth =
+    crosswalkSegmentLength * (2 * crosswalkSegmentsInDiagonal + 1)
+  const straightLaneWidth = laneWidth * 0.8
+  const turnOffset =
+    legLength - cornerWidth - (laneWidth - straightLaneWidth) / (Math.SQRT2 - 1)
+  const turnRadius = legLength - straightLaneWidth - turnOffset
+
+  return (
+    <g
+      className={`leg ${leg === null ? 'leg--placeholder' : ''} ${
+        onClick ? 'leg--interactive' : ''
+      }`}
+      onClick={onClick}
+      tabIndex={onClick ? 0 : undefined}
+      role={onClick && 'button'}
+      aria-label={ariaLabel}
+    >
+      <rect className='road' x={0} y={0} width={legLength} height={legLength} />
+      {leg && (
+        <>
+          <path
+            d={[
+              pathCommand('M', legLength, legLength),
+              pathCommand('L', legLength, straightLaneWidth),
+              pathCommand('L', legLength - turnOffset, straightLaneWidth),
+              pathCommand(
+                'A',
+                turnRadius,
+                turnRadius,
+                0,
+                0,
+                0,
+                straightLaneWidth,
+                legLength - turnOffset,
+              ),
+              pathCommand('L', straightLaneWidth, legLength),
+              pathCommand('Z'),
+            ].join(' ')}
+            fill='white'
+          />
+          <path
+            className='diagonal-island'
+            d={[
+              pathCommand('M', 0, 0),
+              pathCommand('L', cornerWidth, 0),
+              pathCommand(
+                'A',
+                cornerWidth,
+                cornerWidth,
+                0,
+                0,
+                0,
+                0,
+                cornerWidth,
+              ),
+              pathCommand('L', 0, cornerWidth),
+              pathCommand('Z'),
+            ].join(' ')}
+          />
+          <g className='crosswalk'>
+            {range(crosswalkSegmentsInDiagonal).map((segmentIndex) => (
+              <rect
+                className='crosswalk-stripe'
+                key={segmentIndex}
+                x={-crosswalkLength / 2}
+                y={
+                  cornerWidth * (Math.SQRT2 - 1) +
+                  crosswalkSegmentLength * (segmentIndex * 2 + 1)
+                }
+                width={crosswalkLength}
+                height={crosswalkSegmentLength}
+                transform='rotate(-45)'
+              />
+            ))}
+          </g>
+        </>
+      )}
+      <rect
+        className='leg__focus-ring'
+        x={0}
+        y={0}
+        width={legLength}
+        height={legLength}
+      />
+    </g>
+  )
+}
+
+function pathCommand(
+  command: 'M' | 'L' | 'A' | 'Z',
+  ...args: number[]
+): string {
+  return `${command}${args.join(',')}`
+}
+
+function shouldShowDiagonalLeg(
+  diagonalLegId: DiagonalLegId,
+  junction: Junction,
+): boolean {
+  const northSouth = diagonalLegId[0] as 'n' | 's'
+  const eastWest = diagonalLegId[1] as 'e' | 'w'
+  return junction[northSouth] !== null && junction[eastWest] !== null
 }

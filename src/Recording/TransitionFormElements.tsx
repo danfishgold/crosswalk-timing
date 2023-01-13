@@ -9,8 +9,12 @@ import {
 } from '@chakra-ui/number-input'
 import { Radio, RadioGroup } from '@chakra-ui/radio'
 import { FormControl, FormLabel } from '@chakra-ui/react'
-import React from 'react'
-import { Color, crosswalkKey, selectCrosswalkIds, Transition } from '../reducer'
+import {
+  Color,
+  crosswalkKey,
+  selectCrosswalkIdsWithTrafficLights,
+  Transition,
+} from '../reducer'
 import { useSelector } from '../store'
 import TimestampInput from '../TimestampInput'
 
@@ -25,7 +29,7 @@ export default function TransitionFormElements({
   formIdPrefix: string
   isTrackIndexFieldHidden?: boolean
 }) {
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const trackIndex = crosswalkIds.findIndex(
     (id) => crosswalkKey(id) === crosswalkKey(transition.crosswalkId),
   )

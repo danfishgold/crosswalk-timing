@@ -1,9 +1,8 @@
 import { ThemingProps } from '@chakra-ui/system'
-import React from 'react'
 import {
   CrosswalkId,
   Cycle,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
   selectJourneyIndexes,
 } from '../reducer'
 import { useSelector } from '../store'
@@ -71,7 +70,7 @@ const journeyColors: ThemingProps['colorScheme'][] = [
 ]
 
 function useJourneys(): Journey[] {
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const journeyIndexes = useSelector(selectJourneyIndexes)
 
   const journeys = compact(

@@ -48,3 +48,7 @@ body {
   stroke: #a5a5a5;
   stroke-width: 0.1;
 }
+
+.diagonal-island {
+  fill: #a5a5a5;
+}

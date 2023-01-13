@@ -10,7 +10,7 @@ import React from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
   setCrosswalkWalkTime,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -51,7 +51,7 @@ export default function SimulationSection() {
 
 function WalkingTimes() {
   const dispatch = useDispatch()
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const walkTimes = useSelector((state) => state.walkTimes)
 
   return (

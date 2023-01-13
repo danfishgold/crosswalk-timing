@@ -4,7 +4,7 @@ import {
   crosswalkKey,
   Cycle,
   selectCanonicalCycleSegments,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
 } from '../reducer'
 import { useSelector } from '../store'
 import { useColorColors } from '../styleUtils'
@@ -17,7 +17,7 @@ export default function CycleDiagram({
   cycle: Cycle
   className?: string
 }) {
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const canonicalSegments = useSelector(selectCanonicalCycleSegments)
 
   return (

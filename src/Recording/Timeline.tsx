@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   useToken,
 } from '@chakra-ui/react'
-import React, { MouseEvent, useMemo } from 'react'
+import { MouseEvent, useMemo } from 'react'
 import {
   cancelTransitionSuggestion,
   clickOnExistingTransition,
@@ -21,7 +21,7 @@ import {
   makeSelectCrosswalkTransitionsAndIds,
   moveOutsideTimeline,
   selectCrosswalkHighlightColors,
-  selectCrosswalkIds,
+  selectCrosswalkIdsWithTrafficLights,
   Transition,
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
@@ -35,7 +35,7 @@ export default function Timeline() {
   const cursorTimestamp = useSelector(
     (state) => state.cursor?.timestamp ?? null,
   )
-  const crosswalkIds = useSelector(selectCrosswalkIds)
+  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
 
   return (
     <div

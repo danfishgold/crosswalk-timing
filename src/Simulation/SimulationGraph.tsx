@@ -1,5 +1,4 @@
 import { useToken } from '@chakra-ui/system'
-import React from 'react'
 import {
   CartesianGrid,
   Label,
@@ -51,9 +50,9 @@ export default function RechartsSimulationGraph({
             />
           ))}
           <Tooltip
-            formatter={(value: number, key: string) => {
+            formatter={(value, key) => {
               const journey = journeys.find((j) => j.key === key)
-              return [formatTimestamp(value), journey?.title]
+              return [formatTimestamp(+value), journey?.title ?? '']
             }}
             labelFormatter={formatTimestamp}
           />
