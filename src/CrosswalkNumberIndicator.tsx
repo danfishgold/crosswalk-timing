@@ -1,5 +1,4 @@
 import { useToken } from '@chakra-ui/react'
-import React from 'react'
 import {
   CrosswalkId,
   crosswalkKey,
@@ -27,18 +26,9 @@ export default function CrosswalkNumberIndicator({
     <div
       css={{
         display: 'grid',
-        gridTemplateColumns: 'auto',
-        gridTemplateRows: '1fr auto 1fr',
-        justifyItems: 'center',
+        placeItems: 'center',
       }}
     >
-      <div
-        css={{
-          width: '5px',
-          height: withLegs ? '100%' : '0',
-          background: color,
-        }}
-      />
       <div
         css={{
           width: '20px',
@@ -52,13 +42,6 @@ export default function CrosswalkNumberIndicator({
       >
         {number}
       </div>
-      <div
-        css={{
-          width: '5px',
-          height: withLegs ? '100%' : '0',
-          background: color,
-        }}
-      />
     </div>
   )
 }
