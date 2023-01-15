@@ -55,7 +55,7 @@ function svgParameters(): SvgParameters {
   const primaryParameters: PrimarySvgParameters = {
     legWidth: 30,
     legLength: 40,
-    circleRadius: 3,
+    circleRadius: 4,
     crosswalkLength: 10,
     crosswalkSegmentsInEachDirection: 3,
     crosswalkSegmentsInDiagonal: 3,

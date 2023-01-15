@@ -644,7 +644,7 @@ const weizmannSheinkin: State = {
 
 const { reducer, actions } = createSlice({
   name: 'reducer',
-  initialState: weizmannSheinkin,
+  initialState: szoldState,
   reducers: {
     setJunctionTitle(state, action: PayloadAction<string>) {
       state.junctionTitle = action.payload
