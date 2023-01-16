@@ -649,13 +649,7 @@ const { reducer, actions } = createSlice({
     setJunctionTitle(state, action: PayloadAction<string>) {
       state.junctionTitle = action.payload
     },
-    setLeg(
-      state,
-      action: PayloadAction<
-        | { legId: MainLegId; leg: MainLeg | null }
-        | { legId: DiagonalLegId; leg: DiagonalLeg | null }
-      >,
-    ) {
+    setLeg(state, action: PayloadAction<{ legId: LegId; leg: Leg | null }>) {
       if (action.payload.leg?.main) {
         state.junction[action.payload.legId as MainLegId] = action.payload.leg
       } else {

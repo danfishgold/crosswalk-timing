@@ -1,21 +1,36 @@
-import { useToken } from '@chakra-ui/system'
-import { MouseEventHandler, useMemo } from 'react'
 import {
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+} from '@chakra-ui/popover'
+import { Button, HStack, Portal, useDisclosure, VStack } from '@chakra-ui/react'
+import {
+  ForwardedRef,
+  forwardRef,
+  KeyboardEvent,
+  PropsWithChildren,
+  useMemo,
+} from 'react'
+import {
+  areCrosswalkIdsEqual,
   crosswalkKey,
   DiagonalCrosswalkId,
   DiagonalLeg,
   DiagonalLegId,
-  diagonalLegIds,
   Highlight,
+  isMainLegId,
   Junction,
   LegId,
+  legIds,
   MainCrosswalkId,
   MainLeg,
-  mainLegIds,
   selectCrosswalkHighlightColors,
   selectCrosswalkIdsWithTrafficLights,
+  setLeg,
 } from '../reducer'
-import { useSelector } from '../store'
+import { useDispatch, useSelector } from '../store'
 import { range } from '../utils'
 import { useSvgParameters } from './svgParameters'
 
@@ -30,13 +45,9 @@ const legRotation: Record<LegId, number> = {
   nw: 180,
 }
 
-export function JunctionSvg({
-  inEditMode,
-  onLegClick,
-}: {
-  inEditMode: boolean
-  onLegClick: (legId: LegId) => void
-}) {
+const focusRingWeight = 2
+
+export function JunctionSvg({ inEditMode }: { inEditMode: boolean }) {
   const junction = useSelector((state) => state.junction)
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const highlights = useSelector(selectCrosswalkHighlightColors)
@@ -54,11 +65,11 @@ export function JunctionSvg({
       }`}
     >
       <rect
+        className='background'
         x={-viewBoxOffset}
         y={-viewBoxOffset}
         width={viewBoxOffset * 2}
         height={viewBoxOffset * 2}
-        fill='#f4f4f4'
       />
       <rect
         className='road'
@@ -67,53 +78,55 @@ export function JunctionSvg({
         width={legWidth}
         height={legWidth}
       />
-      {mainLegIds.map((legId) => (
-        <g
-          key={legId}
-          transform={`rotate(${legRotation[legId]}) translate(${legWidth / 2},${
-            -legWidth / 2
-          })`}
-        >
-          {(inEditMode || junction[legId]) && (
-            <MainJunctionLegGroup
-              leg={junction[legId]}
-              onClick={inEditMode ? () => onLegClick(legId) : undefined}
-              ariaLabel={junction[legId] ? 'עריכת כביש' : 'הוספת כביש'}
-            />
-          )}
-        </g>
-      ))}
-      {diagonalLegIds.map((legId) => (
-        <g
-          key={legId}
-          transform={`rotate(${legRotation[legId]}) translate(${legWidth / 2},${
-            legWidth / 2
-          })`}
-        >
-          {((inEditMode && shouldShowDiagonalLeg(legId, junction)) ||
-            junction[legId]) && (
-            <DiagonalJunctionLegGroup
-              leg={junction[legId]}
-              onClick={inEditMode ? () => onLegClick(legId) : undefined}
-              ariaLabel={junction[legId] ? 'עריכת כביש' : 'הוספת כביש'}
-            />
-          )}
-        </g>
-      ))}
+      {legIds.map((legId) =>
+        isMainLegId(legId) ? (
+          <g
+            key={legId}
+            transform={`rotate(${legRotation[legId]}) translate(${
+              legWidth / 2
+            },${-legWidth / 2})`}
+          >
+            <LegPopover legId={legId}>
+              {junction[legId] ? (
+                <MainRoadBlock
+                  leg={junction[legId]!}
+                  interactive={inEditMode}
+                />
+              ) : inEditMode ? (
+                <AddButton cx={legLength / 2} cy={legWidth / 2} />
+              ) : null}
+            </LegPopover>
+          </g>
+        ) : (
+          <g
+            key={legId}
+            transform={`rotate(${legRotation[legId]}) translate(${
+              legWidth / 2
+            },${legWidth / 2})`}
+          >
+            <LegPopover legId={legId}>
+              {junction[legId] ? (
+                <DiagonalRoadBlock interactive={inEditMode} />
+              ) : inEditMode &&
+                shouldShowDiagonalLegPlaceholder(legId, junction) ? (
+                <AddButton cx={legLength / 2} cy={legLength / 2} />
+              ) : null}
+            </LegPopover>
+          </g>
+        ),
+      )}
       <g>
         {crosswalkIds.map((crosswalkId, index) =>
           crosswalkId.main ? (
-            <MainCrosswalkIndicatorGroup
+            <MainIndex
               key={crosswalkKey(crosswalkId)}
               crosswalkId={crosswalkId}
-              highlight={highlights[crosswalkKey(crosswalkId)]}
               index={index}
             />
           ) : (
-            <DiagonalCrosswalkIndicatorGroup
+            <DiagonalIndex
               key={crosswalkKey(crosswalkId)}
               crosswalkId={crosswalkId}
-              highlight={highlights[crosswalkKey(crosswalkId)]}
               index={index}
             />
           ),
@@ -123,15 +136,18 @@ export function JunctionSvg({
   )
 }
 
-function MainCrosswalkIndicatorGroup({
+function MainIndex({
   crosswalkId,
-  highlight,
   index,
 }: {
   crosswalkId: MainCrosswalkId
   highlight: Highlight | null
   index: number
 }) {
+  const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)
+  const highlight =
+    cursorCrosswalkId && areCrosswalkIdsEqual(cursorCrosswalkId, crosswalkId)
+
   const {
     legWidth,
     circleRadius,
@@ -159,25 +175,26 @@ function MainCrosswalkIndicatorGroup({
     }
   }, [crosswalkId.part])
 
-  const color = useToken('colors', highlight ? 'yellow.300' : 'white')
   return (
-    <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
+    <g
+      className={`index-indicator ${
+        highlight ? 'index-indicator--highlight' : ''
+      }`}
+      transform={`rotate(${legRotation[crosswalkId.legId]})`}
+    >
       {!crosswalkId.part && (
-        <line
-          x1={x}
-          x2={x}
-          y1={y1}
-          y2={y2}
-          stroke={color}
-          strokeWidth={crosswalkSegmentLength}
+        <rect
+          x={x - crosswalkSegmentLength / 2}
+          y={y1}
+          width={crosswalkSegmentLength}
+          height={y2 - y1}
         />
       )}
-      <circle cx={x} cy={(y1 + y2) / 2} r={circleRadius} fill={color} />
+      <circle cx={x} cy={(y1 + y2) / 2} r={circleRadius} />
       <text
         x={0}
         y={0}
         fontSize={circleRadius * 1.3}
-        fill='black'
         textAnchor='middle'
         alignmentBaseline='middle'
         transform={`translate(${x}, ${(y1 + y2) / 2}) rotate(${-legRotation[
@@ -190,32 +207,30 @@ function MainCrosswalkIndicatorGroup({
   )
 }
 
-function DiagonalCrosswalkIndicatorGroup({
+function DiagonalIndex({
   crosswalkId,
-  highlight,
   index,
 }: {
   crosswalkId: DiagonalCrosswalkId
-  highlight: Highlight | null
   index: number
 }) {
-  const { circleRadius, crosswalkSegmentLength, circleOffset } =
-    useSvgParameters()
+  const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)
+  const highlight =
+    cursorCrosswalkId && areCrosswalkIdsEqual(cursorCrosswalkId, crosswalkId)
+  const { circleRadius, circleOffset } = useSvgParameters()
 
-  const color = useToken('colors', highlight ? 'yellow.300' : 'black')
   return (
-    <g transform={`rotate(${legRotation[crosswalkId.legId]})`}>
-      <circle
-        cx={circleOffset}
-        cy={circleOffset}
-        r={circleRadius}
-        fill={color}
-      />
+    <g
+      className={`index-indicator ${
+        highlight ? 'index-indicator--highlight' : ''
+      }`}
+      transform={`rotate(${legRotation[crosswalkId.legId]})`}
+    >
+      <circle cx={circleOffset} cy={circleOffset} r={circleRadius} />
       <text
         x={0}
         y={0}
         fontSize={circleRadius * 1.3}
-        fill={highlight ? 'black' : 'white'}
         textAnchor='middle'
         alignmentBaseline='middle'
         transform={`translate(${circleOffset}, ${circleOffset}) rotate(${-legRotation[
@@ -228,183 +243,191 @@ function DiagonalCrosswalkIndicatorGroup({
   )
 }
 
-function MainJunctionLegGroup({
-  leg,
-  onClick,
-  ariaLabel,
-}: {
-  leg: MainLeg | null
-  onClick?: MouseEventHandler<SVGElement>
-  ariaLabel?: string
-}) {
-  const {
-    legLength,
-    legWidth,
-    crosswalkSegmentCount,
-    crosswalkOffset,
-    crosswalkSegmentLength,
-    crosswalkLength,
-    islandY,
-    islandHeight,
-  } = useSvgParameters()
-  return (
-    <g
-      className={`leg ${leg === null ? 'leg--placeholder' : ''} ${
-        onClick ? 'leg--interactive' : ''
-      }`}
-      onClick={onClick}
-      tabIndex={onClick ? 0 : undefined}
-      role={onClick && 'button'}
-      aria-label={ariaLabel}
-    >
-      <rect className='road' x={0} y={0} width={legLength} height={legWidth} />
-      {leg?.crosswalk && (
-        <g className='crosswalk'>
-          {range(crosswalkSegmentCount).map((segmentIndex) => (
-            <rect
-              className='crosswalk-stripe'
-              key={segmentIndex}
-              x={crosswalkOffset}
-              y={crosswalkSegmentLength * (segmentIndex * 2 + 1)}
-              width={crosswalkLength}
-              height={crosswalkSegmentLength}
-            />
-          ))}
-        </g>
-      )}
-      {leg?.island && (
-        <g className='island'>
-          <rect
-            className='island--inset'
-            x={0}
-            y={islandY}
-            width={legLength}
-            height={islandHeight}
-            rx={islandHeight / 2}
-          />
-          <rect
-            className='island--separator'
-            x={crosswalkOffset}
-            y={islandY}
-            width={legLength - crosswalkOffset}
-            height={islandHeight}
-          />
-        </g>
-      )}
-      <rect
-        className='leg__focus-ring'
-        x={0}
-        y={0}
-        width={legLength}
-        height={legWidth}
-      />
-    </g>
-  )
-}
-
-function DiagonalJunctionLegGroup({
-  leg,
-  onClick,
-  ariaLabel,
-}: {
-  leg: DiagonalLeg | null
-  onClick?: MouseEventHandler<SVGElement>
-  ariaLabel?: string
-}) {
-  const {
-    legLength,
-    crosswalkLength,
-    crosswalkSegmentLength,
-    crosswalkSegmentsInDiagonal,
-    cornerWidth,
-  } = useSvgParameters()
-  const laneWidth =
-    crosswalkSegmentLength * (2 * crosswalkSegmentsInDiagonal + 1)
-  const straightLaneWidth = laneWidth * 0.8
-  const turnOffset =
-    legLength - cornerWidth - (laneWidth - straightLaneWidth) / (Math.SQRT2 - 1)
-  const turnRadius = legLength - straightLaneWidth - turnOffset
-
-  return (
-    <g
-      className={`leg ${leg === null ? 'leg--placeholder' : ''} ${
-        onClick ? 'leg--interactive' : ''
-      }`}
-      onClick={onClick}
-      tabIndex={onClick ? 0 : undefined}
-      role={onClick && 'button'}
-      aria-label={ariaLabel}
-    >
-      <rect className='road' x={0} y={0} width={legLength} height={legLength} />
-      {leg && (
-        <>
-          <path
-            d={[
-              pathCommand('M', legLength, legLength),
-              pathCommand('L', legLength, straightLaneWidth),
-              pathCommand('L', legLength - turnOffset, straightLaneWidth),
-              pathCommand(
-                'A',
-                turnRadius,
-                turnRadius,
-                0,
-                0,
-                0,
-                straightLaneWidth,
-                legLength - turnOffset,
-              ),
-              pathCommand('L', straightLaneWidth, legLength),
-              pathCommand('Z'),
-            ].join(' ')}
-            fill='white'
-          />
-          <path
-            className='diagonal-island'
-            d={[
-              pathCommand('M', 0, 0),
-              pathCommand('L', cornerWidth, 0),
-              pathCommand(
-                'A',
-                cornerWidth,
-                cornerWidth,
-                0,
-                0,
-                0,
-                0,
-                cornerWidth,
-              ),
-              pathCommand('L', 0, cornerWidth),
-              pathCommand('Z'),
-            ].join(' ')}
-          />
+const MainRoadBlock = forwardRef(
+  (
+    {
+      leg,
+      onClick,
+      interactive,
+    }: {
+      leg: MainLeg
+      onClick?: () => void
+      interactive: boolean
+    },
+    ref: ForwardedRef<SVGGElement>,
+  ) => {
+    const onKeyDown = (event: KeyboardEvent<SVGElement>) => {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault()
+        onClick?.()
+      }
+    }
+    const {
+      legLength,
+      legWidth,
+      crosswalkSegmentCount,
+      crosswalkOffset,
+      crosswalkSegmentLength,
+      crosswalkLength,
+      islandY,
+      islandHeight,
+    } = useSvgParameters()
+    return (
+      <g
+        className='leg'
+        onClick={interactive ? onClick : undefined}
+        onKeyDown={interactive ? onKeyDown : undefined}
+        tabIndex={interactive ? 0 : -1}
+        role={interactive ? 'button' : undefined}
+        ref={interactive ? ref : undefined}
+      >
+        <rect
+          className='road'
+          x={0}
+          y={0}
+          width={legLength}
+          height={legWidth}
+        />
+        {leg.crosswalk && (
           <g className='crosswalk'>
-            {range(crosswalkSegmentsInDiagonal).map((segmentIndex) => (
+            {range(crosswalkSegmentCount).map((segmentIndex) => (
               <rect
                 className='crosswalk-stripe'
                 key={segmentIndex}
-                x={-crosswalkLength / 2}
-                y={
-                  cornerWidth * (Math.SQRT2 - 1) +
-                  crosswalkSegmentLength * (segmentIndex * 2 + 1)
-                }
+                x={crosswalkOffset}
+                y={crosswalkSegmentLength * (segmentIndex * 2 + 1)}
                 width={crosswalkLength}
                 height={crosswalkSegmentLength}
-                transform='rotate(-45)'
               />
             ))}
           </g>
-        </>
-      )}
-      <rect
-        className='leg__focus-ring'
-        x={0}
-        y={0}
-        width={legLength}
-        height={legLength}
-      />
-    </g>
-  )
-}
+        )}
+        {leg.island && (
+          <>
+            <rect
+              className='island'
+              x={0}
+              y={islandY}
+              width={legLength}
+              height={islandHeight}
+              rx={islandHeight / 2}
+            />
+            <rect
+              className='island'
+              x={crosswalkOffset}
+              y={islandY}
+              width={legLength - crosswalkOffset}
+              height={islandHeight}
+            />
+          </>
+        )}
+        <LegFocusRing width={legLength} height={legWidth} />
+      </g>
+    )
+  },
+)
+
+const DiagonalRoadBlock = forwardRef(
+  (
+    {
+      onClick,
+      interactive,
+    }: {
+      onClick?: () => void
+      interactive: boolean
+    },
+    ref: ForwardedRef<SVGGElement>,
+  ) => {
+    const onKeyDown = (event: KeyboardEvent<SVGElement>) => {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault()
+        onClick?.()
+      }
+    }
+    const {
+      legLength,
+      crosswalkLength,
+      crosswalkSegmentLength,
+      crosswalkSegmentsInDiagonal,
+      cornerWidth,
+    } = useSvgParameters()
+    const laneWidth =
+      crosswalkSegmentLength * (2 * crosswalkSegmentsInDiagonal + 1)
+    const straightLaneWidth = laneWidth * 0.8
+    const turnOffset =
+      legLength -
+      cornerWidth -
+      (laneWidth - straightLaneWidth) / (Math.SQRT2 - 1)
+    const turnRadius = legLength - straightLaneWidth - turnOffset
+
+    return (
+      <g
+        className='leg'
+        onClick={interactive ? onClick : undefined}
+        onKeyDown={interactive ? onKeyDown : undefined}
+        tabIndex={interactive ? 0 : -1}
+        role={interactive ? 'button' : undefined}
+        ref={interactive ? ref : undefined}
+      >
+        <rect
+          className='road'
+          x={0}
+          y={0}
+          width={legLength}
+          height={legLength}
+        />
+        <path
+          className='background'
+          d={[
+            pathCommand('M', legLength, legLength),
+            pathCommand('L', legLength, straightLaneWidth),
+            pathCommand('L', legLength - turnOffset, straightLaneWidth),
+            pathCommand(
+              'A',
+              turnRadius,
+              turnRadius,
+              0,
+              0,
+              0,
+              straightLaneWidth,
+              legLength - turnOffset,
+            ),
+            pathCommand('L', straightLaneWidth, legLength),
+            pathCommand('Z'),
+          ].join(' ')}
+          fill='white'
+        />
+        <path
+          className='island'
+          d={[
+            pathCommand('M', 0, 0),
+            pathCommand('L', cornerWidth, 0),
+            pathCommand('A', cornerWidth, cornerWidth, 0, 0, 0, 0, cornerWidth),
+            pathCommand('L', 0, cornerWidth),
+            pathCommand('Z'),
+          ].join(' ')}
+        />
+        <g className='crosswalk'>
+          {range(crosswalkSegmentsInDiagonal).map((segmentIndex) => (
+            <rect
+              className='crosswalk-stripe'
+              key={segmentIndex}
+              x={-crosswalkLength / 2}
+              y={
+                cornerWidth * (Math.SQRT2 - 1) +
+                crosswalkSegmentLength * (segmentIndex * 2 + 1)
+              }
+              width={crosswalkLength}
+              height={crosswalkSegmentLength}
+              transform='rotate(-45)'
+            />
+          ))}
+        </g>
+        <LegFocusRing width={legLength} height={legLength} />
+      </g>
+    )
+  },
+)
 
 function pathCommand(
   command: 'M' | 'L' | 'A' | 'Z',
@@ -413,11 +436,179 @@ function pathCommand(
   return `${command}${args.join(',')}`
 }
 
-function shouldShowDiagonalLeg(
+function shouldShowDiagonalLegPlaceholder(
   diagonalLegId: DiagonalLegId,
   junction: Junction,
 ): boolean {
   const northSouth = diagonalLegId[0] as 'n' | 's'
   const eastWest = diagonalLegId[1] as 'e' | 'w'
   return junction[northSouth] !== null && junction[eastWest] !== null
+}
+
+function LegPopover({ legId, children }: PropsWithChildren<{ legId: LegId }>) {
+  const { onOpen, onClose, isOpen } = useDisclosure()
+
+  if (!children) {
+    return null
+  }
+  return (
+    <Popover closeOnBlur isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+      <PopoverTrigger>{children}</PopoverTrigger>
+      <Portal>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverBody>
+            <LegPopoverMenu legId={legId} closeMenu={onClose} />
+          </PopoverBody>
+        </PopoverContent>
+      </Portal>
+    </Popover>
+  )
+}
+
+function LegPopoverMenu({
+  legId,
+  closeMenu,
+}: {
+  legId: LegId
+  closeMenu: () => void
+}) {
+  const dispatch = useDispatch()
+
+  const legOptions = isMainLegId(legId) ? mainLegOptions : diagonalLegOptions
+  const { legLength } = useSvgParameters()
+  return (
+    <VStack align='start'>
+      {legOptions.map((option) => (
+        <HStack key={option.title}>
+          <svg width={legLength} height={legLength}>
+            {!option.leg ? null : option.leg.main ? (
+              <g
+                transform={`translate(${legLength / 2}, ${
+                  legLength / 2
+                }) rotate(${legRotation[legId]}) translate(${-legLength / 2}, ${
+                  -legLength / 2
+                })`}
+              >
+                <MainRoadBlock leg={option.leg} interactive={false} />
+              </g>
+            ) : (
+              <g
+                transform={`translate(${legLength / 2}, ${
+                  legLength / 2
+                }) rotate(${legRotation[legId]}) translate(${-legLength / 2}, ${
+                  -legLength / 2
+                })`}
+              >
+                <DiagonalRoadBlock interactive={false} />
+              </g>
+            )}
+          </svg>
+          <Button
+            size='sm'
+            onClick={() => {
+              dispatch(setLeg({ legId, leg: option.leg }))
+              closeMenu()
+            }}
+          >
+            {option.title}
+          </Button>
+        </HStack>
+      ))}
+    </VStack>
+  )
+}
+
+const mainLegOptions: { title: string; leg: MainLeg | null }[] = [
+  { title: 'שום כלום', leg: null },
+  { title: 'מעבר חציה', leg: { main: true, crosswalk: true, island: false } },
+  {
+    title: 'מעבר חציה עם מפרדה',
+    leg: { main: true, crosswalk: true, island: true },
+  },
+  { title: 'כביש', leg: { main: true, crosswalk: false, island: false } },
+  {
+    title: 'כביש עם מפרדה',
+    leg: { main: true, crosswalk: false, island: true },
+  },
+]
+
+const diagonalLegOptions: { title: string; leg: DiagonalLeg | null }[] = [
+  { title: 'שום כלום', leg: null },
+  { title: 'מעבר חציה', leg: { main: false, trafficLight: true } },
+]
+
+const AddButton = forwardRef(
+  (
+    {
+      cx,
+      cy,
+      onClick,
+    }: {
+      cx: number
+      cy: number
+      onClick?: () => void
+    },
+    ref: ForwardedRef<SVGGElement>,
+  ) => {
+    const { legLength, legWidth } = useSvgParameters()
+    const r = Math.min(legLength, legWidth) / 4
+    const rectLength = r * 0.95
+    const rectWidth = r * 0.15
+    const onKeyDown = (event: KeyboardEvent<SVGElement>) => {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault()
+        onClick?.()
+      }
+    }
+    return (
+      <g
+        className='add-button'
+        onClick={onClick}
+        onKeyDown={onKeyDown}
+        tabIndex={0}
+        role='button'
+        aria-label='הוספת כביש'
+        ref={ref}
+      >
+        <circle cx={cx} cy={cy} r={r} />
+        <circle
+          className='add-button__focus-ring'
+          cx={cx}
+          cy={cy}
+          r={r + focusRingWeight / 2}
+          fill='none'
+          strokeWidth={focusRingWeight}
+        />
+        <rect
+          x={cx - rectWidth / 2}
+          y={cy - rectLength / 2}
+          width={rectWidth}
+          height={rectLength}
+          fill='white'
+        />
+        <rect
+          x={cx - rectLength / 2}
+          y={cy - rectWidth / 2}
+          width={rectLength}
+          height={rectWidth}
+          fill='white'
+        />
+      </g>
+    )
+  },
+)
+
+function LegFocusRing({ width, height }: { width: number; height: number }) {
+  return (
+    <rect
+      className='leg__focus-ring'
+      x={focusRingWeight / 2}
+      y={focusRingWeight / 2}
+      width={width - focusRingWeight}
+      height={height - focusRingWeight}
+      fill='none'
+      strokeWidth={focusRingWeight}
+    />
+  )
 }
