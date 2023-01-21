@@ -14,6 +14,7 @@ import {
   mainLegIds,
   State,
 } from './reducer'
+import { zeroPad } from './utils'
 
 export function encodeState(state: State): string {
   const {
@@ -179,7 +180,7 @@ function decodeCycle(cycleString: string): Cycle | null {
 function encodeJunction(junction: Junction): string {
   const mainLegs = parseInt(
     mainLegIds.map((id) => encodeMainLeg(junction[id]).toString()).join(''),
-    6,
+    5,
   )
 
   const diagonalLegs = parseInt(
@@ -193,7 +194,7 @@ function encodeJunction(junction: Junction): string {
 
 function encodeMainLeg(leg: MainLeg | null): number {
   if (!leg) {
-    return 5
+    return 4
   }
   return parseInt(`${leg.crosswalk ? 1 : 0}${leg.island ? 1 : 0}`, 2)
 }
@@ -201,23 +202,20 @@ function encodeMainLeg(leg: MainLeg | null): number {
 function encodeDiagonalLeg(leg: DiagonalLeg | null): number {
   if (!leg) {
     return 0
-  } else if (leg.trafficLight) {
-    return 2
   } else {
     return 1
   }
 }
 
 function decodeJunction(junctionString: string): Junction {
-  // TODO: handle leading zeros
   const [mainLegsInBase10, diagonalLegsInBase10] =
     decodeNumberArray(junctionString)
-  const mainLegs = Array.from(mainLegsInBase10.toString(6)).map((digit) =>
-    decodeMainLeg(parseInt(digit)),
+  const mainLegs = Array.from(zeroPad(mainLegsInBase10.toString(5), 4)).map(
+    (digit) => decodeMainLeg(parseInt(digit)),
   )
-  const diagonalLegs = Array.from(diagonalLegsInBase10.toString(3)).map(
-    (digit) => decodeDiagonalLeg(parseInt(digit)),
-  )
+  const diagonalLegs = Array.from(
+    zeroPad(diagonalLegsInBase10.toString(2), 4),
+  ).map((digit) => decodeDiagonalLeg(parseInt(digit)))
 
   const mainLegEntries: [MainLegId, MainLeg | null][] = mainLegIds.map(
     (id: MainLegId, index: number) => [id, mainLegs[index]],
@@ -234,7 +232,7 @@ function decodeJunction(junctionString: string): Junction {
 }
 
 function decodeMainLeg(legValue: number): MainLeg | null {
-  if (legValue === 5) {
+  if (legValue === 4) {
     return null
   } else {
     const crosswalk = legValue >= 2
@@ -248,8 +246,6 @@ function decodeDiagonalLeg(legValue: number): DiagonalLeg | null {
     case 0:
       return null
     case 1:
-      return { main: false, trafficLight: false }
-    case 2:
       return { main: false, trafficLight: true }
     default:
       throw new Error(`Couldn't decode diagonal leg value ${legValue}`)

@@ -81,3 +81,12 @@ export function pairs<T>(array: T[]): [T, T][] {
     array[index + 1],
   ])
 }
+
+export function zeroPad(str: string, length: number): string {
+  const missingCharacters = length - str.length
+  if (missingCharacters > 0) {
+    return `${new Array(missingCharacters).fill('0').join('')}${str}`
+  } else {
+    return str
+  }
+}
