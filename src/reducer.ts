@@ -997,7 +997,7 @@ function parseJourneyCrosswalkIndexes(valueString: string): number[][] {
   return journeyIndexes
 }
 
-function areCrosswalkIdsEqual(a: CrosswalkId, b: CrosswalkId): boolean {
+export function areCrosswalkIdsEqual(a: CrosswalkId, b: CrosswalkId): boolean {
   if (a.main && b.main) {
     return a.legId === b.legId && a.part === b.part
   } else if (!a.main && !b.main) {

@@ -31,10 +31,7 @@ import { formatTimestamp } from '../utils'
 export default function Timeline() {
   const dispatch = useDispatch()
   const duration = useSelector((state) => state.recordingDuration)
-  const suggestion = useSelector((state) => state.transitionSuggestion)
-  const cursorTimestamp = useSelector(
-    (state) => state.cursor?.timestamp ?? null,
-  )
+
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
 
   return (
@@ -55,31 +52,7 @@ export default function Timeline() {
           crosswalkId={crosswalkId}
         />
       ))}
-      {cursorTimestamp !== null && (
-        <div
-          css={{
-            position: 'absolute',
-            top: 0,
-            left: `${(cursorTimestamp / duration) * 100}%`,
-            height: '100%',
-            width: '1px',
-            background: 'black',
-            pointerEvents: 'none',
-          }}
-        ></div>
-      )}
-      <div
-        css={{
-          direction: 'ltr',
-          marginLeft: `calc(${
-            ((cursorTimestamp ?? 0) / duration) * 100
-          }% + 5px)`,
-          background: 'white',
-          color: cursorTimestamp !== null ? 'black' : 'white',
-        }}
-      >
-        {cursorTimestamp !== null ? formatTimestamp(cursorTimestamp) : 'hi'}
-      </div>
+      <Cursor />
     </div>
   )
 }
@@ -222,4 +195,41 @@ function timestampFromEvent(
   const x = event.clientX - boundingRect.x
   const timestamp = Math.round((x / boundingRect.width) * duration)
   return timestamp
+}
+
+function Cursor() {
+  const cursorTimestamp = useSelector(
+    (state) => state.cursor?.timestamp ?? null,
+  )
+  const duration = useSelector((state) => state.recordingDuration)
+
+  return (
+    <>
+      {cursorTimestamp !== null && (
+        <div
+          css={{
+            position: 'absolute',
+            top: 0,
+            left: `${(cursorTimestamp / duration) * 100}%`,
+            height: '100%',
+            width: '1px',
+            background: 'black',
+            pointerEvents: 'none',
+          }}
+        ></div>
+      )}
+      <div
+        css={{
+          direction: 'ltr',
+          marginLeft: `calc(${
+            ((cursorTimestamp ?? 0) / duration) * 100
+          }% + 5px)`,
+          background: 'white',
+          color: cursorTimestamp !== null ? 'black' : 'white',
+        }}
+      >
+        {cursorTimestamp !== null ? formatTimestamp(cursorTimestamp) : 'hi'}
+      </div>
+    </>
+  )
 }
