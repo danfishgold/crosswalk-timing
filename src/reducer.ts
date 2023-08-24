@@ -107,7 +107,7 @@ export function isMainLegId(id: LegId): id is MainLegId {
   return (mainLegIds as readonly string[]).includes(id)
 }
 
-const emptyState: State = {
+export const emptyState: State = {
   junction: {
     n: null,
     e: null,

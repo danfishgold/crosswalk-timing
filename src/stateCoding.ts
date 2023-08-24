@@ -67,7 +67,9 @@ export function decodeState(stateString: string): State | null {
       journeyIndexesString,
     }
   } catch (error) {
-    console.warn(error)
+    if (import.meta.env.MODE !== 'test') {
+      console.warn(error)
+    }
     return null
   }
 }
@@ -126,7 +128,9 @@ function decodeWalkTimes(
   const entries: [CrosswalkKey, number | undefined][] = keys.map(
     (key, index) => [key, values[index]],
   )
-  return Object.fromEntries(entries)
+  return Object.fromEntries(
+    entries.filter(([key, walkTime]) => walkTime !== undefined),
+  )
 }
 
 // TIMESTAMPS
@@ -155,7 +159,9 @@ function decodeTimestamps(
     eventKey,
     values[index],
   ])
-  return Object.fromEntries(entries)
+  return Object.fromEntries(
+    entries.filter(([key, timestamps]) => timestamps.length > 0),
+  )
 }
 
 // CYCLE
@@ -275,6 +281,9 @@ function encodeOptionalNumberArray(array: (number | undefined)[]): string {
 }
 
 function decodeNumberArray(str: string): number[] {
+  if (str === '') {
+    return []
+  }
   return str.split(',').map((numberString) => parseInt(numberString))
 }
 function decodeOptionalNumberArray(str: string): (number | undefined)[] {

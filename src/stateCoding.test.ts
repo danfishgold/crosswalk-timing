@@ -1,16 +1,38 @@
+import _ from 'lodash'
 import { describe, expect, test } from 'vitest'
-import { szoldState } from './reducer'
+import { emptyState, szoldState } from './reducer'
 // import { State } from './reducer'
 import { decodeState, encodeState } from './stateCoding'
+import { State } from './store'
 
 describe('Encoding > Decoding', () => {
   test('The main bits of the state are the same', () => {
     const state = szoldState
     const parsedState = decodeState(encodeState(state))!
-    expect(state.junction).toStrictEqual(parsedState.junction)
-    expect(state.junctionTitle).toStrictEqual(parsedState.junctionTitle)
-    expect(state.eventTimestamps).toStrictEqual(parsedState.eventTimestamps)
-    expect(state.cycle).toStrictEqual(parsedState.cycle)
+    expect(_.omit(state, ['inEditMode', 'transitions'])).toStrictEqual(
+      _.omit(parsedState, ['inEditMode', 'transitions']),
+    )
+  })
+
+  test('A pretty empty state stays the same', () => {
+    const state: State = {
+      ...emptyState,
+      junctionTitle: 'A title',
+      junction: {
+        n: { main: true, island: false, crosswalk: true },
+        e: null,
+        s: null,
+        w: null,
+        ne: null,
+        nw: null,
+        se: null,
+        sw: null,
+      },
+    }
+    const parsedState = decodeState(encodeState(state))!
+    expect(_.omit(state, ['inEditMode', 'transitions'])).toStrictEqual(
+      _.omit(parsedState, ['inEditMode', 'transitions']),
+    )
   })
 })
 
