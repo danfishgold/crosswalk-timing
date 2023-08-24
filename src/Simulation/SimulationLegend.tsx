@@ -8,10 +8,12 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react'
+import { useMemo } from 'react'
 import {
   crosswalkKey,
+  diagonalLegIds,
   LegId,
-  legIds,
+  mainLegIds,
   selectCrosswalkIdsWithTrafficLights,
 } from '../reducer'
 import { useSelector } from '../store'
@@ -110,12 +112,13 @@ function useStatistics(
   return { min, max, mean, kippur }
 }
 
-const legWidth = 40
-const legLength = 40
+const legWidth = 30
+const legLength = 50
+const diagonalWidth = (1 / 2) * legLength
 const roadColor = '#ccc'
 const arrowColor = '#000'
 const arrowWidth = 6
-const arrowHeadDiagonalLength = 12
+const arrowHeadLength = 12
 
 const viewBoxOffset = legWidth / 2 + legLength
 
@@ -132,15 +135,19 @@ const legRotation: Record<LegId, number> = {
 
 function LittleJourneyDiagram({ journey }: { journey: Journey }) {
   const junction = useSelector((state) => state.junction)
-  const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
-  const secondToLastIndex =
-    journey.crosswalkIndexes[mod(-2, journey.crosswalkIndexes.length)]
-  const lastIndex =
-    journey.crosswalkIndexes[mod(-1, journey.crosswalkIndexes.length)]
-  const lastChirality = mod(lastIndex - secondToLastIndex, crosswalkIds.length)
-  const isClockwise = lastChirality === 1 || lastChirality === 0
-  const isCounterClockwise =
-    lastChirality === crosswalkIds.length - 1 || lastChirality === 0
+
+  const isClockwise = useMemo(() => {
+    if (journey.crosswalkIds.length < 2) {
+      return true
+    }
+    const secondToLastLeg = journey.crosswalkIds.at(-2)!
+    const lastLeg = journey.crosswalkIds.at(-1)!
+    const secondToLastRotation = legRotation[secondToLastLeg.legId]
+    const lastRotation = legRotation[lastLeg.legId]
+    const rotationDiff =
+      mod(lastRotation - secondToLastRotation + 180, 360) - 180
+    return rotationDiff >= 0
+  }, [journey])
 
   return (
     <svg
@@ -156,7 +163,7 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
         height={legWidth}
         fill={roadColor}
       />
-      {legIds.map(
+      {mainLegIds.map(
         (legId) =>
           junction[legId] && (
             <rect
@@ -170,38 +177,70 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
             />
           ),
       )}
-      {journey.crosswalkIds.map((id, index) => {
-        if (!id.main) {
-          return null
-          // TODO: support diagonal crosswalks
-        }
-        const x = legWidth / 2 + legLength / 2
-        const y1 = id.part === 'second' ? 0 : -legWidth / 2 - legLength / 2
-        const y2 = id.part === 'first' ? 0 : legWidth / 2 + legLength / 2
-
-        return (
-          <g
-            key={crosswalkKey(id)}
-            transform={`rotate(${legRotation[id.legId]})`}
-          >
-            <line
-              x1={x}
-              x2={x}
-              y1={y1}
-              y2={y2}
-              stroke={arrowColor}
-              strokeWidth={arrowWidth}
-              strokeLinecap='round'
+      {diagonalLegIds.map(
+        (legId) =>
+          junction[legId] && (
+            <path
+              key={legId}
+              d={[
+                `M ${legWidth / 2 + legLength} ${legWidth / 2}`,
+                `L ${legWidth / 2 + legLength - diagonalWidth} ${legWidth / 2}`,
+                `L ${legWidth / 2} ${legWidth / 2 + legLength - diagonalWidth}`,
+                `L ${legWidth / 2} ${legWidth / 2 + legLength}`,
+                `Z`,
+              ].join(' ')}
+              fill={roadColor}
+              transform={`rotate(${legRotation[legId]})`}
             />
-            {index === journey.crosswalkIds.length - 1 && isClockwise && (
-              <ArrowHead x={x} y1={y1} y2={y2} isOnTop={true} />
-            )}
-            {index === journey.crosswalkIds.length - 1 &&
-              isCounterClockwise && (
-                <ArrowHead x={x} y1={y1} y2={y2} isOnTop={false} />
+          ),
+      )}
+      {journey.crosswalkIds.map((id, index) => {
+        const x = legWidth / 2 + (legLength - diagonalWidth) / 3
+        if (id.main) {
+          const y1 = id.part === 'second' ? 0 : -x
+          const y2 = id.part === 'first' ? 0 : x
+
+          return (
+            <g
+              key={crosswalkKey(id)}
+              transform={`rotate(${legRotation[id.legId]})`}
+            >
+              <line
+                x1={x}
+                x2={x}
+                y1={y1}
+                y2={y2}
+                stroke={arrowColor}
+                strokeWidth={arrowWidth}
+                strokeLinecap='round'
+              />
+              {index === journey.crosswalkIds.length - 1 && (
+                <ArrowHead x={x} y1={y1} y2={y2} isOnTop={isClockwise} />
               )}
-          </g>
-        )
+            </g>
+          )
+        } else {
+          const x2 = legWidth + legLength - x - legLength / 7
+          return (
+            <g
+              key={crosswalkKey(id)}
+              transform={`rotate(${legRotation[id.legId]})`}
+            >
+              <line
+                x1={x}
+                x2={x2}
+                y1={x}
+                y2={x2}
+                stroke={arrowColor}
+                strokeWidth={arrowWidth}
+                strokeLinecap='round'
+              />
+              {index === journey.crosswalkIds.length - 1 && (
+                <DiagonalArrowHead x={x2} y={x2} />
+              )}
+            </g>
+          )
+        }
       })}
     </svg>
   )
@@ -220,14 +259,14 @@ function ArrowHead({
 }) {
   const y0 = isOnTop ? y2 : y1
   const yd = isOnTop
-    ? y2 - arrowHeadDiagonalLength
-    : y1 + arrowHeadDiagonalLength
+    ? y2 - arrowHeadLength * Math.SQRT1_2
+    : y1 + arrowHeadLength * Math.SQRT1_2
   return (
     <>
       <line
         x1={x}
         y1={y0}
-        x2={x + arrowHeadDiagonalLength}
+        x2={x + arrowHeadLength * Math.SQRT1_2}
         y2={yd}
         stroke={arrowColor}
         strokeWidth={arrowWidth}
@@ -236,8 +275,33 @@ function ArrowHead({
       <line
         x1={x}
         y1={y0}
-        x2={x - arrowHeadDiagonalLength}
+        x2={x - arrowHeadLength * Math.SQRT1_2}
         y2={yd}
+        stroke={arrowColor}
+        strokeWidth={arrowWidth}
+        strokeLinecap='round'
+      />
+    </>
+  )
+}
+
+function DiagonalArrowHead({ x, y }: { x: number; y: number }) {
+  return (
+    <>
+      <line
+        x1={x}
+        y1={y}
+        x2={x - arrowHeadLength}
+        y2={y}
+        stroke={arrowColor}
+        strokeWidth={arrowWidth}
+        strokeLinecap='round'
+      />
+      <line
+        x1={x}
+        y1={y}
+        x2={x}
+        y2={y - arrowHeadLength}
         stroke={arrowColor}
         strokeWidth={arrowWidth}
         strokeLinecap='round'
