@@ -31,7 +31,7 @@ export type State = {
 }
 
 export const mainLegIds = ['n', 'e', 's', 'w'] as const
-export type MainLegId = typeof mainLegIds[number]
+export type MainLegId = (typeof mainLegIds)[number]
 
 export type DiagonalLegId = `${'n' | 's'}${'e' | 'w'}`
 export const diagonalLegIds: DiagonalLegId[] = ['ne', 'nw', 'se', 'sw']
