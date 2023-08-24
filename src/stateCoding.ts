@@ -193,7 +193,7 @@ function encodeJunction(junction: Junction): string {
     diagonalLegIds
       .map((id) => encodeDiagonalLeg(junction[id]).toString())
       .join(''),
-    3,
+    2,
   )
   return encodeNumberArray([mainLegs, diagonalLegs])
 }

@@ -17,16 +17,11 @@ describe('Encoding > Decoding', () => {
   test('A pretty empty state stays the same', () => {
     const state: State = {
       ...emptyState,
-      junctionTitle: 'A title',
       junction: {
-        n: { main: true, island: false, crosswalk: true },
-        e: null,
-        s: null,
-        w: null,
-        ne: null,
-        nw: null,
-        se: null,
-        sw: null,
+        ...emptyState.junction,
+        n: { main: true, crosswalk: true, island: false },
+        e: { main: true, crosswalk: true, island: false },
+        ne: { main: false, trafficLight: true },
       },
     }
     const parsedState = decodeState(encodeState(state))!
