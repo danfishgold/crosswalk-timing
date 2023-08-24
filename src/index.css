@@ -8,43 +8,75 @@ body {
   direction: rtl;
 }
 
-.leg--placeholder .road {
-  opacity: 0.25;
+.background {
+  fill: var(--chakra-colors-gray-200);
 }
 
-.leg--interactive.leg--placeholder:hover .road {
-  opacity: 0.9;
+.add-button {
+  outline: none;
 }
 
-.leg--interactive:hover {
-  opacity: 0.9;
+.add-button circle {
+  fill: var(--chakra-colors-green-400);
 }
 
-.leg__focus-ring {
-  opacity: 0;
+.add-button:hover circle {
+  fill: var(--chakra-colors-green-500);
+}
+
+.add-button:focus-visible .add-button__focus-ring {
+  stroke: var(--chakra-colors-blue-400);
+}
+
+.leg {
+  outline: none;
+}
+
+.leg[role='button']:hover .road {
+  fill: var(--chakra-colors-gray-800);
+}
+
+.leg[role='button']:focus-visible .leg__focus-ring {
   fill: none;
-  stroke: rgb(72, 0, 255);
-  stroke-width: 1;
-  transform: translateZ(1px);
+  stroke: var(--chakra-colors-blue-400);
 }
 
-.leg:focus .leg__focus-ring,
-.leg-placeholder:focus .leg__focus-ring {
-  opacity: 1;
+.leg[role='button']:focus-visible .road {
+  fill: var(--chakra-colors-gray-800);
+  stroke: none;
 }
 
 .road {
-  fill: #373842;
-  stroke: #373842;
-  stroke-width: 0.1;
+  fill: var(--chakra-colors-gray-700);
+  stroke: var(--chakra-colors-gray-700);
+  stroke-width: 0.5;
 }
 
 .crosswalk-stripe {
-  fill: #eeeeee;
+  fill: var(--chakra-colors-gray-50);
 }
 
-.island rect {
-  fill: #a5a5a5;
-  stroke: #a5a5a5;
-  stroke-width: 0.1;
+.island {
+  fill: var(--chakra-colors-gray-400);
+  stroke: var(--chakra-colors-gray-400);
+  stroke-width: 0.5;
+}
+
+.index-indicator {
+  user-select: none;
+  pointer-events: none;
+}
+
+.index-indicator text {
+  fill: black;
+}
+
+.index-indicator rect,
+.index-indicator circle {
+  fill: var(--chakra-colors-orange-200);
+}
+
+.index-indicator--highlight rect,
+.index-indicator--highlight circle {
+  fill: var(--chakra-colors-orange-300);
 }

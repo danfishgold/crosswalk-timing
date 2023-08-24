@@ -10,16 +10,14 @@ import { rgbValuesForColor, textColor } from './styleUtils'
 export default function CrosswalkNumberIndicator({
   id,
   number,
-  withLegs,
 }: {
   id: CrosswalkId
   number: number
-  withLegs: boolean
 }) {
   const highlights = useSelector(selectCrosswalkHighlightColors)
   const color = useToken(
     'colors',
-    highlights[crosswalkKey(id)] ? 'yellow.400' : 'black',
+    highlights[crosswalkKey(id)] ? 'orange.300' : 'orange.200',
   )
 
   return (

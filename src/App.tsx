@@ -1,12 +1,11 @@
-import { VStack } from '@chakra-ui/react'
-import React, { useEffect } from 'react'
+import { HStack, VStack } from '@chakra-ui/react'
+import { useEffect } from 'react'
 import CycleDiagram from './Cycle/CycleDiagram'
 import CycleSection from './Cycle/CycleSection'
 import DebugSection from './DebugSection'
 import Header from './Header'
 import JunctionSection from './Junction/JunctionSection'
 import { JunctionSvg } from './Junction/JunctionSvg'
-import JunctionSvgAndCompanionWrapper from './Junction/JunctionSvgAndCompanionWrapper'
 import RecordingSection from './Recording/RecordingSection'
 import { replaceEntireState } from './reducer'
 import JourneyCrosswalkIndexEditor from './Simulation/JourneyCrosswalkIndexEditor'
@@ -33,15 +32,22 @@ function App() {
         </>
       ) : (
         <>
-          <JunctionSvgAndCompanionWrapper>
-            <JunctionSvg inEditMode={inEditMode} onLegClick={() => {}} />
+          <HStack
+            wrap='wrap'
+            align='stretch'
+            justify='center'
+            spacing='40px'
+            dir='ltr'
+            css={sectionWidthCss}
+          >
             {cycle && (
               <CycleDiagram
                 cycle={cycle}
                 css={{ minWidth: '300px', flexGrow: 1, alignSelf: 'center' }}
               />
             )}
-          </JunctionSvgAndCompanionWrapper>
+            <JunctionSvg inEditMode={inEditMode} />
+          </HStack>
           {cycle && <JourneyCrosswalkIndexEditor css={sectionWidthCss} />}
           {cycle && <SimulationVisualization cycle={cycle} />}
         </>

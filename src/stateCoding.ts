@@ -4,13 +4,17 @@ import {
   CrosswalkKey,
   crosswalkKey,
   Cycle,
+  DiagonalLeg,
+  DiagonalLegId,
+  diagonalLegIds,
   Junction,
-  junctionCrosswalkIds,
-  Leg,
-  LegId,
-  legIds,
+  junctionCrosswalkIdsWithTrafficLights,
+  MainLeg,
+  MainLegId,
+  mainLegIds,
   State,
 } from './reducer'
+import { zeroPad } from './utils'
 
 export function encodeState(state: State): string {
   const {
@@ -21,7 +25,7 @@ export function encodeState(state: State): string {
     walkTimes,
     journeyIndexesString,
   } = state
-  const crosswalkIds = junctionCrosswalkIds(junction)
+  const crosswalkIds = junctionCrosswalkIdsWithTrafficLights(junction)
 
   const otherStuff = [
     encodeJunction(junction),
@@ -87,7 +91,7 @@ function decodeOtherStuff(
   ] = otherStuffString.split('|')
 
   const junction = decodeJunction(junctionString)
-  const crosswalkIds = junctionCrosswalkIds(junction)
+  const crosswalkIds = junctionCrosswalkIdsWithTrafficLights(junction)
   const cycle = decodeCycle(cycleString)
   const eventTimestamps = decodeTimestamps(timestampsString, crosswalkIds)
   const walkTimes = decodeWalkTimes(walkTimesString, crosswalkIds)
@@ -173,39 +177,78 @@ function decodeCycle(cycleString: string): Cycle | null {
 
 // JUNCTION
 
-/// max: 6^4 - 1 = 1295
 function encodeJunction(junction: Junction): string {
-  return parseInt(
-    legIds.map((id) => encodeLeg(junction[id]).toString()).join(''),
-    6,
-  ).toString()
+  const mainLegs = parseInt(
+    mainLegIds.map((id) => encodeMainLeg(junction[id]).toString()).join(''),
+    5,
+  )
+
+  const diagonalLegs = parseInt(
+    diagonalLegIds
+      .map((id) => encodeDiagonalLeg(junction[id]).toString())
+      .join(''),
+    3,
+  )
+  return encodeNumberArray([mainLegs, diagonalLegs])
 }
 
-function encodeLeg(leg: Leg | null): number {
+function encodeMainLeg(leg: MainLeg | null): number {
   if (!leg) {
-    return 5
+    return 4
   }
   return parseInt(`${leg.crosswalk ? 1 : 0}${leg.island ? 1 : 0}`, 2)
 }
 
-function decodeJunction(junctionString: string): Junction {
-  const legs = Array.from(parseInt(junctionString).toString(6)).map((digit) =>
-    decodeLeg(parseInt(digit)),
-  )
-  const entries: [LegId, Leg | null][] = legIds.map((id: LegId, index) => [
-    id,
-    legs[index],
-  ])
-  return Object.fromEntries(entries) as Junction
+function encodeDiagonalLeg(leg: DiagonalLeg | null): number {
+  if (!leg) {
+    return 0
+  } else {
+    return 1
+  }
 }
 
-function decodeLeg(legValue: number): Leg | null {
-  if (legValue === 5) {
+function decodeJunction(junctionString: string): Junction {
+  const [mainLegsInBase10, diagonalLegsInBase10] =
+    decodeNumberArray(junctionString)
+  const mainLegs = Array.from(zeroPad(mainLegsInBase10.toString(5), 4)).map(
+    (digit) => decodeMainLeg(parseInt(digit)),
+  )
+  const diagonalLegs = Array.from(
+    zeroPad(diagonalLegsInBase10.toString(2), 4),
+  ).map((digit) => decodeDiagonalLeg(parseInt(digit)))
+
+  const mainLegEntries: [MainLegId, MainLeg | null][] = mainLegIds.map(
+    (id: MainLegId, index: number) => [id, mainLegs[index]],
+  )
+  const diagonalLegEntries: [DiagonalLegId, DiagonalLeg | null][] =
+    diagonalLegIds.map((id: DiagonalLegId, index: number) => [
+      id,
+      diagonalLegs[index],
+    ])
+  return Object.fromEntries([
+    ...mainLegEntries,
+    ...diagonalLegEntries,
+  ]) as Junction
+}
+
+function decodeMainLeg(legValue: number): MainLeg | null {
+  if (legValue === 4) {
     return null
   } else {
     const crosswalk = legValue >= 2
     const island = legValue % 2 === 1
-    return { crosswalk, island }
+    return { main: true, crosswalk, island }
+  }
+}
+
+function decodeDiagonalLeg(legValue: number): DiagonalLeg | null {
+  switch (legValue) {
+    case 0:
+      return null
+    case 1:
+      return { main: false, trafficLight: true }
+    default:
+      throw new Error(`Couldn't decode diagonal leg value ${legValue}`)
   }
 }
 
