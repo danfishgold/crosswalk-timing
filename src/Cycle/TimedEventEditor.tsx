@@ -41,11 +41,7 @@ export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
         </div>
         {crosswalkIds.map((id, index) => (
           <React.Fragment key={crosswalkKey(id)}>
-            <CrosswalkNumberIndicator
-              id={id}
-              number={index + 1}
-              withLegs={true}
-            />
+            <CrosswalkNumberIndicator id={id} number={index + 1} />
             <EventInputs
               eventKey={timedEventKey(id, 'green')}
               suggestions={

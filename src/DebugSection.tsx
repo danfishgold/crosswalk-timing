@@ -1,5 +1,4 @@
 import { Heading, Link, VStack } from '@chakra-ui/react'
-import React from 'react'
 import StateClipboardButtons from './StateClipboardButtons'
 import { sectionWidthCss } from './styleUtils'
 
@@ -13,7 +12,7 @@ export default function DebugSection() {
       <p>
         <Link
           color='blue.500'
-          href='#ארלוזורוב/הנרייטה%20סולד/QWuQpEtJxhxJyExMOLmnp7Gio8OioQ'
+          href='#ארלוזורוב/הנרייטה%20סולד/JCoLkKRLScYccchMTDi5p6exoqPDoqE'
         >
           דוגמה סולד 1
         </Link>
@@ -21,7 +20,7 @@ export default function DebugSection() {
       <p>
         <Link
           color='blue.500'
-          href='#ארלוזורוב/הנרייטה%20סולד/BBa5CkS0nGHHHITEw4uaensaKjyjoqE'
+          href='#ארלוזורוב/הנרייטה%20סולד/JCoLkKRLScYcSchMTDi5p6exoqPDoqE'
         >
           דוגמה סולד 2
         </Link>

@@ -6,7 +6,6 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/react'
-import React from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
@@ -62,11 +61,7 @@ function WalkingTimes() {
       <HStack spacing='40px' shouldWrapChildren css={sectionWidthCss}>
         {crosswalkIds.map((id, index) => (
           <HStack key={crosswalkKey(id)}>
-            <CrosswalkNumberIndicator
-              number={index + 1}
-              id={id}
-              withLegs={false}
-            />
+            <CrosswalkNumberIndicator number={index + 1} id={id} />
             <NumberInput
               css={{ width: '100px' }}
               size='sm'

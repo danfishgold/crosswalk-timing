@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'
+import { Button, Radio, RadioGroup, Stack } from '@chakra-ui/react'
+import React, { useMemo, useState } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
   crosswalkKey,
@@ -20,6 +21,8 @@ export default function CycleDiagram({
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const canonicalSegments = useSelector(selectCanonicalCycleSegments)
 
+  const [speed, setSpeed] = useState(1)
+
   return (
     <div
       className={className}
@@ -27,15 +30,12 @@ export default function CycleDiagram({
         display: 'grid',
         gridTemplateColumns: 'auto 1fr',
         gap: '10px',
+        direction: 'ltr',
       }}
     >
       {crosswalkIds.map((crosswalkId, index) => (
         <React.Fragment key={crosswalkKey(crosswalkId)}>
-          <CrosswalkNumberIndicator
-            id={crosswalkId}
-            number={index + 1}
-            withLegs={false}
-          />
+          <CrosswalkNumberIndicator id={crosswalkId} number={index + 1} />
           <DiagramTrack
             crosswalkIndex={index}
             cycle={cycle}
@@ -45,6 +45,10 @@ export default function CycleDiagram({
           />
         </React.Fragment>
       ))}
+      <div css={{ gridColumn: 2 }}>
+        <Button>play</Button>
+        <SpeedControl speed={speed} setSpeed={setSpeed} />
+      </div>
     </div>
   )
 }
@@ -105,5 +109,26 @@ function TrackSegment({
         background: colorColors[segment.color],
       }}
     ></div>
+  )
+}
+
+function SpeedControl({
+  speed,
+  setSpeed,
+}: {
+  speed: number
+  setSpeed: (value: number) => void
+}) {
+  return (
+    <RadioGroup
+      onChange={(stringValue) => setSpeed(+stringValue)}
+      value={speed.toString()}
+    >
+      <Stack direction='row'>
+        <Radio value='1'>x1</Radio>
+        <Radio value='2'>x2</Radio>
+        <Radio value='4'>x4</Radio>
+      </Stack>
+    </RadioGroup>
   )
 }

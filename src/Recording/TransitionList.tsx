@@ -58,11 +58,7 @@ function CrosswalkTransitionList({
         padding: '5px 5px',
       }}
     >
-      <CrosswalkNumberIndicator
-        id={crosswalkId}
-        number={index + 1}
-        withLegs={true}
-      />
+      <CrosswalkNumberIndicator id={crosswalkId} number={index + 1} />
       <div>
         {transitions.length > 0 ? (
           transitions.map(([id]) => <TransitionRow key={id} id={id} />)

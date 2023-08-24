@@ -130,7 +130,7 @@ const emptyState: State = {
   journeyIndexesString: '',
 }
 
-const szoldState: State = {
+export const szoldState: State = {
   junction: {
     n: { main: true, crosswalk: false, island: true },
     e: null,
@@ -642,9 +642,9 @@ const weizmannSheinkin: State = {
   journeyIndexesString: '2 3 4 5',
 }
 
-const { reducer, actions } = createSlice({
+const { actions, reducer } = createSlice({
   name: 'reducer',
-  initialState: szoldState,
+  initialState: emptyState,
   reducers: {
     setJunctionTitle(state, action: PayloadAction<string>) {
       state.junctionTitle = action.payload

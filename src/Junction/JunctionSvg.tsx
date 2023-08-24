@@ -19,7 +19,6 @@ import {
   DiagonalCrosswalkId,
   DiagonalLeg,
   DiagonalLegId,
-  Highlight,
   isMainLegId,
   Junction,
   LegId,
@@ -141,7 +140,6 @@ function MainIndex({
   index,
 }: {
   crosswalkId: MainCrosswalkId
-  highlight: Highlight | null
   index: number
 }) {
   const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)

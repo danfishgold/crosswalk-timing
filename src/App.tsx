@@ -37,15 +37,16 @@ function App() {
             align='stretch'
             justify='center'
             spacing='40px'
+            dir='ltr'
             css={sectionWidthCss}
           >
-            <JunctionSvg inEditMode={inEditMode} />
             {cycle && (
               <CycleDiagram
                 cycle={cycle}
                 css={{ minWidth: '300px', flexGrow: 1, alignSelf: 'center' }}
               />
             )}
+            <JunctionSvg inEditMode={inEditMode} />
           </HStack>
           {cycle && <JourneyCrosswalkIndexEditor css={sectionWidthCss} />}
           {cycle && <SimulationVisualization cycle={cycle} />}
