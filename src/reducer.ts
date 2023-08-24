@@ -13,6 +13,7 @@ import {
   TimedEventKey,
 } from './Cycle/timedEvents'
 import { canonicalWaitTimes } from './Simulation/waitTimes'
+import { decodeState } from './stateCoding'
 import { compact } from './utils'
 
 export type State = {
@@ -642,9 +643,11 @@ const weizmannSheinkin: State = {
   journeyIndexesString: '2 3 4 5',
 }
 
+const stateString = window.location.hash.replace(/^#/, '')
+
 const { actions, reducer } = createSlice({
   name: 'reducer',
-  initialState: emptyState,
+  initialState: decodeState(stateString) ?? emptyState,
   reducers: {
     setJunctionTitle(state, action: PayloadAction<string>) {
       state.junctionTitle = action.payload
@@ -768,8 +771,8 @@ const { actions, reducer } = createSlice({
       }
       state.cycle.offset = action.payload
     },
-    toggleEditMode(state) {
-      state.inEditMode = !state.inEditMode
+    setEditMode(state, action: PayloadAction<boolean>) {
+      state.inEditMode = action.payload
     },
     setEventTimestamps(
       state,
@@ -830,7 +833,7 @@ export const {
   deleteTransitionFromList,
   setCycleDuraration,
   setCycleOffset,
-  toggleEditMode,
+  setEditMode,
   setEventTimestamps,
   setCrosswalkWalkTime,
   setJourneyIndexesString,
