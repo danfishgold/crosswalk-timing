@@ -2,7 +2,7 @@ import { Input, InputProps } from '@chakra-ui/input'
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react'
 import { formatTimestamp } from './utils'
 
-export default function TimestampInput({
+export function TimestampInput({
   timestamp,
   setTimestamp,
   onKeyDown: externalOnKeyDown,

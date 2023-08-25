@@ -1,9 +1,8 @@
 import { Button, ButtonGroup } from '@chakra-ui/button'
-import React from 'react'
 import { replaceEntireState } from './reducer'
 import { useDispatch, useSelector } from './store'
 
-export default function StateClipboardButtons() {
+export function StateClipboardButtons() {
   const dispatch = useDispatch()
   const state = useSelector((state) => state)
 

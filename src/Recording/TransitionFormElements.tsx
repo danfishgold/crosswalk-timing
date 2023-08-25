@@ -12,7 +12,7 @@ import { useId } from 'react'
 import { selectCrosswalkIdsWithTrafficLights } from '../reducer'
 import { Color } from '../state'
 import { useSelector } from '../store'
-import TimestampInput from '../TimestampInput'
+import { TimestampInput } from '../TimestampInput'
 
 export function TimestampField({
   timestamp,

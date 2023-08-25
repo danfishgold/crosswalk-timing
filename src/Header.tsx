@@ -7,7 +7,7 @@ import { encodeState } from './stateCoding'
 import { useDispatch, useSelector } from './store'
 import { sectionWidthCss } from './styleUtils'
 
-export default function Header() {
+export function Header() {
   return (
     <VStack align='start' css={sectionWidthCss}>
       <p>

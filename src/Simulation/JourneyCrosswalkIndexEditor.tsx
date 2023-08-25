@@ -1,9 +1,8 @@
 import { FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react'
-import React from 'react'
 import { setJourneyIndexesString } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 
-export default function JourneyCrosswalkIndexEditor({
+export function JourneyCrosswalkIndexEditor({
   className,
 }: {
   className?: string

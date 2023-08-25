@@ -16,7 +16,7 @@ import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
 
-export default function SimulationLegend({
+export function SimulationTable({
   journeys,
   data,
   className,

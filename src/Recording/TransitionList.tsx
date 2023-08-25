@@ -9,10 +9,10 @@ import {
 } from '../reducer'
 import { CrosswalkId, crosswalkKey } from '../state'
 import { useDispatch, useSelector } from '../store'
-import CrosswalkNumberIndicator from './../CrosswalkNumberIndicator'
+import { CrosswalkNumberIndicator } from './../CrosswalkNumberIndicator'
 import { ColorSwitcher, TimestampField } from './TransitionFormElements'
 
-export default function TransitionList() {
+export function TransitionList() {
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
 
   return (

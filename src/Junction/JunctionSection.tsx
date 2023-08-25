@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import { JunctionSvg } from './JunctionSvg'
 
-export default function JunctionSection() {
+export function JunctionSection() {
   const inEditMode = useSelector((state) => state.inEditMode)
 
   return (

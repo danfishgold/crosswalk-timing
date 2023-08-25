@@ -2,18 +2,18 @@ import { Button, ButtonGroup } from '@chakra-ui/button'
 import { Heading, VStack } from '@chakra-ui/layout'
 import { Tag } from '@chakra-ui/tag'
 import React, { useEffect } from 'react'
-import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
+import { CrosswalkNumberIndicator } from '../CrosswalkNumberIndicator'
 import {
   selectCrosswalkIdsWithTrafficLights,
   setEventTimestamps,
 } from '../reducer'
 import { crosswalkKey, Cycle } from '../state'
 import { useDispatch, useSelector } from '../store'
-import TimestampInput from '../TimestampInput'
+import { TimestampInput } from '../TimestampInput'
 import { formatTimestamp, range, sortBy, tally } from '../utils'
 import { TimedEventKey, timedEventKey, timingSuggestions } from './timedEvents'
 
-export default function TimedEventEditor({ cycle }: { cycle: Cycle }) {
+export function TimedEventEditor({ cycle }: { cycle: Cycle }) {
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const transitions = useSelector((state) => state.transitions)
   const eventTimingSuggestions = timingSuggestions(transitions, cycle)

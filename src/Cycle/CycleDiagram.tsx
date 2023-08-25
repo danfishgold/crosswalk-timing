@@ -1,6 +1,6 @@
 import { Button, Radio, RadioGroup, Stack } from '@chakra-ui/react'
 import React, { useMemo, useState } from 'react'
-import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
+import { CrosswalkNumberIndicator } from '../CrosswalkNumberIndicator'
 import {
   selectCanonicalCycleSegments,
   selectCrosswalkIdsWithTrafficLights,
@@ -10,7 +10,7 @@ import { useSelector } from '../store'
 import { useColorColors } from '../styleUtils'
 import { cutSegmentsToFit, Segment } from './timedEvents'
 
-export default function CycleDiagram({
+export function CycleDiagram({
   cycle,
   className,
 }: {

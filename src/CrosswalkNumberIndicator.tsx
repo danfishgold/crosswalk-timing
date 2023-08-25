@@ -2,7 +2,7 @@ import { useToken } from '@chakra-ui/react'
 import { CrosswalkId } from './state'
 import { rgbValuesForColor, textColor } from './styleUtils'
 
-export default function CrosswalkNumberIndicator({
+export function CrosswalkNumberIndicator({
   id,
   number,
 }: {

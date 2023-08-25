@@ -1,8 +1,8 @@
 import { Heading, Link, VStack } from '@chakra-ui/react'
-import StateClipboardButtons from './StateClipboardButtons'
+import { StateClipboardButtons } from './StateClipboardButtons'
 import { sectionWidthCss } from './styleUtils'
 
-export default function DebugSection() {
+export function DebugSection() {
   return (
     <VStack align='start' css={sectionWidthCss}>
       <Heading as='h2' size='lg'>

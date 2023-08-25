@@ -22,10 +22,10 @@ import { Cycle } from '../state'
 import { useDispatch, useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import { formatTimestamp } from '../utils'
-import CycleDiagram from './CycleDiagram'
-import TimedEventEditor from './TimedEventEditor'
+import { CycleDiagram } from './CycleDiagram'
+import { TimedEventEditor } from './TimedEventEditor'
 
-export default function CycleSection() {
+export function CycleSection() {
   const cycle = useSelector((state) => state.cycle)
 
   return (

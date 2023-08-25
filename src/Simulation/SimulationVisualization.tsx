@@ -6,11 +6,11 @@ import {
 import { CrosswalkId, Cycle } from '../state'
 import { useSelector } from '../store'
 import { compact, mod } from '../utils'
-import SimulationGraph from './SimulationGraph'
-import SimulationLegend from './SimulationLegend'
-import useJourneyDurations from './useJourneyDurations'
+import { RechartsSimulationGraph as SimulationGraph } from './SimulationGraph'
+import { SimulationTable } from './SimulationTable'
+import { useJourneyDurations } from './useJourneyDurations'
 
-export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
+export function SimulationVisualization({ cycle }: { cycle: Cycle }) {
   const journeys = useJourneys()
   const data = useJourneyDurations(cycle, journeys)
   return (
@@ -38,7 +38,7 @@ export default function SimulationVisualization({ cycle }: { cycle: Cycle }) {
         }}
       />
       {journeys.length > 0 && (
-        <SimulationLegend
+        <SimulationTable
           journeys={journeys}
           data={data}
           css={{

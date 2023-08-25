@@ -15,7 +15,7 @@ import { formatTimestamp } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'
 
-export default function RechartsSimulationGraph({
+export function RechartsSimulationGraph({
   cycle,
   journeys,
   data,

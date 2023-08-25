@@ -11,7 +11,7 @@ export type JourneyDurationData = {
   [journey: string]: number | undefined
 }[]
 
-export default function useJourneyDurations(
+export function useJourneyDurations(
   cycle: Cycle,
   journeys: Journey[],
 ): JourneyDurationData {

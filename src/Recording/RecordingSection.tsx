@@ -4,15 +4,15 @@ import { selectCrosswalkIdsWithTrafficLights } from '../reducer'
 import { useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import { AudioPlayer } from './AudioPlayer'
-import NewTransitionForm from './NewTransitionForm'
-import TransitionList from './TransitionList'
+import { NewTransitionForm } from './NewTransitionForm'
+import { TransitionList } from './TransitionList'
 
 export type TimelineTimestamp = {
   value: number
   fromWaveSurfer: boolean
 }
 
-export default function TimelineEditor() {
+export function TimelineEditor() {
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const hasCrosswalks = crosswalkIds.length > 0
   const [fileUrl, setFileUrl] = useState<string | null>(null)

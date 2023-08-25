@@ -6,7 +6,7 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/react'
-import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
+import { CrosswalkNumberIndicator } from '../CrosswalkNumberIndicator'
 import {
   selectCrosswalkIdsWithTrafficLights,
   setCrosswalkWalkTime,
@@ -14,10 +14,10 @@ import {
 import { crosswalkKey } from '../state'
 import { useDispatch, useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
-import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'
-import SimulationVisualization from './SimulationVisualization'
+import { JourneyCrosswalkIndexEditor } from './JourneyCrosswalkIndexEditor'
+import { SimulationVisualization } from './SimulationVisualization'
 
-export default function SimulationSection() {
+export function SimulationSection() {
   const cycle = useSelector((state) => state.cycle)
   return (
     <>

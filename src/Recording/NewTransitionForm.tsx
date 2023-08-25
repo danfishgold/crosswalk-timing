@@ -13,7 +13,7 @@ import {
   TrackIndexField,
 } from './TransitionFormElements'
 
-export default function NewTransitionForm({
+export function NewTransitionForm({
   timestamp,
   setTimestamp,
   isPlaying,
