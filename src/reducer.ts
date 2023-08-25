@@ -660,6 +660,9 @@ const { actions, reducer } = createSlice({
           action.payload.leg
       }
     },
+    setRotation(state, action: PayloadAction<number>) {
+      state.junctionRotation = action.payload
+    },
     hoverOverTimeline(
       state,
       action: PayloadAction<{ timestamp: number; crosswalkId?: CrosswalkId }>,
@@ -818,6 +821,7 @@ export default reducer
 export const {
   setJunctionTitle,
   setLeg,
+  setRotation,
   hoverOverTimeline,
   moveOutsideTimeline,
   clickTimelineTrack,

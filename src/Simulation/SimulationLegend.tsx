@@ -135,6 +135,7 @@ const legRotation: Record<LegId, number> = {
 
 function LittleJourneyDiagram({ journey }: { journey: Journey }) {
   const junction = useSelector((state) => state.junction)
+  const junctionRotation = useSelector((state) => state.junctionRotation)
 
   const isClockwise = useMemo(() => {
     if (journey.crosswalkIds.length < 2) {
@@ -149,11 +150,10 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
     return rotationDiff >= 0
   }, [journey])
 
-  const rotation = 120
-  const rotationInRadians = rotation * (Math.PI / 180)
+  const junctionRotationInRadians = junctionRotation * (Math.PI / 180)
   const scale =
-    Math.abs(Math.cos(rotationInRadians)) +
-    Math.abs(Math.sin(rotationInRadians))
+    Math.abs(Math.cos(junctionRotationInRadians)) +
+    Math.abs(Math.sin(junctionRotationInRadians))
 
   return (
     <svg
@@ -162,7 +162,7 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
       }`}
       css={{ width: `${40 * scale}px` }}
     >
-      <g transform={`rotate(${rotation}) scale(${1 / scale})`}>
+      <g transform={`rotate(${junctionRotation}) scale(${1 / scale})`}>
         <rect
           x={-legWidth / 2}
           y={-legWidth / 2}

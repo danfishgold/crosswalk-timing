@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useSelector } from '../store'
 
 export type SvgParameters = PrimarySvgParameters & DerivedSvgParameters
 
@@ -60,7 +61,7 @@ function derivedSvgParameters({
   }
 }
 
-function svgParameters(): SvgParameters {
+function svgParameters(junctionRotation: number): SvgParameters {
   const primaryParameters: PrimarySvgParameters = {
     legWidth: 30,
     legLength: 40,
@@ -69,7 +70,7 @@ function svgParameters(): SvgParameters {
     crosswalkSegmentsInEachDirection: 3,
     crosswalkSegmentsInDiagonal: 3,
     islandWidthInSegments: 2,
-    rotation: 120,
+    rotation: junctionRotation,
   }
   return {
     ...primaryParameters,
@@ -78,7 +79,12 @@ function svgParameters(): SvgParameters {
 }
 
 export function useSvgParameters(): SvgParameters {
-  const parameters = useMemo(() => svgParameters(), [])
+  const junctionRotation = useSelector((state) => state.junctionRotation)
+
+  const parameters = useMemo(
+    () => svgParameters(junctionRotation),
+    [junctionRotation],
+  )
 
   return parameters
 }
