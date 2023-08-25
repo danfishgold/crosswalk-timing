@@ -83,9 +83,7 @@ function CycleOffsetInput({ cycle }: { cycle: Cycle }) {
 
   return (
     <FormControl css={{ maxWidth: '400px' }}>
-      <FormLabel htmlFor='cycle-offset-input'>
-        אני לא זוכר איך אומרים אופסט בעברית (בשניות)
-      </FormLabel>
+      <FormLabel htmlFor='cycle-offset-input'>היסט (offset) (בשניות)</FormLabel>
       <NumberInput
         size='sm'
         id='cycle-offset-input'
