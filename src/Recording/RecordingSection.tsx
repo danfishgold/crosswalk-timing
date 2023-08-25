@@ -46,7 +46,7 @@ export default function TimelineEditor() {
       )}
       {hasCrosswalks && (
         <NewTransitionForm
-          timestamp={timestamp.value}
+          timestamp={Math.floor(timestamp.value)}
           setTimestamp={(value) =>
             setTimestamp({ value, fromWaveSurfer: false })
           }
