@@ -2,13 +2,12 @@ import { Button } from '@chakra-ui/button'
 import { Heading, HStack, VStack } from '@chakra-ui/layout'
 import { useMemo } from 'react'
 import {
-  CrosswalkId,
-  crosswalkKey,
   deleteTransitionFromList,
   makeSelectCrosswalkTransitionsAndIds,
   selectCrosswalkIdsWithTrafficLights,
   updateTransitionInList,
 } from '../reducer'
+import { CrosswalkId, crosswalkKey } from '../state'
 import { useDispatch, useSelector } from '../store'
 import CrosswalkNumberIndicator from './../CrosswalkNumberIndicator'
 import { ColorSwitcher, TimestampField } from './TransitionFormElements'

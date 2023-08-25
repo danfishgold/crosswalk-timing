@@ -1,10 +1,9 @@
 import { ThemingProps } from '@chakra-ui/system'
 import {
-  CrosswalkId,
-  Cycle,
   selectCrosswalkIdsWithTrafficLights,
   selectJourneyIndexes,
 } from '../reducer'
+import { CrosswalkId, Cycle } from '../state'
 import { useSelector } from '../store'
 import { compact, mod } from '../utils'
 import SimulationGraph from './SimulationGraph'

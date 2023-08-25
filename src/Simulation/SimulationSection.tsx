@@ -8,10 +8,10 @@ import {
 } from '@chakra-ui/react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
-  crosswalkKey,
   selectCrosswalkIdsWithTrafficLights,
   setCrosswalkWalkTime,
 } from '../reducer'
+import { crosswalkKey } from '../state'
 import { useDispatch, useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import JourneyCrosswalkIndexEditor from './JourneyCrosswalkIndexEditor'

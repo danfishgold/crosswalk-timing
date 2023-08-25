@@ -13,13 +13,12 @@ import {
   Heading,
   VStack,
 } from '@chakra-ui/react'
-import React from 'react'
 import {
-  Cycle,
   selectCycleDurationSuggestions,
   setCycleDuraration,
   setCycleOffset,
 } from '../reducer'
+import { Cycle } from '../state'
 import { useDispatch, useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import { formatTimestamp } from '../utils'

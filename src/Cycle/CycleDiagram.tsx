@@ -2,11 +2,10 @@ import { Button, Radio, RadioGroup, Stack } from '@chakra-ui/react'
 import React, { useMemo, useState } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
-  crosswalkKey,
-  Cycle,
   selectCanonicalCycleSegments,
   selectCrosswalkIdsWithTrafficLights,
 } from '../reducer'
+import { crosswalkKey, Cycle } from '../state'
 import { useSelector } from '../store'
 import { useColorColors } from '../styleUtils'
 import { cutSegmentsToFit, Segment } from './timedEvents'

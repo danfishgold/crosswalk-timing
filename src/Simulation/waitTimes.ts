@@ -1,5 +1,5 @@
 import { Segment } from '../Cycle/timedEvents'
-import { CrosswalkId, crosswalkKey, CrosswalkKey } from '../reducer'
+import { CrosswalkId, crosswalkKey, CrosswalkKey } from '../state'
 import { mod, range } from '../utils'
 
 export function canonicalWaitTimes(

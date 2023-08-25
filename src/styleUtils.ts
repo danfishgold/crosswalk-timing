@@ -1,6 +1,6 @@
 import { useToken } from '@chakra-ui/system'
 import { css } from '@emotion/react'
-import { Color } from './reducer'
+import { Color } from './state'
 
 export const sectionWidthCss = css({
   width: '100%',

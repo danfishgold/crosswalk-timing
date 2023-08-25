@@ -1,9 +1,6 @@
 import { useToken } from '@chakra-ui/react'
-import {
-  CrosswalkId,
-  crosswalkKey,
-  selectCrosswalkHighlightColors,
-} from './reducer'
+import { selectCrosswalkHighlightColors } from './reducer'
+import { CrosswalkId, crosswalkKey } from './state'
 import { useSelector } from './store'
 import { rgbValuesForColor, textColor } from './styleUtils'
 

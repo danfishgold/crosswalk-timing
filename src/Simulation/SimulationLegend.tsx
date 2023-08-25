@@ -9,13 +9,8 @@ import {
   Tr,
 } from '@chakra-ui/react'
 import { useMemo } from 'react'
-import {
-  crosswalkKey,
-  diagonalLegIds,
-  LegId,
-  mainLegIds,
-  selectCrosswalkIdsWithTrafficLights,
-} from '../reducer'
+import { selectCrosswalkIdsWithTrafficLights } from '../reducer'
+import { crosswalkKey, diagonalLegIds, LegId, mainLegIds } from '../state'
 import { useSelector } from '../store'
 import { compact, formatTimestamp, mod, sum } from '../utils'
 import { Journey } from './SimulationVisualization'

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { Cycle, selectCanonicalWaitTimes } from '../reducer'
+import { selectCanonicalWaitTimes } from '../reducer'
+import { Cycle } from '../state'
 import { useSelector } from '../store'
 import { mod, range } from '../utils'
 import { Journey } from './SimulationVisualization'

@@ -5,7 +5,7 @@ import {
   CrosswalkKey,
   Cycle,
   Transition,
-} from '../reducer'
+} from '../state'
 import { groupBy, mod, pairs, sortBy, sumBy, uniques } from '../utils'
 
 // Key function

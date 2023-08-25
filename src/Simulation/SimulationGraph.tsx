@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Cycle } from '../reducer'
+import { Cycle } from '../state'
 import { formatTimestamp } from '../utils'
 import { Journey } from './SimulationVisualization'
 import { JourneyDurationData } from './useJourneyDurations'

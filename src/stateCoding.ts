@@ -1,4 +1,5 @@
 import { timedEventKey, TimedEventKey } from './Cycle/timedEvents'
+import { junctionCrosswalkIdsWithTrafficLights } from './reducer'
 import {
   CrosswalkId,
   CrosswalkKey,
@@ -8,12 +9,11 @@ import {
   DiagonalLegId,
   diagonalLegIds,
   Junction,
-  junctionCrosswalkIdsWithTrafficLights,
   MainLeg,
   MainLegId,
   mainLegIds,
   State,
-} from './reducer'
+} from './state'
 import { zeroPad } from './utils'
 
 export function encodeState(state: State): string {

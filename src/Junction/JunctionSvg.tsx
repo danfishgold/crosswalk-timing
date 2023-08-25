@@ -15,6 +15,11 @@ import {
 } from 'react'
 import {
   areCrosswalkIdsEqual,
+  selectCrosswalkHighlightColors,
+  selectCrosswalkIdsWithTrafficLights,
+  setLeg,
+} from '../reducer'
+import {
   crosswalkKey,
   DiagonalCrosswalkId,
   DiagonalLeg,
@@ -25,10 +30,7 @@ import {
   legIds,
   MainCrosswalkId,
   MainLeg,
-  selectCrosswalkHighlightColors,
-  selectCrosswalkIdsWithTrafficLights,
-  setLeg,
-} from '../reducer'
+} from '../state'
 import { useDispatch, useSelector } from '../store'
 import { range } from '../utils'
 import { useSvgParameters } from './svgParameters'

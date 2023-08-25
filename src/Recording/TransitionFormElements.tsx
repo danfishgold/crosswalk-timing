@@ -9,7 +9,8 @@ import {
 import { Radio, RadioGroup } from '@chakra-ui/radio'
 import { FormControl, FormLabel, InputProps } from '@chakra-ui/react'
 import { useId } from 'react'
-import { Color, selectCrosswalkIdsWithTrafficLights } from '../reducer'
+import { selectCrosswalkIdsWithTrafficLights } from '../reducer'
+import { Color } from '../state'
 import { useSelector } from '../store'
 import TimestampInput from '../TimestampInput'
 

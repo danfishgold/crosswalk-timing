@@ -4,11 +4,10 @@ import { Tag } from '@chakra-ui/tag'
 import React, { useEffect } from 'react'
 import CrosswalkNumberIndicator from '../CrosswalkNumberIndicator'
 import {
-  crosswalkKey,
-  Cycle,
   selectCrosswalkIdsWithTrafficLights,
   setEventTimestamps,
 } from '../reducer'
+import { crosswalkKey, Cycle } from '../state'
 import { useDispatch, useSelector } from '../store'
 import TimestampInput from '../TimestampInput'
 import { formatTimestamp, range, sortBy, tally } from '../utils'

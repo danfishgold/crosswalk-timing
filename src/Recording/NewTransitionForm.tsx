@@ -3,9 +3,9 @@ import { Flex, Heading, Spacer, VStack } from '@chakra-ui/layout'
 import { useEffect, useState } from 'react'
 import {
   addTransitionThroughForm,
-  Color,
   selectCrosswalkIdsWithTrafficLights,
 } from '../reducer'
+import { Color } from '../state'
 import { useDispatch, useSelector } from '../store'
 import {
   ColorSwitcher,
