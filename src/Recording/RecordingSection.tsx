@@ -44,7 +44,7 @@ export default function TimelineEditor() {
           setIsPlaying={setIsPlaying}
         />
       )}
-      {hasCrosswalks && (
+      {hasCrosswalks && fileUrl && (
         <NewTransitionForm
           timestamp={Math.floor(timestamp.value)}
           setTimestamp={(value) =>
@@ -54,7 +54,7 @@ export default function TimelineEditor() {
           setIsPlaying={setIsPlaying}
         />
       )}
-      {hasCrosswalks && <TransitionList />}
+      {hasCrosswalks && fileUrl && <TransitionList />}
     </VStack>
   )
 }
