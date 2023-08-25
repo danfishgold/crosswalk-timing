@@ -138,11 +138,17 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
     }
     const secondToLastLeg = journey.crosswalkIds.at(-2)!
     const lastLeg = journey.crosswalkIds.at(-1)!
+    const secondToLastLegIndex = journey.crosswalkIndexes.at(-2)!
+    const lastLegIndex = journey.crosswalkIndexes.at(-1)!
     const secondToLastRotation = legRotation[secondToLastLeg.legId]
     const lastRotation = legRotation[lastLeg.legId]
     const rotationDiff =
       mod(lastRotation - secondToLastRotation + 180, 360) - 180
-    return rotationDiff >= 0
+    if (rotationDiff === 0) {
+      return secondToLastLegIndex < lastLegIndex
+    } else {
+      return rotationDiff > 0
+    }
   }, [journey])
 
   const junctionRotationInRadians = junctionRotation * (Math.PI / 180)
