@@ -8,26 +8,25 @@ import {
 } from '@chakra-ui/number-input'
 import { Radio, RadioGroup } from '@chakra-ui/radio'
 import { FormControl, FormLabel } from '@chakra-ui/react'
+import { useId } from 'react'
 import { Color, selectCrosswalkIdsWithTrafficLights } from '../reducer'
 import { useSelector } from '../store'
 import TimestampInput from '../TimestampInput'
 
 export function TimestampField({
-  formIdPrefix,
   timestamp,
   setTimestamp,
 }: {
-  formIdPrefix: string
   timestamp: number
   setTimestamp: (timestamp: number | null) => void
 }) {
+  const id = useId()
+
   return (
     <FormControl>
-      <FormLabel htmlFor={`${formIdPrefix}-timestamp-input`}>
-        נקודת זמן
-      </FormLabel>
+      <FormLabel htmlFor={id}>נקודת זמן</FormLabel>
       <TimestampInput
-        id={`${formIdPrefix}-timestamp-input`}
+        id={id}
         timestamp={timestamp}
         setTimestamp={setTimestamp}
         css={{ maxWidth: '100px' }}
@@ -37,23 +36,20 @@ export function TimestampField({
 }
 
 export function TrackIndexField({
-  formIdPrefix,
   trackIndex,
   setTrackIndex,
 }: {
-  formIdPrefix: string
   trackIndex: number
   setTrackIndex: (index: number) => void
 }) {
+  const id = useId()
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
 
   return (
     <FormControl>
-      <FormLabel htmlFor={`${formIdPrefix}-crosswalk-index`}>
-        מספר מעבר חציה
-      </FormLabel>
+      <FormLabel htmlFor={id}>מספר מעבר חציה</FormLabel>
       <NumberInput
-        id={`${formIdPrefix}-crosswalk-index`}
+        id={id}
         size='sm'
         min={1}
         max={crosswalkIds.length}
@@ -78,10 +74,12 @@ export function ColorSwitcher({
   selectedColor: Color
   setSelectedColor: (color: Color) => void
 }) {
+  const id = useId()
+
   return (
     <FormControl>
-      <FormLabel>צבע הרמזור</FormLabel>
-      <RadioGroup value={selectedColor} onChange={setSelectedColor}>
+      <FormLabel htmlFor={id}>צבע הרמזור</FormLabel>
+      <RadioGroup id={id} value={selectedColor} onChange={setSelectedColor}>
         <Stack direction='row-reverse' justify='flex-end'>
           <Radio value='red' colorScheme={'red'}>
             אדום

@@ -83,7 +83,6 @@ function TransitionRow({ id }: { id: string }) {
     <HStack align='flex-end' spacing='20px'>
       <HStack>
         <TimestampField
-          formIdPrefix={id}
           timestamp={transition.timestamp}
           setTimestamp={(timestamp) => {
             if (timestamp !== null) {

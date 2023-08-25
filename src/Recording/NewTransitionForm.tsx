@@ -30,7 +30,6 @@ export default function NewTransitionForm({
 
   const [crosswalkIndex, setCrosswalkIndex] = useState(0)
   const [toColor, setToColor] = useState<Color>('green')
-  const formIdPrefix = 'main-form'
 
   useEffect(() => {
     setCrosswalkIndex(0)
@@ -70,7 +69,6 @@ export default function NewTransitionForm({
           </Button>
           <HStack>
             <TimestampField
-              formIdPrefix={formIdPrefix}
               timestamp={timestamp}
               setTimestamp={(timestamp) => {
                 if (timestamp !== null) {
@@ -79,7 +77,6 @@ export default function NewTransitionForm({
               }}
             />
             <TrackIndexField
-              formIdPrefix={formIdPrefix}
               trackIndex={crosswalkIndex}
               setTrackIndex={setCrosswalkIndex}
             />
