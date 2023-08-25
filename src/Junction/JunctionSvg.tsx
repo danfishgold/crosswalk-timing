@@ -45,6 +45,7 @@ const legRotation: Record<LegId, number> = {
 }
 
 const focusRingWeight = 2
+const rotation = 120
 
 export function JunctionSvg({ inEditMode }: { inEditMode: boolean }) {
   const junction = useSelector((state) => state.junction)
@@ -53,83 +54,92 @@ export function JunctionSvg({ inEditMode }: { inEditMode: boolean }) {
   const { legWidth, legLength } = useSvgParameters()
   const viewBoxOffset = legWidth / 2 + legLength
 
+  const rotationInRadians = rotation * (Math.PI / 180)
+  const scale =
+    Math.abs(Math.cos(rotationInRadians)) +
+    Math.abs(Math.sin(rotationInRadians))
+  const sideSizeInPixels = 250
+
   return (
     <svg
       css={{
-        height: '250px',
-        width: '250px',
+        height: `${sideSizeInPixels * scale}px`,
+        width: `${sideSizeInPixels * scale}px`,
       }}
       viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${viewBoxOffset * 2} ${
         viewBoxOffset * 2
       }`}
     >
-      <rect
-        className='background'
-        x={-viewBoxOffset}
-        y={-viewBoxOffset}
-        width={viewBoxOffset * 2}
-        height={viewBoxOffset * 2}
-      />
-      <rect
-        className='road'
-        x={-legWidth / 2}
-        y={-legWidth / 2}
-        width={legWidth}
-        height={legWidth}
-      />
-      {legIds.map((legId) =>
-        isMainLegId(legId) ? (
-          <g
-            key={legId}
-            transform={`rotate(${legRotation[legId]}) translate(${
-              legWidth / 2
-            },${-legWidth / 2})`}
-          >
-            <LegPopover legId={legId}>
-              {junction[legId] ? (
-                <MainRoadBlock
-                  leg={junction[legId]!}
-                  interactive={inEditMode}
-                />
-              ) : inEditMode ? (
-                <AddButton cx={legLength / 2} cy={legWidth / 2} />
-              ) : null}
-            </LegPopover>
-          </g>
-        ) : (
-          <g
-            key={legId}
-            transform={`rotate(${legRotation[legId]}) translate(${
-              legWidth / 2
-            },${legWidth / 2})`}
-          >
-            <LegPopover legId={legId}>
-              {junction[legId] ? (
-                <DiagonalRoadBlock interactive={inEditMode} />
-              ) : inEditMode &&
-                shouldShowDiagonalLegPlaceholder(legId, junction) ? (
-                <AddButton cx={legLength / 2} cy={legLength / 2} />
-              ) : null}
-            </LegPopover>
-          </g>
-        ),
-      )}
-      <g>
-        {crosswalkIds.map((crosswalkId, index) =>
-          crosswalkId.main ? (
-            <MainIndex
-              key={crosswalkKey(crosswalkId)}
-              crosswalkId={crosswalkId}
-              index={index}
-            />
+      <g transform={`rotate(${rotation}) scale(${1 / scale})`}>
+        {' '}
+        <rect
+          className='background'
+          x={-viewBoxOffset}
+          y={-viewBoxOffset}
+          width={viewBoxOffset * 2}
+          height={viewBoxOffset * 2}
+        />
+        <rect
+          className='road'
+          x={-legWidth / 2}
+          y={-legWidth / 2}
+          width={legWidth}
+          height={legWidth}
+        />
+        {legIds.map((legId) =>
+          isMainLegId(legId) ? (
+            <g
+              key={legId}
+              transform={`rotate(${legRotation[legId]}) translate(${
+                legWidth / 2
+              },${-legWidth / 2})`}
+            >
+              <LegPopover legId={legId}>
+                {junction[legId] ? (
+                  <MainRoadBlock
+                    leg={junction[legId]!}
+                    interactive={inEditMode}
+                  />
+                ) : inEditMode ? (
+                  <AddButton cx={legLength / 2} cy={legWidth / 2} />
+                ) : null}
+              </LegPopover>
+            </g>
           ) : (
-            <DiagonalIndex
-              key={crosswalkKey(crosswalkId)}
-              crosswalkId={crosswalkId}
-              index={index}
-            />
+            <g
+              key={legId}
+              transform={`rotate(${legRotation[legId]}) translate(${
+                legWidth / 2
+              },${legWidth / 2})`}
+            >
+              <LegPopover legId={legId}>
+                {junction[legId] ? (
+                  <DiagonalRoadBlock interactive={inEditMode} />
+                ) : inEditMode &&
+                  shouldShowDiagonalLegPlaceholder(legId, junction) ? (
+                  <AddButton cx={legLength / 2} cy={legLength / 2} />
+                ) : null}
+              </LegPopover>
+            </g>
           ),
         )}
+        <g>
+          {crosswalkIds.map((crosswalkId, index) =>
+            crosswalkId.main ? (
+              <MainIndex
+                key={crosswalkKey(crosswalkId)}
+                crosswalkId={crosswalkId}
+                index={index}
+              />
+            ) : (
+              <DiagonalIndex
+                key={crosswalkKey(crosswalkId)}
+                crosswalkId={crosswalkId}
+                index={index}
+              />
+            ),
+          )}
+        </g>
       </g>
     </svg>
   )
@@ -195,9 +205,9 @@ function MainIndex({
         fontSize={circleRadius * 1.3}
         textAnchor='middle'
         alignmentBaseline='middle'
-        transform={`translate(${x}, ${(y1 + y2) / 2}) rotate(${-legRotation[
-          crosswalkId.legId
-        ]})`}
+        transform={`translate(${x}, ${(y1 + y2) / 2}) rotate(${
+          -legRotation[crosswalkId.legId] - rotation
+        })`}
       >
         {index + 1}
       </text>
@@ -231,9 +241,9 @@ function DiagonalIndex({
         fontSize={circleRadius * 1.3}
         textAnchor='middle'
         alignmentBaseline='middle'
-        transform={`translate(${circleOffset}, ${circleOffset}) rotate(${-legRotation[
-          crosswalkId.legId
-        ]})`}
+        transform={`translate(${circleOffset}, ${circleOffset}) rotate(${
+          -legRotation[crosswalkId.legId] - rotation
+        })`}
       >
         {index + 1}
       </text>
@@ -578,20 +588,22 @@ const AddButton = forwardRef(
           fill='none'
           strokeWidth={focusRingWeight}
         />
-        <rect
-          x={cx - rectWidth / 2}
-          y={cy - rectLength / 2}
-          width={rectWidth}
-          height={rectLength}
-          fill='white'
-        />
-        <rect
-          x={cx - rectLength / 2}
-          y={cy - rectWidth / 2}
-          width={rectLength}
-          height={rectWidth}
-          fill='white'
-        />
+        <g transform={`translate(${cx}, ${cy}) rotate(${-rotation})`}>
+          <rect
+            x={-rectWidth / 2}
+            y={-rectLength / 2}
+            width={rectWidth}
+            height={rectLength}
+            fill='white'
+          />
+          <rect
+            x={-rectLength / 2}
+            y={-rectWidth / 2}
+            width={rectLength}
+            height={rectWidth}
+            fill='white'
+          />
+        </g>
       </g>
     )
   },
