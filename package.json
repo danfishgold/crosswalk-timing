@@ -18,7 +18,8 @@
     "react-dom": "^18.0.0",
     "react-redux": "^8.0.1",
     "recharts": "^2.3.2",
-    "vitest": "^0.34.2"
+    "vitest": "^0.34.2",
+    "wavesurfer.js": "^7.1.5"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

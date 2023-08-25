@@ -1,15 +1,17 @@
 import { Input, InputProps } from '@chakra-ui/input'
-import React, { KeyboardEvent, useEffect, useState } from 'react'
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react'
 import { formatTimestamp } from './utils'
 
 export default function TimestampInput({
   timestamp,
   setTimestamp,
+  onKeyDown: externalOnKeyDown,
   ...props
 }: {
   timestamp: number | null
   setTimestamp: (timestamp: number | null) => void
-} & Exclude<InputProps, 'value' | 'onChange' | 'onKeyDown'>) {
+  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
+} & Exclude<InputProps, 'value' | 'onChange'>) {
   const [value, setValue] = useState(
     timestamp !== null ? formatTimestamp(timestamp) : '',
   )
@@ -25,16 +27,17 @@ export default function TimestampInput({
     }
   }, [timestamp])
 
-  useEffect(() => {
-    const newTimestamp = parseTimestamp(value)
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newTimestamp = parseTimestamp(event.target.value)
     if (newTimestamp === null) {
       setTimestamp(null)
     } else if (newTimestamp && newTimestamp !== timestamp) {
       setTimestamp(newTimestamp)
     }
-  }, [value])
+  }
 
-  const onMouseDown = (event: KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    externalOnKeyDown?.(event)
     let delta = 0
     if (event.key === 'ArrowUp') {
       delta = 1
@@ -48,10 +51,11 @@ export default function TimestampInput({
     if (delta === 0) {
       return
     }
-    const [newValue, isValueChanged] = addSecondsToTimestamp(value, delta)
-    if (isValueChanged) {
+    const newValue = addSecondsToTimestamp(value, delta)
+    if (newValue) {
       event.preventDefault()
-      setValue(newValue)
+      setValue(newValue.asString)
+      setTimestamp(newValue.timestamp)
     }
   }
 
@@ -59,8 +63,8 @@ export default function TimestampInput({
     <Input
       size='sm'
       value={value}
-      onChange={(event) => setValue(event.target.value)}
-      onKeyDown={onMouseDown}
+      onChange={onChange}
+      onKeyDown={onKeyDown}
       {...props}
     />
   )
@@ -76,11 +80,14 @@ function parseTimestamp(value: string): number | null {
 function addSecondsToTimestamp(
   value: string,
   secondsToAdd: number,
-): [string, boolean] {
+): { timestamp: number; asString: string } | null {
   const timestamp = parseTimestamp(value)
-  if (timestamp !== null) {
-    return [formatTimestamp(timestamp + secondsToAdd), true]
-  } else {
-    return [value, false]
+  if (timestamp === null) {
+    return null
+  }
+  const newTimestamp = Math.max(0, timestamp + secondsToAdd)
+  return {
+    timestamp: newTimestamp,
+    asString: formatTimestamp(newTimestamp),
   }
 }

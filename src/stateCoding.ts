@@ -61,7 +61,6 @@ export function decodeState(stateString: string): State | null {
       walkTimes,
       cursor: null,
       transitionSuggestion: null,
-      recordingDuration: 180,
       transitions: {},
       inEditMode: false,
       journeyIndexesString,
