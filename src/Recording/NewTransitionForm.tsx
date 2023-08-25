@@ -1,6 +1,5 @@
 import { Button } from '@chakra-ui/button'
 import { Flex, Heading, Spacer, VStack } from '@chakra-ui/layout'
-import { HStack } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import {
   addTransitionThroughForm,
@@ -60,38 +59,37 @@ export default function NewTransitionForm({
         <Heading as='h3' size='md'>
           הוספת מעבר
         </Heading>
-        <Flex align='flex-end' direction='row' width='100%'>
+        <Flex align='flex-end' direction='row' width='100%' gap='5px'>
           <Button
+            size='sm'
             onClick={() => setIsPlaying(!isPlaying)}
             aria-label={isPlaying ? 'הפסק הקלטה' : 'הפעל הקלטה'}
           >
             {isPlaying ? '⏸️' : '▶️'}
           </Button>
-          <HStack>
-            <TimestampField
-              timestamp={timestamp}
-              setTimestamp={(timestamp) => {
-                if (timestamp !== null) {
-                  setTimestamp(timestamp)
-                }
-              }}
-              onKeyDown={(event) => {
-                if (event.key === ' ') {
-                  setIsPlaying(!isPlaying)
-                }
-              }}
-            />
-            <TrackIndexField
-              trackIndex={crosswalkIndex}
-              setTrackIndex={setCrosswalkIndex}
-            />
-            <ColorSwitcher
-              selectedColor={toColor}
-              setSelectedColor={setToColor}
-            />
-          </HStack>
+          <TimestampField
+            timestamp={timestamp}
+            setTimestamp={(timestamp) => {
+              if (timestamp !== null) {
+                setTimestamp(timestamp)
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === ' ') {
+                setIsPlaying(!isPlaying)
+              }
+            }}
+          />
+          <TrackIndexField
+            trackIndex={crosswalkIndex}
+            setTrackIndex={setCrosswalkIndex}
+          />
+          <ColorSwitcher
+            selectedColor={toColor}
+            setSelectedColor={setToColor}
+          />
           <Spacer />
-          <Button type='submit' size='sm' colorScheme='blue'>
+          <Button type='submit' size='sm' colorScheme='blue' flexShrink={0}>
             הוספה
           </Button>
         </Flex>

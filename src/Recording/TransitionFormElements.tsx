@@ -32,7 +32,6 @@ export function TimestampField({
         timestamp={timestamp}
         setTimestamp={setTimestamp}
         onKeyDown={onKeyDown}
-        css={{ maxWidth: '100px' }}
       />
     </FormControl>
   )
@@ -81,8 +80,15 @@ export function ColorSwitcher({
 
   return (
     <FormControl>
-      <FormLabel htmlFor={id}>צבע הרמזור</FormLabel>
-      <RadioGroup id={id} value={selectedColor} onChange={setSelectedColor}>
+      <FormLabel htmlFor={id} marginBottom='12px'>
+        צבע הרמזור
+      </FormLabel>
+      <RadioGroup
+        id={id}
+        value={selectedColor}
+        onChange={setSelectedColor}
+        marginBottom='4px'
+      >
         <Stack direction='row-reverse' justify='flex-end'>
           <Radio value='red' colorScheme={'red'}>
             אדום
