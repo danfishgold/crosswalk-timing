@@ -135,6 +135,7 @@ const legRotation: Record<LegId, number> = {
 
 function LittleJourneyDiagram({ journey }: { journey: Journey }) {
   const junction = useSelector((state) => state.junction)
+  const junctionRotation = useSelector((state) => state.junctionRotation)
 
   const isClockwise = useMemo(() => {
     if (journey.crosswalkIds.length < 2) {
@@ -149,99 +150,110 @@ function LittleJourneyDiagram({ journey }: { journey: Journey }) {
     return rotationDiff >= 0
   }, [journey])
 
+  const junctionRotationInRadians = junctionRotation * (Math.PI / 180)
+  const scale =
+    Math.abs(Math.cos(junctionRotationInRadians)) +
+    Math.abs(Math.sin(junctionRotationInRadians))
+
   return (
     <svg
       viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${2 * viewBoxOffset} ${
         2 * viewBoxOffset
       }`}
-      css={{ width: '40px' }}
+      css={{ width: `${40 * scale}px` }}
     >
-      <rect
-        x={-legWidth / 2}
-        y={-legWidth / 2}
-        width={legWidth}
-        height={legWidth}
-        fill={roadColor}
-      />
-      {mainLegIds.map(
-        (legId) =>
-          junction[legId] && (
-            <rect
-              x={legWidth / 2}
-              y={-legWidth / 2}
-              width={legLength}
-              height={legWidth}
-              key={legId}
-              fill={roadColor}
-              transform={`rotate(${legRotation[legId]})`}
-            />
-          ),
-      )}
-      {diagonalLegIds.map(
-        (legId) =>
-          junction[legId] && (
-            <path
-              key={legId}
-              d={[
-                `M ${legWidth / 2 + legLength} ${legWidth / 2}`,
-                `L ${legWidth / 2 + legLength - diagonalWidth} ${legWidth / 2}`,
-                `L ${legWidth / 2} ${legWidth / 2 + legLength - diagonalWidth}`,
-                `L ${legWidth / 2} ${legWidth / 2 + legLength}`,
-                `Z`,
-              ].join(' ')}
-              fill={roadColor}
-              transform={`rotate(${legRotation[legId]})`}
-            />
-          ),
-      )}
-      {journey.crosswalkIds.map((id, index) => {
-        const x = legWidth / 2 + (legLength - diagonalWidth) / 3
-        if (id.main) {
-          const y1 = id.part === 'second' ? 0 : -x
-          const y2 = id.part === 'first' ? 0 : x
+      <g transform={`rotate(${junctionRotation}) scale(${1 / scale})`}>
+        <rect
+          x={-legWidth / 2}
+          y={-legWidth / 2}
+          width={legWidth}
+          height={legWidth}
+          fill={roadColor}
+        />
+        {mainLegIds.map(
+          (legId) =>
+            junction[legId] && (
+              <rect
+                x={legWidth / 2}
+                y={-legWidth / 2}
+                width={legLength}
+                height={legWidth}
+                key={legId}
+                fill={roadColor}
+                transform={`rotate(${legRotation[legId]})`}
+              />
+            ),
+        )}
+        {diagonalLegIds.map(
+          (legId) =>
+            junction[legId] && (
+              <path
+                key={legId}
+                d={[
+                  `M ${legWidth / 2 + legLength} ${legWidth / 2}`,
+                  `L ${legWidth / 2 + legLength - diagonalWidth} ${
+                    legWidth / 2
+                  }`,
+                  `L ${legWidth / 2} ${
+                    legWidth / 2 + legLength - diagonalWidth
+                  }`,
+                  `L ${legWidth / 2} ${legWidth / 2 + legLength}`,
+                  `Z`,
+                ].join(' ')}
+                fill={roadColor}
+                transform={`rotate(${legRotation[legId]})`}
+              />
+            ),
+        )}
+        {journey.crosswalkIds.map((id, index) => {
+          const x = legWidth / 2 + (legLength - diagonalWidth) / 3
+          if (id.main) {
+            const y1 = id.part === 'second' ? 0 : -x
+            const y2 = id.part === 'first' ? 0 : x
 
-          return (
-            <g
-              key={crosswalkKey(id)}
-              transform={`rotate(${legRotation[id.legId]})`}
-            >
-              <line
-                x1={x}
-                x2={x}
-                y1={y1}
-                y2={y2}
-                stroke={arrowColor}
-                strokeWidth={arrowWidth}
-                strokeLinecap='round'
-              />
-              {index === journey.crosswalkIds.length - 1 && (
-                <ArrowHead x={x} y1={y1} y2={y2} isOnTop={isClockwise} />
-              )}
-            </g>
-          )
-        } else {
-          const x2 = legWidth + legLength - x - legLength / 7
-          return (
-            <g
-              key={crosswalkKey(id)}
-              transform={`rotate(${legRotation[id.legId]})`}
-            >
-              <line
-                x1={x}
-                x2={x2}
-                y1={x}
-                y2={x2}
-                stroke={arrowColor}
-                strokeWidth={arrowWidth}
-                strokeLinecap='round'
-              />
-              {index === journey.crosswalkIds.length - 1 && (
-                <DiagonalArrowHead x={x2} y={x2} />
-              )}
-            </g>
-          )
-        }
-      })}
+            return (
+              <g
+                key={crosswalkKey(id)}
+                transform={`rotate(${legRotation[id.legId]})`}
+              >
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={y1}
+                  y2={y2}
+                  stroke={arrowColor}
+                  strokeWidth={arrowWidth}
+                  strokeLinecap='round'
+                />
+                {index === journey.crosswalkIds.length - 1 && (
+                  <ArrowHead x={x} y1={y1} y2={y2} isOnTop={isClockwise} />
+                )}
+              </g>
+            )
+          } else {
+            const x2 = legWidth + legLength - x - legLength / 7
+            return (
+              <g
+                key={crosswalkKey(id)}
+                transform={`rotate(${legRotation[id.legId]})`}
+              >
+                <line
+                  x1={x}
+                  x2={x2}
+                  y1={x}
+                  y2={x2}
+                  stroke={arrowColor}
+                  strokeWidth={arrowWidth}
+                  strokeLinecap='round'
+                />
+                {index === journey.crosswalkIds.length - 1 && (
+                  <DiagonalArrowHead x={x2} y={x2} />
+                )}
+              </g>
+            )
+          }
+        })}
+      </g>
     </svg>
   )
 }

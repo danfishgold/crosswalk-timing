@@ -34,7 +34,7 @@ describe('Encoding > Decoding', () => {
 describe('Decoding > Encoding', () => {
   test('The encoded string is the same', () => {
     const encodedState =
-      'ארלוזורוב/הנרייטה סולד/JCoLkKRLScYcSchMTDi5p6exoqPDoqE'
+      'ארלוזורוב/הנרייטה סולד/JCoLC5CkS0nGHHHITEw4uaensaKjw6Kh'
     const decodedState = decodeState(encodedState)
     expect(decodedState).not.toBeNull()
     const reencodedState = encodeState(decodedState!)
@@ -43,7 +43,7 @@ describe('Decoding > Encoding', () => {
 
   test('The encoded string is the same (2)', () => {
     const encodedState =
-      'ארלוזורוב/הנרייטה סולד/JCoLkKRLScYccchMTDi5p6exoqPDoqE'
+      'ארלוזורוב/הנרייטה סולד/JCoLC5CkS0nGHEnITEw4uaensaKjw6Kh'
     const decodedState = decodeState(encodedState)
     expect(decodedState).not.toBeNull()
     const reencodedState = encodeState(decodedState!)

@@ -20,6 +20,7 @@ export function encodeState(state: State): string {
   const {
     junctionTitle,
     junction,
+    junctionRotation,
     cycle,
     eventTimestamps,
     walkTimes,
@@ -29,6 +30,7 @@ export function encodeState(state: State): string {
 
   const otherStuff = [
     encodeJunction(junction),
+    junctionRotation.toString(),
     encodeCycle(cycle),
     encodeTimestamps(eventTimestamps, crosswalkIds),
     encodeWalkTimes(walkTimes, crosswalkIds),
@@ -48,6 +50,7 @@ export function decodeState(stateString: string): State | null {
     const junctionTitle = decodeURI(junctionTitleString)
     const {
       junction,
+      junctionRotation,
       cycle,
       eventTimestamps,
       walkTimes,
@@ -56,6 +59,7 @@ export function decodeState(stateString: string): State | null {
     return {
       junctionTitle,
       junction,
+      junctionRotation,
       cycle,
       eventTimestamps,
       walkTimes,
@@ -78,6 +82,7 @@ function decodeOtherStuff(
 ): Pick<
   State,
   | 'junction'
+  | 'junctionRotation'
   | 'cycle'
   | 'eventTimestamps'
   | 'walkTimes'
@@ -85,6 +90,7 @@ function decodeOtherStuff(
 > {
   const [
     junctionString,
+    junctionRotationString,
     cycleString,
     timestampsString,
     walkTimesString,
@@ -100,6 +106,7 @@ function decodeOtherStuff(
     decodeJourneyIndexesString(journeyIndexesString)
   return {
     junction,
+    junctionRotation: +junctionRotationString,
     cycle,
     eventTimestamps,
     walkTimes,

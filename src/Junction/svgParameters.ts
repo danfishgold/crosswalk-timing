@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useSelector } from '../store'
 
 export type SvgParameters = PrimarySvgParameters & DerivedSvgParameters
 
@@ -10,6 +11,7 @@ type PrimarySvgParameters = {
   crosswalkSegmentsInDiagonal: number
   islandWidthInSegments: number
   circleRadius: number
+  rotation: number
 }
 
 type DerivedSvgParameters = {
@@ -20,6 +22,7 @@ type DerivedSvgParameters = {
   crosswalkOffset: number
   cornerWidth: number
   circleOffset: number
+  scale: number
 }
 
 function derivedSvgParameters({
@@ -28,6 +31,7 @@ function derivedSvgParameters({
   islandWidthInSegments,
   crosswalkLength,
   circleRadius,
+  rotation,
 }: PrimarySvgParameters): DerivedSvgParameters {
   const crosswalkSegmentCount =
     crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
@@ -40,6 +44,11 @@ function derivedSvgParameters({
   const circleOffset =
     legWidth / 2 + crosswalkOffset * 2 + crosswalkLength + circleRadius
 
+  const rotationInRadians = rotation * (Math.PI / 180)
+  const scale =
+    Math.abs(Math.cos(rotationInRadians)) +
+    Math.abs(Math.sin(rotationInRadians))
+
   return {
     crosswalkSegmentCount,
     crosswalkSegmentLength,
@@ -48,10 +57,11 @@ function derivedSvgParameters({
     crosswalkOffset,
     cornerWidth,
     circleOffset,
+    scale,
   }
 }
 
-function svgParameters(): SvgParameters {
+function svgParameters(junctionRotation: number): SvgParameters {
   const primaryParameters: PrimarySvgParameters = {
     legWidth: 30,
     legLength: 40,
@@ -60,6 +70,7 @@ function svgParameters(): SvgParameters {
     crosswalkSegmentsInEachDirection: 3,
     crosswalkSegmentsInDiagonal: 3,
     islandWidthInSegments: 2,
+    rotation: junctionRotation,
   }
   return {
     ...primaryParameters,
@@ -68,7 +79,12 @@ function svgParameters(): SvgParameters {
 }
 
 export function useSvgParameters(): SvgParameters {
-  const parameters = useMemo(() => svgParameters(), [])
+  const junctionRotation = useSelector((state) => state.junctionRotation)
+
+  const parameters = useMemo(
+    () => svgParameters(junctionRotation),
+    [junctionRotation],
+  )
 
   return parameters
 }

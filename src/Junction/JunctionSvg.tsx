@@ -50,86 +50,91 @@ export function JunctionSvg({ inEditMode }: { inEditMode: boolean }) {
   const junction = useSelector((state) => state.junction)
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const highlights = useSelector(selectCrosswalkHighlightColors)
-  const { legWidth, legLength } = useSvgParameters()
+  const { legWidth, legLength, scale, rotation } = useSvgParameters()
   const viewBoxOffset = legWidth / 2 + legLength
+
+  const sideSizeInPixels = 250
 
   return (
     <svg
       css={{
-        height: '250px',
-        width: '250px',
+        height: `${sideSizeInPixels * scale}px`,
+        width: `${sideSizeInPixels * scale}px`,
       }}
       viewBox={`${-viewBoxOffset} ${-viewBoxOffset} ${viewBoxOffset * 2} ${
         viewBoxOffset * 2
       }`}
     >
-      <rect
-        className='background'
-        x={-viewBoxOffset}
-        y={-viewBoxOffset}
-        width={viewBoxOffset * 2}
-        height={viewBoxOffset * 2}
-      />
-      <rect
-        className='road'
-        x={-legWidth / 2}
-        y={-legWidth / 2}
-        width={legWidth}
-        height={legWidth}
-      />
-      {legIds.map((legId) =>
-        isMainLegId(legId) ? (
-          <g
-            key={legId}
-            transform={`rotate(${legRotation[legId]}) translate(${
-              legWidth / 2
-            },${-legWidth / 2})`}
-          >
-            <LegPopover legId={legId}>
-              {junction[legId] ? (
-                <MainRoadBlock
-                  leg={junction[legId]!}
-                  interactive={inEditMode}
-                />
-              ) : inEditMode ? (
-                <AddButton cx={legLength / 2} cy={legWidth / 2} />
-              ) : null}
-            </LegPopover>
-          </g>
-        ) : (
-          <g
-            key={legId}
-            transform={`rotate(${legRotation[legId]}) translate(${
-              legWidth / 2
-            },${legWidth / 2})`}
-          >
-            <LegPopover legId={legId}>
-              {junction[legId] ? (
-                <DiagonalRoadBlock interactive={inEditMode} />
-              ) : inEditMode &&
-                shouldShowDiagonalLegPlaceholder(legId, junction) ? (
-                <AddButton cx={legLength / 2} cy={legLength / 2} />
-              ) : null}
-            </LegPopover>
-          </g>
-        ),
-      )}
-      <g>
-        {crosswalkIds.map((crosswalkId, index) =>
-          crosswalkId.main ? (
-            <MainIndex
-              key={crosswalkKey(crosswalkId)}
-              crosswalkId={crosswalkId}
-              index={index}
-            />
+      <g transform={`rotate(${rotation}) scale(${1 / scale})`}>
+        {' '}
+        <rect
+          className='background'
+          x={-viewBoxOffset}
+          y={-viewBoxOffset}
+          width={viewBoxOffset * 2}
+          height={viewBoxOffset * 2}
+        />
+        <rect
+          className='road'
+          x={-legWidth / 2}
+          y={-legWidth / 2}
+          width={legWidth}
+          height={legWidth}
+        />
+        {legIds.map((legId) =>
+          isMainLegId(legId) ? (
+            <g
+              key={legId}
+              transform={`rotate(${legRotation[legId]}) translate(${
+                legWidth / 2
+              },${-legWidth / 2})`}
+            >
+              <LegPopover legId={legId}>
+                {junction[legId] ? (
+                  <MainRoadBlock
+                    leg={junction[legId]!}
+                    interactive={inEditMode}
+                  />
+                ) : inEditMode ? (
+                  <AddButton cx={legLength / 2} cy={legWidth / 2} />
+                ) : null}
+              </LegPopover>
+            </g>
           ) : (
-            <DiagonalIndex
-              key={crosswalkKey(crosswalkId)}
-              crosswalkId={crosswalkId}
-              index={index}
-            />
+            <g
+              key={legId}
+              transform={`rotate(${legRotation[legId]}) translate(${
+                legWidth / 2
+              },${legWidth / 2})`}
+            >
+              <LegPopover legId={legId}>
+                {junction[legId] ? (
+                  <DiagonalRoadBlock interactive={inEditMode} />
+                ) : inEditMode &&
+                  shouldShowDiagonalLegPlaceholder(legId, junction) ? (
+                  <AddButton cx={legLength / 2} cy={legLength / 2} />
+                ) : null}
+              </LegPopover>
+            </g>
           ),
         )}
+        <g>
+          {crosswalkIds.map((crosswalkId, index) =>
+            crosswalkId.main ? (
+              <MainIndex
+                key={crosswalkKey(crosswalkId)}
+                crosswalkId={crosswalkId}
+                index={index}
+              />
+            ) : (
+              <DiagonalIndex
+                key={crosswalkKey(crosswalkId)}
+                crosswalkId={crosswalkId}
+                index={index}
+              />
+            ),
+          )}
+        </g>
       </g>
     </svg>
   )
@@ -152,6 +157,7 @@ function MainIndex({
     crosswalkSegmentLength,
     crosswalkSegmentsInEachDirection,
     circleOffset: x,
+    rotation,
   } = useSvgParameters()
   const [y1, y2] = useMemo(() => {
     if (!crosswalkId.part) {
@@ -195,9 +201,9 @@ function MainIndex({
         fontSize={circleRadius * 1.3}
         textAnchor='middle'
         alignmentBaseline='middle'
-        transform={`translate(${x}, ${(y1 + y2) / 2}) rotate(${-legRotation[
-          crosswalkId.legId
-        ]})`}
+        transform={`translate(${x}, ${(y1 + y2) / 2}) rotate(${
+          -legRotation[crosswalkId.legId] - rotation
+        })`}
       >
         {index + 1}
       </text>
@@ -215,7 +221,7 @@ function DiagonalIndex({
   const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)
   const highlight =
     cursorCrosswalkId && areCrosswalkIdsEqual(cursorCrosswalkId, crosswalkId)
-  const { circleRadius, circleOffset } = useSvgParameters()
+  const { circleRadius, circleOffset, rotation } = useSvgParameters()
 
   return (
     <g
@@ -231,9 +237,9 @@ function DiagonalIndex({
         fontSize={circleRadius * 1.3}
         textAnchor='middle'
         alignmentBaseline='middle'
-        transform={`translate(${circleOffset}, ${circleOffset}) rotate(${-legRotation[
-          crosswalkId.legId
-        ]})`}
+        transform={`translate(${circleOffset}, ${circleOffset}) rotate(${
+          -legRotation[crosswalkId.legId] - rotation
+        })`}
       >
         {index + 1}
       </text>
@@ -474,30 +480,28 @@ function LegPopoverMenu({
   const dispatch = useDispatch()
 
   const legOptions = isMainLegId(legId) ? mainLegOptions : diagonalLegOptions
-  const { legLength } = useSvgParameters()
+  const { legLength, scale, rotation } = useSvgParameters()
+  const transform = [
+    `translate(${legLength / 2}, ${legLength / 2})`,
+    `rotate(${legRotation[legId] + rotation})`,
+    `scale(${1 / scale})`,
+    `translate(${-legLength / 2}, ${-legLength / 2})`,
+  ].join(' ')
   return (
     <VStack align='start'>
       {legOptions.map((option) => (
         <HStack key={option.title}>
-          <svg width={legLength} height={legLength}>
+          <svg
+            width={legLength * scale}
+            height={legLength * scale}
+            viewBox={`${0} ${0} ${legLength} ${legLength}`}
+          >
             {!option.leg ? null : option.leg.main ? (
-              <g
-                transform={`translate(${legLength / 2}, ${
-                  legLength / 2
-                }) rotate(${legRotation[legId]}) translate(${-legLength / 2}, ${
-                  -legLength / 2
-                })`}
-              >
+              <g transform={transform}>
                 <MainRoadBlock leg={option.leg} interactive={false} />
               </g>
             ) : (
-              <g
-                transform={`translate(${legLength / 2}, ${
-                  legLength / 2
-                }) rotate(${legRotation[legId]}) translate(${-legLength / 2}, ${
-                  -legLength / 2
-                })`}
-              >
+              <g transform={transform}>
                 <DiagonalRoadBlock interactive={false} />
               </g>
             )}
@@ -549,7 +553,7 @@ const AddButton = forwardRef(
     },
     ref: ForwardedRef<SVGGElement>,
   ) => {
-    const { legLength, legWidth } = useSvgParameters()
+    const { legLength, legWidth, rotation } = useSvgParameters()
     const r = Math.min(legLength, legWidth) / 4
     const rectLength = r * 0.95
     const rectWidth = r * 0.15
@@ -578,20 +582,22 @@ const AddButton = forwardRef(
           fill='none'
           strokeWidth={focusRingWeight}
         />
-        <rect
-          x={cx - rectWidth / 2}
-          y={cy - rectLength / 2}
-          width={rectWidth}
-          height={rectLength}
-          fill='white'
-        />
-        <rect
-          x={cx - rectLength / 2}
-          y={cy - rectWidth / 2}
-          width={rectLength}
-          height={rectWidth}
-          fill='white'
-        />
+        <g transform={`translate(${cx}, ${cy}) rotate(${-rotation})`}>
+          <rect
+            x={-rectWidth / 2}
+            y={-rectLength / 2}
+            width={rectWidth}
+            height={rectLength}
+            fill='white'
+          />
+          <rect
+            x={-rectLength / 2}
+            y={-rectWidth / 2}
+            width={rectLength}
+            height={rectWidth}
+            fill='white'
+          />
+        </g>
       </g>
     )
   },
