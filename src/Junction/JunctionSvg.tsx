@@ -45,19 +45,14 @@ const legRotation: Record<LegId, number> = {
 }
 
 const focusRingWeight = 2
-const rotation = 120
 
 export function JunctionSvg({ inEditMode }: { inEditMode: boolean }) {
   const junction = useSelector((state) => state.junction)
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
   const highlights = useSelector(selectCrosswalkHighlightColors)
-  const { legWidth, legLength } = useSvgParameters()
+  const { legWidth, legLength, scale, rotation } = useSvgParameters()
   const viewBoxOffset = legWidth / 2 + legLength
 
-  const rotationInRadians = rotation * (Math.PI / 180)
-  const scale =
-    Math.abs(Math.cos(rotationInRadians)) +
-    Math.abs(Math.sin(rotationInRadians))
   const sideSizeInPixels = 250
 
   return (
@@ -162,6 +157,7 @@ function MainIndex({
     crosswalkSegmentLength,
     crosswalkSegmentsInEachDirection,
     circleOffset: x,
+    rotation,
   } = useSvgParameters()
   const [y1, y2] = useMemo(() => {
     if (!crosswalkId.part) {
@@ -225,7 +221,7 @@ function DiagonalIndex({
   const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)
   const highlight =
     cursorCrosswalkId && areCrosswalkIdsEqual(cursorCrosswalkId, crosswalkId)
-  const { circleRadius, circleOffset } = useSvgParameters()
+  const { circleRadius, circleOffset, rotation } = useSvgParameters()
 
   return (
     <g
@@ -484,30 +480,28 @@ function LegPopoverMenu({
   const dispatch = useDispatch()
 
   const legOptions = isMainLegId(legId) ? mainLegOptions : diagonalLegOptions
-  const { legLength } = useSvgParameters()
+  const { legLength, scale, rotation } = useSvgParameters()
+  const transform = [
+    `translate(${legLength / 2}, ${legLength / 2})`,
+    `rotate(${legRotation[legId] + rotation})`,
+    `scale(${1 / scale})`,
+    `translate(${-legLength / 2}, ${-legLength / 2})`,
+  ].join(' ')
   return (
     <VStack align='start'>
       {legOptions.map((option) => (
         <HStack key={option.title}>
-          <svg width={legLength} height={legLength}>
+          <svg
+            width={legLength * scale}
+            height={legLength * scale}
+            viewBox={`${0} ${0} ${legLength} ${legLength}`}
+          >
             {!option.leg ? null : option.leg.main ? (
-              <g
-                transform={`translate(${legLength / 2}, ${
-                  legLength / 2
-                }) rotate(${legRotation[legId]}) translate(${-legLength / 2}, ${
-                  -legLength / 2
-                })`}
-              >
+              <g transform={transform}>
                 <MainRoadBlock leg={option.leg} interactive={false} />
               </g>
             ) : (
-              <g
-                transform={`translate(${legLength / 2}, ${
-                  legLength / 2
-                }) rotate(${legRotation[legId]}) translate(${-legLength / 2}, ${
-                  -legLength / 2
-                })`}
-              >
+              <g transform={transform}>
                 <DiagonalRoadBlock interactive={false} />
               </g>
             )}
@@ -559,7 +553,7 @@ const AddButton = forwardRef(
     },
     ref: ForwardedRef<SVGGElement>,
   ) => {
-    const { legLength, legWidth } = useSvgParameters()
+    const { legLength, legWidth, rotation } = useSvgParameters()
     const r = Math.min(legLength, legWidth) / 4
     const rectLength = r * 0.95
     const rectWidth = r * 0.15

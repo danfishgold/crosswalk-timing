@@ -10,6 +10,7 @@ type PrimarySvgParameters = {
   crosswalkSegmentsInDiagonal: number
   islandWidthInSegments: number
   circleRadius: number
+  rotation: number
 }
 
 type DerivedSvgParameters = {
@@ -20,6 +21,7 @@ type DerivedSvgParameters = {
   crosswalkOffset: number
   cornerWidth: number
   circleOffset: number
+  scale: number
 }
 
 function derivedSvgParameters({
@@ -28,6 +30,7 @@ function derivedSvgParameters({
   islandWidthInSegments,
   crosswalkLength,
   circleRadius,
+  rotation,
 }: PrimarySvgParameters): DerivedSvgParameters {
   const crosswalkSegmentCount =
     crosswalkSegmentsInEachDirection * 2 + islandWidthInSegments
@@ -40,6 +43,11 @@ function derivedSvgParameters({
   const circleOffset =
     legWidth / 2 + crosswalkOffset * 2 + crosswalkLength + circleRadius
 
+  const rotationInRadians = rotation * (Math.PI / 180)
+  const scale =
+    Math.abs(Math.cos(rotationInRadians)) +
+    Math.abs(Math.sin(rotationInRadians))
+
   return {
     crosswalkSegmentCount,
     crosswalkSegmentLength,
@@ -48,6 +56,7 @@ function derivedSvgParameters({
     crosswalkOffset,
     cornerWidth,
     circleOffset,
+    scale,
   }
 }
 
@@ -60,6 +69,7 @@ function svgParameters(): SvgParameters {
     crosswalkSegmentsInEachDirection: 3,
     crosswalkSegmentsInDiagonal: 3,
     islandWidthInSegments: 2,
+    rotation: 120,
   }
   return {
     ...primaryParameters,
