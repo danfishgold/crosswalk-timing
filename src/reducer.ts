@@ -14,12 +14,10 @@ import {
 } from './Cycle/timedEvents'
 import { canonicalWaitTimes } from './Simulation/waitTimes'
 import {
-  Color,
   CrosswalkId,
   CrosswalkKey,
   crosswalkKey,
   DiagonalLegId,
-  Highlight,
   Junction,
   Leg,
   LegId,
@@ -51,86 +49,6 @@ const { actions, reducer } = createSlice({
     },
     setRotation(state, action: PayloadAction<number>) {
       state.junctionRotation = action.payload
-    },
-    hoverOverTimeline(
-      state,
-      action: PayloadAction<{ timestamp: number; crosswalkId?: CrosswalkId }>,
-    ) {
-      if (state.transitionSuggestion) {
-        return
-      }
-      state.cursor = {
-        timestamp: action.payload.timestamp,
-        crosswalkId: action.payload.crosswalkId ?? null,
-      }
-    },
-    moveOutsideTimeline(state) {
-      if (state.transitionSuggestion) {
-        return
-      }
-      state.cursor = null
-    },
-    clickTimelineTrack(
-      state,
-      action: PayloadAction<{
-        crosswalkId: CrosswalkId
-        timestamp: number
-        x: number
-        y: number
-      }>,
-    ) {
-      state.transitionSuggestion = {
-        crosswalkId: action.payload.crosswalkId,
-        timestamp: action.payload.timestamp,
-        x: action.payload.x,
-        y: action.payload.y,
-      }
-      state.cursor = {
-        crosswalkId: action.payload.crosswalkId,
-        timestamp: action.payload.timestamp,
-      }
-    },
-    confirmTransitionSuggestion(state, action: PayloadAction<Color>) {
-      if (!state.transitionSuggestion) {
-        return
-      }
-
-      const transition = {
-        crosswalkId: state.transitionSuggestion.crosswalkId,
-        timestamp: state.transitionSuggestion.timestamp,
-        toColor: action.payload,
-      }
-
-      upsertTransition(
-        state.transitions,
-        transition,
-        state.transitionSuggestion.id,
-      )
-      state.transitionSuggestion = null
-      state.cursor = null
-    },
-    cancelTransitionSuggestion(state) {
-      if (state.transitionSuggestion?.id) {
-        delete state.transitions[state.transitionSuggestion.id]
-      }
-      state.transitionSuggestion = null
-      state.cursor = null
-    },
-    clickOnExistingTransition(
-      state,
-      action: PayloadAction<{ id: string; x: number; y: number }>,
-    ) {
-      const transition = state.transitions[action.payload.id]
-      if (!transition) {
-        return
-      }
-      state.transitionSuggestion = {
-        id: action.payload.id,
-        timestamp: transition.timestamp,
-        crosswalkId: transition.crosswalkId,
-        x: action.payload.x,
-        y: action.payload.y,
-      }
     },
     addTransitionThroughForm(state, action: PayloadAction<Transition>) {
       upsertTransition(state.transitions, action.payload)
@@ -178,10 +96,10 @@ const { actions, reducer } = createSlice({
     setJourneyIndexesString(state, action: PayloadAction<string>) {
       state.journeyIndexesString = action.payload
     },
-    replaceEntireState(state, action: PayloadAction<State>) {
+    replaceEntireState(_, action: PayloadAction<State>) {
       return action.payload
     },
-    resetState(state) {
+    resetState() {
       return { ...states.emptyState, inEditMode: true }
     },
   },
@@ -211,12 +129,6 @@ export const {
   setJunctionTitle,
   setLeg,
   setRotation,
-  hoverOverTimeline,
-  moveOutsideTimeline,
-  clickTimelineTrack,
-  confirmTransitionSuggestion,
-  cancelTransitionSuggestion,
-  clickOnExistingTransition,
   addTransitionThroughForm,
   updateTransitionInList,
   deleteTransitionFromList,
@@ -285,30 +197,6 @@ export const selectCycleDurationSuggestions = createSelector(
   (state: State) => state.transitions,
   (transitions) => cycleDurationSuggestions(transitions),
 )
-
-export const selectCrosswalkHighlightColors = createSelector<
-  [Selector<State, CrosswalkId[]>, Selector<State, CrosswalkId | null>],
-  Record<CrosswalkKey, Highlight | null>
->(
-  selectCrosswalkIdsWithTrafficLights,
-  (state) => state.cursor?.crosswalkId ?? null,
-  crosswalkHighlightColors,
-)
-
-function crosswalkHighlightColors(
-  crosswalkIds: CrosswalkId[],
-  cursorCrosswalkId: CrosswalkId | null,
-): Record<CrosswalkKey, Highlight | null> {
-  const entries = crosswalkIds.map((id) => {
-    const key = crosswalkKey(id)
-    if (cursorCrosswalkId && crosswalkKey(cursorCrosswalkId) === key) {
-      return [key, 'highlight']
-    } else {
-      return [key, null]
-    }
-  })
-  return Object.fromEntries(entries)
-}
 
 export const selectCanonicalCycleSegments = createSelector<
   [

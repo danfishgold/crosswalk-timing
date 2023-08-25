@@ -13,12 +13,7 @@ import {
   PropsWithChildren,
   useMemo,
 } from 'react'
-import {
-  areCrosswalkIdsEqual,
-  selectCrosswalkHighlightColors,
-  selectCrosswalkIdsWithTrafficLights,
-  setLeg,
-} from '../reducer'
+import { selectCrosswalkIdsWithTrafficLights, setLeg } from '../reducer'
 import {
   crosswalkKey,
   DiagonalCrosswalkId,
@@ -51,7 +46,6 @@ const focusRingWeight = 2
 export function JunctionSvg({ inEditMode }: { inEditMode: boolean }) {
   const junction = useSelector((state) => state.junction)
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
-  const highlights = useSelector(selectCrosswalkHighlightColors)
   const { legWidth, legLength, scale, rotation } = useSvgParameters()
   const viewBoxOffset = legWidth / 2 + legLength
 
@@ -149,10 +143,6 @@ function MainIndex({
   crosswalkId: MainCrosswalkId
   index: number
 }) {
-  const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)
-  const highlight =
-    cursorCrosswalkId && areCrosswalkIdsEqual(cursorCrosswalkId, crosswalkId)
-
   const {
     legWidth,
     circleRadius,
@@ -183,9 +173,7 @@ function MainIndex({
 
   return (
     <g
-      className={`index-indicator ${
-        highlight ? 'index-indicator--highlight' : ''
-      }`}
+      className='index-indicator'
       transform={`rotate(${legRotation[crosswalkId.legId]})`}
     >
       {!crosswalkId.part && (
@@ -220,16 +208,11 @@ function DiagonalIndex({
   crosswalkId: DiagonalCrosswalkId
   index: number
 }) {
-  const cursorCrosswalkId = useSelector((state) => state.cursor?.crosswalkId)
-  const highlight =
-    cursorCrosswalkId && areCrosswalkIdsEqual(cursorCrosswalkId, crosswalkId)
   const { circleRadius, circleOffset, rotation } = useSvgParameters()
 
   return (
     <g
-      className={`index-indicator ${
-        highlight ? 'index-indicator--highlight' : ''
-      }`}
+      className='index-indicator'
       transform={`rotate(${legRotation[crosswalkId.legId]})`}
     >
       <circle cx={circleOffset} cy={circleOffset} r={circleRadius} />

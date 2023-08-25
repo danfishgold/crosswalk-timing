@@ -5,8 +5,6 @@ export type State = {
   junctionTitle: string
   junctionRotation: number
   transitions: Record<string, Transition>
-  cursor: Cursor | null
-  transitionSuggestion: TransitionSuggestion | null
   cycle: Cycle | null
   eventTimestamps: Partial<Record<TimedEventKey, number[]>>
   walkTimes: Partial<Record<CrosswalkKey, number>>
@@ -58,20 +56,6 @@ export type Transition = {
 }
 
 export type Color = 'red' | 'green'
-export type Highlight = Color | 'highlight'
-
-export type Cursor = {
-  timestamp: number
-  crosswalkId: CrosswalkId | null
-}
-
-export type TransitionSuggestion = {
-  id?: string
-  timestamp: number
-  crosswalkId: CrosswalkId
-  x: number
-  y: number
-}
 
 export type Cycle = { duration: number; offset: number }
 
@@ -106,8 +90,6 @@ const emptyState: State = {
   junctionTitle: '',
   junctionRotation: 0,
   transitions: {},
-  cursor: null,
-  transitionSuggestion: null,
   cycle: null,
   eventTimestamps: {},
   walkTimes: {},
@@ -179,8 +161,6 @@ const szoldState: State = {
       toColor: 'red',
     },
   },
-  cursor: null,
-  transitionSuggestion: null,
   cycle: { duration: 90, offset: 44 },
   eventTimestamps: {
     'w-green': [4],
@@ -318,8 +298,6 @@ const weizmannState: State = {
       toColor: 'green',
     },
   },
-  cursor: null,
-  transitionSuggestion: null,
   cycle: { duration: 90, offset: 28 },
   eventTimestamps: {
     'n-first-green': [34],
@@ -442,8 +420,6 @@ const ibnGavirolState: State = {
       toColor: 'red',
     },
   },
-  cursor: null,
-  transitionSuggestion: null,
   cycle: { duration: 90, offset: -21 },
   eventTimestamps: {
     'n-green': [76],
@@ -595,8 +571,6 @@ const weizmannSheinkin: State = {
       toColor: 'red',
     },
   },
-  cursor: null,
-  transitionSuggestion: null,
   cycle: { duration: 105, offset: 83 },
   eventTimestamps: {
     'w-green': [4],
