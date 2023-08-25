@@ -80,3 +80,25 @@ body {
 .index-indicator--highlight circle {
   fill: var(--chakra-colors-orange-300);
 }
+
+#waveform ::part(transition-marker) {
+  margin-right: 3px;
+  padding: 0;
+  text-align: center;
+  display: grid;
+  place-items: center;
+  border-radius: 1000px;
+  font-size: 10px;
+  width: 14px;
+  height: 14px;
+  line-height: 1.25;
+}
+
+#waveform ::part(red) {
+  background: var(--chakra-colors-red-500);
+  color: white;
+}
+#waveform ::part(green) {
+  background: var(--chakra-colors-green-500);
+  color: white;
+}

@@ -286,3 +286,22 @@ export function areCrosswalkIdsEqual(a: CrosswalkId, b: CrosswalkId): boolean {
     return false
   }
 }
+
+export const selectTransitionsByCrosswalkIndex = createSelector<
+  [Selector<State, CrosswalkId[]>, Selector<State, Record<string, Transition>>],
+  Record<number, Transition[]>
+>(
+  selectCrosswalkIdsWithTrafficLights,
+  (state) => state.transitions,
+  (crosswalkIds, transitions) => {
+    const transitionsByCrosswalkIndex: Record<number, Transition[]> = {}
+    crosswalkIds.forEach((id, index) => {
+      const relevantTransitions = Object.values(transitions).filter(
+        (transition) => areCrosswalkIdsEqual(transition.crosswalkId, id),
+      )
+      transitionsByCrosswalkIndex[index] = relevantTransitions
+    })
+
+    return transitionsByCrosswalkIndex
+  },
+)

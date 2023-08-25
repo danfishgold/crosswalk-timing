@@ -1,8 +1,12 @@
 import { RefObject, useEffect, useRef, useState } from 'react'
 import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js'
 import Hover from 'wavesurfer.js/dist/plugins/hover'
+import Regions from 'wavesurfer.js/dist/plugins/regions'
 import Timeline from 'wavesurfer.js/dist/plugins/timeline'
+import { Transition } from '../state'
 import { TimelineTimestamp } from './RecordingSection'
+
+const regionsPlugin = Regions.create()
 
 const options = {
   height: 100,
@@ -18,6 +22,7 @@ const options = {
       labelColor: '#fff',
       labelSize: '11px',
     }),
+    regionsPlugin,
   ],
 }
 
@@ -27,12 +32,14 @@ export function AudioPlayer({
   setTimestamp,
   isPlaying,
   setIsPlaying,
+  transitions,
 }: {
   url: string
   timestamp: TimelineTimestamp
   setTimestamp: (timestamp: TimelineTimestamp) => void
   isPlaying: boolean
   setIsPlaying: (isPlaying: boolean) => void
+  transitions: Record<number, Transition[]>
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const wavesurfer = useWavesurfer(containerRef, options, url)
@@ -73,7 +80,22 @@ export function AudioPlayer({
     }
   }, [isPlaying])
 
-  return <div ref={containerRef} css={{ width: '100%' }} />
+  useEffect(() => {
+    regionsPlugin.clearRegions()
+    for (const [crosswalkIndex, transitionsForCrosswalk] of Object.entries(
+      transitions,
+    )) {
+      for (const transition of transitionsForCrosswalk) {
+        regionsPlugin.addRegion({
+          start: transition.timestamp,
+          content: transitionMarker(transition, +crosswalkIndex),
+          id: transition.toColor,
+        })
+      }
+    }
+  }, [transitions])
+
+  return <div id='waveform' ref={containerRef} css={{ width: '100%' }} />
 }
 
 function useWavesurfer(
@@ -100,4 +122,17 @@ function useWavesurfer(
   }, [containerRef, options, url])
 
   return wavesurfer
+}
+
+function transitionMarker(
+  transition: Transition,
+  crosswalkIndex: number,
+): HTMLElement {
+  const div = document.createElement('div')
+  const innerDiv = document.createElement('div')
+  div.appendChild(innerDiv)
+  innerDiv.part.add('transition-marker')
+  innerDiv.part.add(transition.toColor)
+  innerDiv.innerText = `${crosswalkIndex + 1}`
+  return div
 }

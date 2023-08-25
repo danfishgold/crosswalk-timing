@@ -1,6 +1,9 @@
 import { Heading, VStack } from '@chakra-ui/layout'
 import { useState } from 'react'
-import { selectCrosswalkIdsWithTrafficLights } from '../reducer'
+import {
+  selectCrosswalkIdsWithTrafficLights,
+  selectTransitionsByCrosswalkIndex,
+} from '../reducer'
 import { useSelector } from '../store'
 import { sectionWidthCss } from '../styleUtils'
 import { AudioPlayer } from './AudioPlayer'
@@ -14,6 +17,9 @@ export type TimelineTimestamp = {
 
 export function TimelineEditor() {
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
+  const transitionsByCrosswalkIndex = useSelector(
+    selectTransitionsByCrosswalkIndex,
+  )
   const hasCrosswalks = crosswalkIds.length > 0
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -42,6 +48,7 @@ export function TimelineEditor() {
           setTimestamp={setTimestamp}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
+          transitions={transitionsByCrosswalkIndex}
         />
       )}
       {hasCrosswalks && fileUrl && (
