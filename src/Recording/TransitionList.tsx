@@ -11,7 +11,7 @@ import {
 } from '../reducer'
 import { useDispatch, useSelector } from '../store'
 import CrosswalkNumberIndicator from './../CrosswalkNumberIndicator'
-import TransitionFormElements from './TransitionFormElements'
+import { ColorSwitcher, TimestampField } from './TransitionFormElements'
 
 export default function TransitionList() {
   const crosswalkIds = useSelector(selectCrosswalkIdsWithTrafficLights)
@@ -81,16 +81,33 @@ function TransitionRow({ id }: { id: string }) {
   }
   return (
     <HStack align='flex-end' spacing='20px'>
-      <TransitionFormElements
-        transition={transition}
-        onChange={(updatedTransition) =>
-          dispatch(
-            updateTransitionInList({ id, transition: updatedTransition }),
-          )
-        }
-        formIdPrefix={id}
-        isTrackIndexFieldHidden={true}
-      />
+      <HStack>
+        <TimestampField
+          formIdPrefix={id}
+          timestamp={transition.timestamp}
+          setTimestamp={(timestamp) => {
+            if (timestamp !== null) {
+              dispatch(
+                updateTransitionInList({
+                  id,
+                  transition: { ...transition, timestamp },
+                }),
+              )
+            }
+          }}
+        />
+        <ColorSwitcher
+          selectedColor={transition.toColor}
+          setSelectedColor={(toColor) =>
+            dispatch(
+              updateTransitionInList({
+                id,
+                transition: { ...transition, toColor },
+              }),
+            )
+          }
+        />
+      </HStack>
       <Button size='sm' onClick={onDeleteClick}>
         מחיקה
       </Button>

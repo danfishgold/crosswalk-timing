@@ -19,7 +19,6 @@ import { compact } from './utils'
 export type State = {
   junction: Junction
   junctionTitle: string
-  recordingDuration: number
   transitions: Record<string, Transition>
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
@@ -120,7 +119,6 @@ export const emptyState: State = {
     sw: null,
   },
   junctionTitle: '',
-  recordingDuration: 180,
   transitions: {},
   cursor: null,
   transitionSuggestion: null,
@@ -143,7 +141,6 @@ export const szoldState: State = {
     sw: null,
   },
   junctionTitle: 'ארלוזורוב/הנרייטה סולד',
-  recordingDuration: 180,
   transitions: {
     '0.12398773012577846': {
       crosswalkId: { main: true, legId: 's', part: 'first' },
@@ -228,7 +225,6 @@ const weizmannState: State = {
     sw: null,
   },
   junctionTitle: 'ארלוזורוב/ויצמן',
-  recordingDuration: 399,
   transitions: {
     '0.5223888119273669': {
       timestamp: 35,
@@ -383,7 +379,6 @@ const ibnGavirolState: State = {
     sw: null,
   },
   junctionTitle: 'אבן גבירול/מלכי ישראל/צייטלין',
-  recordingDuration: 381,
   transitions: {
     '0.6560413026551709': {
       timestamp: 16,
@@ -502,7 +497,6 @@ const weizmannSheinkin: State = {
     sw: null,
   },
   junctionTitle: 'ויצמן / שינקין (גבעתיים)',
-  recordingDuration: 498,
   transitions: {
     '0.8095581678087502': {
       crosswalkId: { main: true, legId: 'w' },
@@ -659,9 +653,6 @@ const { actions, reducer } = createSlice({
         state.junction[action.payload.legId as DiagonalLegId] =
           action.payload.leg
       }
-    },
-    setRecordingDuration(state, action: PayloadAction<number>) {
-      state.recordingDuration = action.payload
     },
     hoverOverTimeline(
       state,
@@ -821,7 +812,6 @@ export default reducer
 export const {
   setJunctionTitle,
   setLeg,
-  setRecordingDuration,
   hoverOverTimeline,
   moveOutsideTimeline,
   clickTimelineTrack,
