@@ -16,10 +16,10 @@ const options = {
   plugins: [
     Timeline.create(),
     Hover.create({
-      lineColor: '#ff0000',
+      lineColor: 'black',
       lineWidth: 2,
       labelBackground: '#555',
-      labelColor: '#fff',
+      labelColor: 'white',
       labelSize: '11px',
     }),
     regionsPlugin,
