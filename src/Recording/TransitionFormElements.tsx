@@ -7,7 +7,7 @@ import {
   NumberInputStepper,
 } from '@chakra-ui/number-input'
 import { Radio, RadioGroup } from '@chakra-ui/radio'
-import { FormControl, FormLabel } from '@chakra-ui/react'
+import { FormControl, FormLabel, InputProps } from '@chakra-ui/react'
 import { useId } from 'react'
 import { Color, selectCrosswalkIdsWithTrafficLights } from '../reducer'
 import { useSelector } from '../store'
@@ -16,9 +16,11 @@ import TimestampInput from '../TimestampInput'
 export function TimestampField({
   timestamp,
   setTimestamp,
+  onKeyDown,
 }: {
   timestamp: number
   setTimestamp: (timestamp: number | null) => void
+  onKeyDown?: InputProps['onKeyDown']
 }) {
   const id = useId()
 
@@ -29,6 +31,7 @@ export function TimestampField({
         id={id}
         timestamp={timestamp}
         setTimestamp={setTimestamp}
+        onKeyDown={onKeyDown}
         css={{ maxWidth: '100px' }}
       />
     </FormControl>

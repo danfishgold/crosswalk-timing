@@ -5,11 +5,13 @@ import { formatTimestamp } from './utils'
 export default function TimestampInput({
   timestamp,
   setTimestamp,
+  onKeyDown: externalOnKeyDown,
   ...props
 }: {
   timestamp: number | null
   setTimestamp: (timestamp: number | null) => void
-} & Exclude<InputProps, 'value' | 'onChange' | 'onKeyDown'>) {
+  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
+} & Exclude<InputProps, 'value' | 'onChange'>) {
   const [value, setValue] = useState(
     timestamp !== null ? formatTimestamp(timestamp) : '',
   )
@@ -34,7 +36,8 @@ export default function TimestampInput({
     }
   }
 
-  const onMouseDown = (event: KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    externalOnKeyDown?.(event)
     let delta = 0
     if (event.key === 'ArrowUp') {
       delta = 1
@@ -61,7 +64,7 @@ export default function TimestampInput({
       size='sm'
       value={value}
       onChange={onChange}
-      onKeyDown={onMouseDown}
+      onKeyDown={onKeyDown}
       {...props}
     />
   )

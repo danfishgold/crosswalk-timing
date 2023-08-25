@@ -75,6 +75,11 @@ export default function NewTransitionForm({
                   setTimestamp(timestamp)
                 }
               }}
+              onKeyDown={(event) => {
+                if (event.key === ' ') {
+                  setIsPlaying(!isPlaying)
+                }
+              }}
             />
             <TrackIndexField
               trackIndex={crosswalkIndex}
