@@ -19,6 +19,7 @@ import { compact } from './utils'
 export type State = {
   junction: Junction
   junctionTitle: string
+  junctionRotation: number
   transitions: Record<string, Transition>
   cursor: Cursor | null
   transitionSuggestion: TransitionSuggestion | null
@@ -119,6 +120,7 @@ export const emptyState: State = {
     sw: null,
   },
   junctionTitle: '',
+  junctionRotation: 0,
   transitions: {},
   cursor: null,
   transitionSuggestion: null,
@@ -141,6 +143,7 @@ export const szoldState: State = {
     sw: null,
   },
   junctionTitle: 'ארלוזורוב/הנרייטה סולד',
+  junctionRotation: 20,
   transitions: {
     '0.12398773012577846': {
       crosswalkId: { main: true, legId: 's', part: 'first' },
@@ -225,6 +228,7 @@ const weizmannState: State = {
     sw: null,
   },
   junctionTitle: 'ארלוזורוב/ויצמן',
+  junctionRotation: 0,
   transitions: {
     '0.5223888119273669': {
       timestamp: 35,
@@ -379,6 +383,7 @@ const ibnGavirolState: State = {
     sw: null,
   },
   junctionTitle: 'אבן גבירול/מלכי ישראל/צייטלין',
+  junctionRotation: 0,
   transitions: {
     '0.6560413026551709': {
       timestamp: 16,
@@ -497,6 +502,7 @@ const weizmannSheinkin: State = {
     sw: null,
   },
   junctionTitle: 'ויצמן / שינקין (גבעתיים)',
+  junctionRotation: 0,
   transitions: {
     '0.8095581678087502': {
       crosswalkId: { main: true, legId: 'w' },

@@ -12,7 +12,7 @@ export default function DebugSection() {
       <p>
         <Link
           color='blue.500'
-          href='#ארלוזורוב/הנרייטה%20סולד/JCoLkKRLScYccchMTDi5p6exoqPDoqE'
+          href='#ארלוזורוב/הנרייטה%20סולד/JCoLC5CkS0nGHHHITEw4uaensaKjw6Kh'
         >
           דוגמה סולד 1
         </Link>
@@ -20,7 +20,7 @@ export default function DebugSection() {
       <p>
         <Link
           color='blue.500'
-          href='#ארלוזורוב/הנרייטה%20סולד/JCoLkKRLScYcSchMTDi5p6exoqPDoqE'
+          href='#ארלוזורוב/הנרייטה%20סולד/JCoLC5CkS0nGHEnITEw4uaensaKjw6Kh'
         >
           דוגמה סולד 2
         </Link>
