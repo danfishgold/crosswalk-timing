@@ -1,4 +1,3 @@
-import { Button, Radio, RadioGroup, Stack } from '@chakra-ui/react'
 import React, { useMemo, useState } from 'react'
 import { CrosswalkNumberIndicator } from '../CrosswalkNumberIndicator'
 import {
@@ -44,10 +43,6 @@ export function CycleDiagram({
           />
         </React.Fragment>
       ))}
-      <div css={{ gridColumn: 2 }}>
-        <Button>play</Button>
-        <SpeedControl speed={speed} setSpeed={setSpeed} />
-      </div>
     </div>
   )
 }
@@ -108,26 +103,5 @@ function TrackSegment({
         background: colorColors[segment.color],
       }}
     ></div>
-  )
-}
-
-function SpeedControl({
-  speed,
-  setSpeed,
-}: {
-  speed: number
-  setSpeed: (value: number) => void
-}) {
-  return (
-    <RadioGroup
-      onChange={(stringValue) => setSpeed(+stringValue)}
-      value={speed.toString()}
-    >
-      <Stack direction='row'>
-        <Radio value='1'>x1</Radio>
-        <Radio value='2'>x2</Radio>
-        <Radio value='4'>x4</Radio>
-      </Stack>
-    </RadioGroup>
   )
 }
